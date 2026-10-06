@@ -8,6 +8,7 @@ import logging
 import re
 import threading
 import time
+import unicodedata
 from datetime import datetime, timezone
 from urllib.parse import urljoin, urlsplit, parse_qs
 
@@ -40,11 +41,13 @@ PROJETOS = {
               ('cef_claro', 'Caixa Econômica', 'projeto_cef'),
               ('bb_claro', 'Banco do Brasil', 'projeto_bb'),
               ('carrefour', 'Carrefour', 'projeto_carrefour'),
-              ('div_claro', 'Diversos', 'atacado_diversos')],
+              ('div_claro', 'Diversos', 'atacado_diversos'),
+              ('fust_claro', 'FUST', 'fust')],
     'vivo': [('brad_vivo', 'Bradesco', 'brad'),
              ('mcdonalds', "McDonald's", 'mc_donalds'),
              ('l2l', 'L2L (LAN-to-LAN)', 'lan_to_lan'),
-             ('div_vivo', 'Diversos', None)],
+             ('div_vivo', 'Diversos', None),
+             ('fust_vivo', 'FUST', 'fust')],
     'algar': [('escolas', 'Escolas Conectadas', 'projeto_algar')],
 }
 
@@ -66,7 +69,7 @@ def parse_ajax(payload):
     return result
 
 
-def _buscar_tickets(page, profile, token):
+def _buscar_tickets(page, profile, token, incluir_cliente=False):
     """Só retorna uma busca completa; falha/página parcial nunca equivale a 0."""
     url = (f'{OTRS_BASE}?Action=AgentKPISearch;Subaction=Search'
            f';TakeLastSearch=1;Profile={profile};ChallengeToken={token}')
@@ -89,7 +92,14 @@ def _buscar_tickets(page, profile, token):
             heading = page.locator('.Headline h1')
             if heading.count() != 1:
                 raise ValueError('Título do resultado único ausente')
-            return {ticket_id: heading.inner_text()}
+            title = heading.inner_text()
+            if incluir_cliente:
+                customer_id = page.locator('fieldset.TableLike label').evaluate_all("""(labels) => {
+                    const label = labels.find(n => /^ID do Cliente:$/i.test(n.innerText.trim()));
+                    return label?.nextElementSibling?.textContent.trim() || '';
+                }""")
+                return {ticket_id: {'titulo': title, 'cliente_id': customer_id}}
+            return {ticket_id: title}
         pagination = ' '.join(page.locator('.Pagination').all_inner_texts())
         match = re.search(r'(?:de|of)\s+([\d.]+)', pagination, re.I)
         if match:
@@ -105,7 +115,18 @@ def _buscar_tickets(page, profile, token):
             href = link.get_attribute('href') or ''
             match = re.search(r'(?:[?;&])TicketID=(\d+)', href)
             if match:
-                tickets[match.group(1)] = link.get_attribute('title') or link.inner_text()
+                title = link.get_attribute('title') or link.inner_text()
+                if incluir_cliente:
+                    customer_id = link.evaluate("""(link) => {
+                        const row = link.closest('tr');
+                        const headers = Array.from(row.closest('table').querySelectorAll('thead th'));
+                        const index = headers.findIndex(h => h.classList.contains('CustomerID')
+                            || h.innerText.trim().toUpperCase() === 'ID DO CLIENTE');
+                        return index >= 0 ? (row.cells[index]?.textContent.trim() || '') : '';
+                    }""")
+                    tickets[match.group(1)] = {'titulo': title, 'cliente_id': customer_id}
+                else:
+                    tickets[match.group(1)] = title
         next_link = page.locator('a[title="Próxima Página"], a[title="Next Page"]')
         if next_link.count() and next_link.first.is_visible():
             href = next_link.first.get_attribute('href')
@@ -155,7 +176,10 @@ def coletar_atacado(page):
         # Títulos e IDs são necessários para BRAD e totais sem sobreposição.
         if value is None or key in project_keys:
             try:
-                tickets = _buscar_tickets(page, profile, token)
+                if key == 'fust':
+                    tickets = _buscar_tickets(page, profile, token, incluir_cliente=True)
+                else:
+                    tickets = _buscar_tickets(page, profile, token)
                 if value is None:
                     value, source = len(tickets), 'busca'
                 elif len(tickets) != value:
@@ -178,9 +202,34 @@ def coletar_atacado(page):
     return result
 
 
+def _operadora_fust(ticket):
+    """CustomerID observado no OTRS tem prioridade; título é fallback.
+
+    TELMEX/TELEFONICA preservam os padrões já comprovados em BRAD.
+    CLARO/VIVO são marcas explícitas; conflito ou ausência fica em OUTROS.
+    """
+    if isinstance(ticket, str):
+        ticket = {'titulo': ticket}
+    for field in ('cliente_id', 'titulo'):
+        text = unicodedata.normalize('NFKD', ticket.get(field) or '')
+        text = ''.join(char for char in text if not unicodedata.combining(char)).upper()
+        claro = bool(re.search(r'\b(?:CLARO|TELMEX)\b', text))
+        vivo = bool(re.search(r'\b(?:VIVO|TELEFONICA)\b', text))
+        if claro or vivo:
+            return 'OUTROS' if claro and vivo else ('CLARO' if claro else 'VIVO')
+    return 'OUTROS'
+
+
 def normalizar_atacado(kpis):
     """Contrato público: não entrega títulos de tickets nem tokens ao frontend."""
     result = {}
+    fust = kpis.get('fust', {})
+    fust_tickets = fust.get('tickets')
+    fust_ids = None
+    if fust_tickets is not None and len(fust_tickets) == fust.get('valor'):
+        fust_ids = {'CLARO': set(), 'VIVO': set(), 'OUTROS': set()}
+        for tid, ticket in fust_tickets.items():
+            fust_ids[_operadora_fust(ticket)].add(tid)
     for op, projects in PROJETOS.items():
         cards, ids, complete = [], set(), True
         for project_id, name, key in projects:
@@ -194,6 +243,9 @@ def normalizar_atacado(kpis):
                                if (BRAD_CLARO in title.upper() if op == 'claro'
                                    else BRAD_CLARO not in title.upper() and BRAD_VIVO in title.upper())}
                     value = len(tickets)
+            elif key == 'fust':
+                tickets = fust_ids[op.upper()] if fust_ids is not None else None
+                value = len(tickets) if tickets is not None else None
             if key is not None:
                 if tickets is None:
                     complete = False
@@ -212,6 +264,8 @@ def normalizar_atacado(kpis):
         'projetos': [{k: v for k, v in item.items() if k != 'tickets'}
                      for item in kpis.values()],
         'sem_correspondencia': [key for key in OTRS_ATACADO_KPIS if key not in mapped],
+        'fust_por_operadora': ({op: len(ids) for op, ids in fust_ids.items()}
+                              if fust_ids is not None else None),
     }
     result['total'] = result['total_em_aberto'] = result['atacado']['total']
     result['total_escopo'] = 'NOC - ATACADO'

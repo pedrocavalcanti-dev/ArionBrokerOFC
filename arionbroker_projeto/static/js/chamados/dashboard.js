@@ -37,6 +37,7 @@ const ESTRUTURA = [
             { id: 'correios', nome: 'Correios', col_id: 'CI', status_pool: STATUS_COM_TUNEL, analista: 'Pedro Cavalcanti', api_nome: 'Correios' },
             { id: 'carrefour', nome: 'Carrefour', col_id: 'CI', status_pool: STATUS_COM_TUNEL, analista: 'Pedro Cavalcanti', api_nome: 'Carrefour' },
             { id: 'div_claro', nome: 'Diversos', col_id: 'CI', status_pool: STATUS_BASE, analista: 'Pedro Cavalcanti', api_nome: 'Diversos' },
+            { id: 'fust_claro', nome: 'FUST' },
         ]
     },
     {
@@ -46,6 +47,7 @@ const ESTRUTURA = [
             { id: 'mcdonalds', nome: "McDonald's", col_id: 'SIGLA', status_pool: STATUS_COM_CGNAT_TUNEL, analista: 'Vinicius Floriano', api_nome: "McDonald's" },
             { id: 'l2l', nome: 'L2L (LAN-to-LAN)', col_id: 'CI', status_pool: STATUS_COM_TUNEL, analista: 'Pedro Cavalcanti', api_nome: 'L2L (LAN-to-LAN)' },
             { id: 'div_vivo', nome: 'Diversos', col_id: 'CI', status_pool: STATUS_BASE, analista: 'Pedro Cavalcanti', api_nome: 'Diversos' },
+            { id: 'fust_vivo', nome: 'FUST' },
         ]
     },
     {
