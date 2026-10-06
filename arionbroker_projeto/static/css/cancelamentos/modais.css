@@ -1,0 +1,373 @@
+/* ============================================================
+   ARION PROJETOS — cancelamentos/modais.css  v2
+   Estiliza todos os modais reutilizáveis (4 filas + detalhe)
+   e loading de botões.
+   Não conter estilos de página (ver detalhe.css).
+
+   Observação: .modal-overlay / .modal-box / .modal-box__header /
+   __body / __footer e Toasts / Dropdown têm a base em cancelamentos.css.
+   Aqui apenas REFINAMOS e adicionamos as variantes (tamanhos,
+   grid de forms internos, etc).
+   ============================================================ */
+
+/* ── 1. OVERLAY (AJUSTES) ────────────────────────────────── */
+.modal-overlay {
+    z-index: 9999;
+    align-items: flex-start;
+    padding-top: 6vh;
+    padding-bottom: 2rem;
+}
+
+@media (min-height: 780px) {
+    .modal-overlay {
+        align-items: center;
+        padding-top: 1rem;
+    }
+}
+
+/* ── 2. CAIXA DO MODAL (VARIANTES DE TAMANHO) ────────────── */
+.modal-box {
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+}
+
+.modal-box--form {
+    width: min(760px, 100%);
+    max-width: 760px;
+}
+
+.modal-box--conclusao {
+    width: min(760px, 100%);
+    max-width: 760px;
+}
+
+.modal-box--edit {
+    width: min(900px, 100%);
+    max-width: 900px;
+}
+
+.modal-box--confirm {
+    width: min(440px, 100%);
+    max-width: 440px;
+}
+
+/* ── 3. CABEÇALHO / RODAPÉ STICKY ────────────────────────── */
+.modal-box__header {
+    flex-shrink: 0;
+}
+
+.modal-box__title {
+    max-width: calc(100% - 40px);
+    overflow-wrap: break-word;
+}
+
+.modal-box__close {
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.modal-box__body {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.modal-box__footer {
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+/* ── 4. FORMULÁRIOS INTERNOS ──────────────────────────────── */
+.form-input:hover {
+    border-color: var(--border-strong);
+}
+
+.form-input:disabled,
+.form-input[readonly] {
+    opacity: .55;
+    cursor: not-allowed;
+    background: var(--bg-hover);
+}
+
+.form-input:invalid:not(:placeholder-shown) {
+    border-color: rgba(239, 68, 68, .5);
+}
+
+select.form-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%239CA3AF' stroke-width='1.6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .8rem center;
+    padding-right: 2.2rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--verde-arion);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* ── 5. OBSERVAÇÕES (lista dinâmica via JS) ──────────────── */
+.obs-lista {
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    padding-right: 2px;
+}
+
+.obs-lista::-webkit-scrollbar {
+    width: 5px;
+}
+
+.obs-lista::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 3px;
+}
+
+.obs-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--verde-arion);
+    border-radius: 8px;
+    padding: .7rem .85rem;
+}
+
+.obs-item__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .3rem;
+}
+
+.obs-item__autor {
+    font-size: .74rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.obs-item__autor::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--verde-arion);
+    margin-right: 6px;
+}
+
+.obs-item__data {
+    font-size: .68rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.obs-item__texto {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.obs-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: 1.5rem;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.obs-loading::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--verde-arion);
+    animation: modaisSpin .7s linear infinite;
+}
+
+.obs-erro {
+    background: rgba(239, 68, 68, .1);
+    border: 1px solid rgba(239, 68, 68, .25);
+    color: #F87171;
+    border-radius: 8px;
+    padding: .7rem .9rem;
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+/* ── 6. MODAL DE CONFIRMAÇÃO ─────────────────────────────── */
+.modal-box--confirm .modal-box__body {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.modal-box--confirm .modal-box__body strong {
+    color: var(--text-primary);
+}
+
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #EF4444;
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: .55rem 1rem;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+}
+
+.btn-danger:hover {
+    background: #DC2626;
+}
+
+.btn-danger:active {
+    transform: scale(.98);
+}
+
+.confirm-alert-text {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    background: rgba(239, 68, 68, .08);
+    border: 1px solid rgba(239, 68, 68, .2);
+    border-radius: 8px;
+    padding: .7rem .85rem;
+    margin-top: .75rem;
+    font-size: .82rem;
+    color: #F87171;
+}
+
+/* ── 7. LOADING DE BOTÕES ────────────────────────────────── */
+.is-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.is-loading .btn-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, .35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    color: #fff;
+    animation: modaisSpin .6s linear infinite;
+}
+
+.btn-secondary.is-loading .btn-spinner,
+.btn-danger.is-loading .btn-spinner {
+    border-color: rgba(255, 255, 255, .25);
+}
+
+.btn-secondary.is-loading .btn-spinner {
+    color: var(--text-secondary);
+    border-color: var(--border-strong);
+    border-top-color: var(--text-secondary);
+}
+
+@keyframes modaisSpin {
+    to { transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .is-loading .btn-spinner,
+    .obs-loading::before {
+        animation-duration: 1.4s;
+    }
+}
+
+/* ── 8. ACESSIBILIDADE ──────────────────────────────────── */
+.modal-box__close:focus-visible,
+.form-input:focus-visible,
+.checkbox-label input:focus-visible {
+    outline: 2px solid var(--verde-arion);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-overlay,
+    .modal-box {
+        animation: none !important;
+    }
+}
+
+/* ── 9. RESPONSIVO ───────────────────────────────────────── */
+@media (max-width: 640px) {
+    .modal-overlay {
+        padding: .75rem;
+        align-items: flex-end;
+    }
+
+    .modal-box,
+    .modal-box--form,
+    .modal-box--conclusao,
+    .modal-box--edit,
+    .modal-box--confirm {
+        width: 100%;
+        max-width: 100%;
+        max-height: calc(100vh - 24px);
+        border-radius: 14px 14px 0 0;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .modal-box__footer {
+        flex-direction: column-reverse;
+    }
+
+    .modal-box__footer .btn-primary,
+    .modal-box__footer .btn-secondary,
+    .modal-box__footer .btn-danger {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ── 10. TEMA CLARO ───────────────────────────────────────── */
+[data-theme="light"] .obs-item {
+    background: #F9FAFB;
+}
+
+[data-theme="light"] .obs-item__autor {
+    color: #111827;
+}
+
+[data-theme="light"] select.form-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236B7280' stroke-width='1.6'/%3E%3C/svg%3E");
+}
+
+[data-theme="light"] .confirm-alert-text {
+    background: rgba(239, 68, 68, .06);
+    color: #B91C1C;
+}

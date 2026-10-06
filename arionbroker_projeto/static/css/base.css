@@ -1,0 +1,1767 @@
+/* ==========================================================================
+   ARION PROJETOS — BROKER
+   base.css v6.0
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. VARIÁVEIS
+   ========================================================================== */
+
+:root {
+    /* Marca */
+    --verde-arion: #16A34A;
+    --verde-arion-hover: #15803D;
+    --verde-arion-light: #4ADE80;
+    --verde-arion-soft: rgba(22, 163, 74, 0.10);
+    --verde-arion-soft-hover: rgba(22, 163, 74, 0.15);
+
+    /* Estados */
+    --danger: #EF4444;
+    --danger-soft: rgba(239, 68, 68, 0.10);
+
+    --warning: #F59E0B;
+    --warning-soft: rgba(245, 158, 11, 0.10);
+
+    --info: #3B82F6;
+    --info-soft: rgba(59, 130, 246, 0.10);
+
+    /* Dark padrão */
+    --bg-base: #0B0C0D;
+    --bg-surface: #121314;
+    --bg-surface-2: #171819;
+    --bg-elevated: #1C1D1F;
+    --bg-hover: #222426;
+
+    --text-primary: #F3F4F6;
+    --text-secondary: #A4A7AE;
+    --text-muted: #656971;
+    --text-soft: #858992;
+
+    --border: rgba(255, 255, 255, 0.065);
+    --border-strong: rgba(255, 255, 255, 0.115);
+    --border-hover: rgba(255, 255, 255, 0.17);
+
+    /* Sidebar */
+    --sidebar-width: 270px;
+    --sidebar-collapsed-width: 76px;
+    --sidebar-bg: #0E0F10;
+    --sidebar-text: #898D95;
+
+    --sidebar-active-bg: rgba(22, 163, 74, 0.11);
+    --sidebar-active-border: rgba(74, 222, 128, 0.20);
+    --sidebar-active-text: #4ADE80;
+
+    /* Topbar */
+    --topbar-height: 64px;
+
+    /* Radius */
+    --radius-xs: 6px;
+    --radius-sm: 8px;
+    --radius-md: 11px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.14);
+    --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.24);
+    --shadow-lg: 0 18px 60px rgba(0, 0, 0, 0.35);
+
+    /* Fontes */
+    --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'Inter', Consolas, Monaco, monospace;
+
+    /* Transições */
+    --transition-fast: 0.14s ease;
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ==========================================================================
+   2. TEMAS
+   ========================================================================== */
+
+[data-theme="dark"] {
+    --bg-base: #0B0C0D;
+    --bg-surface: #121314;
+    --bg-surface-2: #171819;
+    --bg-elevated: #1C1D1F;
+    --bg-hover: #222426;
+
+    --text-primary: #F3F4F6;
+    --text-secondary: #A4A7AE;
+    --text-muted: #656971;
+    --text-soft: #858992;
+
+    --border: rgba(255, 255, 255, 0.065);
+    --border-strong: rgba(255, 255, 255, 0.115);
+    --border-hover: rgba(255, 255, 255, 0.17);
+
+    --sidebar-bg: #0E0F10;
+    --sidebar-text: #898D95;
+}
+
+
+[data-theme="light"] {
+    --bg-base: #F5F6F8;
+    --bg-surface: #FFFFFF;
+    --bg-surface-2: #F9FAFB;
+    --bg-elevated: #F0F2F5;
+    --bg-hover: #EAEDF1;
+
+    --text-primary: #111318;
+    --text-secondary: #4F545E;
+    --text-muted: #90949D;
+    --text-soft: #6F747D;
+
+    --border: rgba(0, 0, 0, 0.065);
+    --border-strong: rgba(0, 0, 0, 0.115);
+    --border-hover: rgba(0, 0, 0, 0.17);
+
+    --sidebar-bg: #FFFFFF;
+    --sidebar-text: #626771;
+
+    --sidebar-active-bg: rgba(22, 163, 74, 0.08);
+    --sidebar-active-border: rgba(22, 163, 74, 0.16);
+    --sidebar-active-text: #15803D;
+}
+
+
+/* ==========================================================================
+   3. RESET
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+body {
+    min-width: 0;
+    min-height: 100vh;
+
+    display: flex;
+
+    font-family: var(--font-family);
+    line-height: 1.55;
+    letter-spacing: -0.012em;
+
+    background: var(--bg-base);
+    color: var(--text-primary);
+
+    overflow-x: hidden;
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+
+button {
+    color: inherit;
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+
+/* ==========================================================================
+   4. SELEÇÃO / FOCUS
+   ========================================================================== */
+
+::selection {
+    background: rgba(22, 163, 74, 0.28);
+    color: var(--text-primary);
+}
+
+
+:focus-visible {
+    outline: 2px solid rgba(74, 222, 128, 0.72);
+    outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+   5. SCROLLBAR
+   ========================================================================== */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 20px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-hover);
+}
+
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+
+/* ==========================================================================
+   6. LAYOUT
+   ========================================================================== */
+
+.sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1000;
+
+    width: var(--sidebar-width);
+    height: 100dvh;
+
+    display: flex;
+    flex-direction: column;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.012) 0%,
+            rgba(255, 255, 255, 0) 130px
+        ),
+        var(--sidebar-bg);
+
+    border-right: 1px solid var(--border);
+
+    overflow: hidden;
+
+    transition:
+        width var(--transition-slow),
+        transform var(--transition-slow);
+
+    box-shadow: 5px 0 24px rgba(0, 0, 0, 0.08);
+}
+
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    min-height: 100vh;
+
+    margin-left: var(--sidebar-width);
+
+    display: flex;
+    flex-direction: column;
+
+    transition: margin-left var(--transition-slow);
+}
+
+
+/* ==========================================================================
+   7. OVERLAY MOBILE
+   ========================================================================== */
+
+.sidebar__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+
+    display: none;
+
+    background: rgba(0, 0, 0, 0.62);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity var(--transition);
+}
+
+
+.sidebar__overlay.active,
+body.sidebar-open .sidebar__overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+/* ==========================================================================
+   8. SIDEBAR — BRAND
+   ========================================================================== */
+
+.sidebar__brand {
+    position: relative;
+
+    width: 100%;
+    min-height: 74px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 14px 14px;
+
+    border-bottom: 1px solid var(--border);
+
+    flex-shrink: 0;
+}
+
+
+.sidebar__brand::after {
+    content: '';
+
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: -1px;
+
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(74, 222, 128, 0.10),
+        transparent
+    );
+
+    pointer-events: none;
+}
+
+
+.sidebar__brand-link {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    color: inherit;
+}
+
+
+.sidebar__logo {
+    position: relative;
+
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 12px;
+
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-strong);
+
+    overflow: hidden;
+
+    box-shadow:
+        0 7px 18px rgba(0, 0, 0, 0.20),
+        0 0 0 1px rgba(22, 163, 74, 0.02);
+
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+
+.sidebar__brand-link:hover .sidebar__logo {
+    transform: translateY(-1px);
+
+    border-color: rgba(74, 222, 128, 0.24);
+
+    box-shadow:
+        0 9px 22px rgba(0, 0, 0, 0.24),
+        0 0 18px rgba(22, 163, 74, 0.09);
+}
+
+
+.sidebar__logo-img {
+    width: 31px;
+    height: 31px;
+
+    object-fit: contain;
+
+    border-radius: 7px;
+}
+
+
+.sidebar__brand-text {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+
+    line-height: 1.15;
+
+    transition:
+        opacity var(--transition),
+        transform var(--transition);
+}
+
+
+.sidebar__brand-text strong {
+    font-size: 14px;
+    font-weight: 700;
+
+    color: var(--text-primary);
+
+    letter-spacing: 0.075em;
+}
+
+
+.sidebar__brand-text small {
+    margin-top: 3px;
+
+    font-size: 9px;
+    font-weight: 500;
+
+    color: var(--text-muted);
+
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+
+.sidebar__close-btn {
+    width: 34px;
+    height: 34px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: auto;
+
+    border-radius: 9px;
+
+    color: var(--text-secondary);
+
+    transition:
+        background var(--transition),
+        color var(--transition),
+        transform var(--transition);
+}
+
+
+.sidebar__close-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    transform: rotate(3deg);
+}
+
+
+/* ==========================================================================
+   9. SIDEBAR — NAV
+   ========================================================================== */
+
+.sidebar__nav {
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 8px 0 14px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+.sidebar__section {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+
+    padding: 10px 0 11px;
+}
+
+
+.sidebar__section:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+}
+
+
+.sidebar__section-label {
+    display: block;
+
+    padding: 0 16px;
+    margin: 0 0 5px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    color: var(--text-muted);
+
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+    transition:
+        opacity var(--transition),
+        transform var(--transition);
+}
+
+
+.sidebar__nav-list {
+    list-style: none;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.sidebar__nav-item {
+    position: relative;
+}
+
+
+.sidebar__nav-link {
+    position: relative;
+
+    min-height: 39px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    margin: 0 8px;
+    padding: 9px 12px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    color: var(--sidebar-text);
+
+    font-size: 12px;
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    transition:
+        background var(--transition),
+        color var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+}
+
+
+.sidebar__nav-link::before {
+    content: '';
+
+    position: absolute;
+    top: 50%;
+    left: -1px;
+
+    width: 2px;
+    height: 0;
+
+    border-radius: 0 4px 4px 0;
+
+    background: var(--verde-arion-light);
+
+    transform: translateY(-50%);
+
+    transition: height var(--transition);
+}
+
+
+.sidebar__nav-link:hover {
+    color: var(--text-primary);
+
+    background: rgba(255, 255, 255, 0.025);
+
+    border-color: var(--border);
+}
+
+
+.sidebar__nav-item.active > .sidebar__nav-link,
+.sidebar__nav-link.active {
+    color: var(--sidebar-active-text);
+
+    background: var(--sidebar-active-bg);
+    border-color: var(--sidebar-active-border);
+
+    font-weight: 600;
+}
+
+
+.sidebar__nav-item.active > .sidebar__nav-link::before,
+.sidebar__nav-link.active::before {
+    height: 20px;
+}
+
+
+.sidebar__nav-link i {
+    width: 18px;
+    min-width: 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 15px;
+    line-height: 1;
+
+    color: currentColor;
+
+    transition: transform var(--transition);
+}
+
+
+.sidebar__nav-link:hover > i:first-child {
+    transform: translateY(-1px);
+}
+
+
+.sidebar__nav-link > span:not(.sidebar__badge) {
+    flex: 1;
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    transition:
+        opacity var(--transition),
+        transform var(--transition);
+}
+
+
+/* ==========================================================================
+   10. SIDEBAR — BADGES
+   ========================================================================== */
+
+.sidebar__badge {
+    min-width: 19px;
+    height: 19px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 5px;
+    margin-left: auto;
+
+    border-radius: 999px;
+
+    background: var(--verde-arion);
+    color: #FFFFFF;
+
+    font-family: var(--font-secondary);
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    flex-shrink: 0;
+
+    box-shadow: 0 3px 10px rgba(22, 163, 74, 0.16);
+}
+
+
+/* ==========================================================================
+   11. SIDEBAR — GRUPOS / SUBMENUS
+   ========================================================================== */
+
+.sidebar__nav-link--group {
+    width: calc(100% - 16px);
+
+    text-align: left;
+}
+
+
+.sidebar__chevron {
+    width: auto !important;
+    min-width: auto !important;
+
+    margin-left: auto;
+
+    font-size: 11px !important;
+
+    color: var(--text-muted) !important;
+
+    transition:
+        transform var(--transition-slow),
+        color var(--transition);
+}
+
+
+.sidebar__nav-item--group.active > .sidebar__nav-link .sidebar__chevron {
+    transform: rotate(180deg);
+}
+
+
+.sidebar__nav-link--group:hover .sidebar__chevron {
+    color: var(--text-secondary) !important;
+}
+
+
+.sidebar__submenu {
+    max-height: 0;
+
+    list-style: none;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    transition:
+        max-height 0.32s ease,
+        opacity 0.22s ease,
+        padding var(--transition);
+}
+
+
+.sidebar__submenu.open {
+    max-height: 520px;
+
+    padding: 4px 0 2px;
+
+    opacity: 1;
+}
+
+
+.sidebar__submenu-link {
+    position: relative;
+
+    display: block;
+
+    margin: 1px 8px;
+    padding: 7px 12px 7px 42px;
+
+    border-radius: 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    font-weight: 500;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    transition:
+        color var(--transition),
+        background var(--transition),
+        padding-left var(--transition);
+}
+
+
+.sidebar__submenu-link::before {
+    content: '';
+
+    position: absolute;
+
+    left: 29px;
+    top: 50%;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: var(--text-muted);
+
+    transform: translateY(-50%);
+
+    transition:
+        background var(--transition),
+        transform var(--transition);
+}
+
+
+.sidebar__submenu-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.025);
+
+    padding-left: 45px;
+}
+
+
+.sidebar__submenu-link:hover::before {
+    background: var(--verde-arion-light);
+}
+
+
+.sidebar__submenu-link.active {
+    color: var(--verde-arion-light);
+
+    background: rgba(22, 163, 74, 0.075);
+}
+
+
+.sidebar__submenu-link.active::before {
+    background: var(--verde-arion-light);
+
+    transform:
+        translateY(-50%)
+        scale(1.25);
+}
+
+
+/* ==========================================================================
+   12. SIDEBAR — FOOTER
+   ========================================================================== */
+
+.sidebar__footer {
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    padding: 9px 8px;
+
+    border-top: 1px solid var(--border);
+
+    background: var(--sidebar-bg);
+}
+
+
+.sidebar__action-btn {
+    width: 100%;
+    min-height: 39px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 9px 12px;
+
+    border-radius: 9px;
+
+    color: var(--sidebar-text);
+
+    font-size: 12px;
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    transition:
+        color var(--transition),
+        background var(--transition),
+        border-color var(--transition);
+
+    border: 1px solid transparent;
+}
+
+
+.sidebar__action-btn:hover {
+    color: var(--text-primary);
+
+    background: rgba(255, 255, 255, 0.03);
+
+    border-color: var(--border);
+}
+
+
+.sidebar__action-btn i {
+    width: 18px;
+    min-width: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 15px;
+}
+
+
+.sidebar__logout:hover {
+    color: #F87171;
+
+    background: rgba(239, 68, 68, 0.075);
+
+    border-color: rgba(239, 68, 68, 0.13);
+}
+
+
+.sidebar__credit {
+    flex-shrink: 0;
+
+    padding: 7px 12px 9px;
+
+    border-top: 1px solid var(--border);
+
+    color: var(--text-muted);
+
+    font-family: var(--font-secondary);
+    font-size: 8px;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   13. TOPBAR
+   ========================================================================== */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    width: 100%;
+    height: var(--topbar-height);
+    min-height: var(--topbar-height);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 0 22px;
+
+    background: rgba(18, 19, 20, 0.94);
+
+    border-bottom: 1px solid var(--border);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    box-shadow: 0 3px 18px rgba(0, 0, 0, 0.08);
+}
+
+
+[data-theme="light"] .topbar {
+    background: rgba(255, 255, 255, 0.92);
+}
+
+
+.topbar__left {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.topbar__title-wrap {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    margin-left: 4px;
+}
+
+
+.topbar__title {
+    max-width: 100%;
+
+    color: var(--text-primary);
+
+    font-size: 17px;
+    font-weight: 600;
+
+    letter-spacing: -0.025em;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ==========================================================================
+   14. TOPBAR — BOTÕES MENU
+   ========================================================================== */
+
+.topbar__menu-toggle,
+.topbar__collapse-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    color: var(--text-muted);
+
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        color var(--transition),
+        transform var(--transition);
+}
+
+
+.topbar__menu-toggle {
+    display: none;
+}
+
+
+.topbar__menu-toggle i,
+.topbar__collapse-btn i {
+    font-size: 17px;
+    line-height: 1;
+}
+
+
+.topbar__menu-toggle:hover,
+.topbar__collapse-btn:hover {
+    color: var(--text-primary);
+
+    background: var(--bg-hover);
+    border-color: var(--border);
+}
+
+
+.topbar__menu-toggle:active,
+.topbar__collapse-btn:active {
+    transform: scale(0.95);
+}
+
+
+body.sidebar-closed .topbar__collapse-btn {
+    color: var(--verde-arion-light);
+
+    background: rgba(22, 163, 74, 0.07);
+
+    border-color: rgba(22, 163, 74, 0.11);
+}
+
+
+/* ==========================================================================
+   15. TOPBAR — DIREITA
+   ========================================================================== */
+
+.topbar__right {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.topbar__alert {
+    min-height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 6px 11px;
+
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 999px;
+
+    background: rgba(239, 68, 68, 0.07);
+    color: #F87171;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.topbar__alert i {
+    font-size: 13px;
+}
+
+
+/* ==========================================================================
+   16. TOPBAR — USUÁRIO
+   ========================================================================== */
+
+.topbar__user {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 5px 7px 5px 5px;
+
+    border: 1px solid transparent;
+    border-radius: 12px;
+
+    transition:
+        background var(--transition),
+        border-color var(--transition);
+}
+
+
+.topbar__user:hover {
+    background: rgba(255, 255, 255, 0.025);
+    border-color: var(--border);
+}
+
+
+.topbar__user-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        var(--verde-arion),
+        #22C55E
+    );
+
+    color: #FFFFFF;
+
+    font-family: var(--font-secondary);
+    font-size: 11px;
+    font-weight: 700;
+
+    box-shadow:
+        0 3px 12px rgba(22, 163, 74, 0.18),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.13);
+}
+
+
+.topbar__user-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+}
+
+
+.topbar__user-info strong {
+    max-width: 190px;
+
+    color: var(--text-primary);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.topbar__user-info small {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color: var(--text-muted);
+
+    font-size: 9px;
+    font-weight: 500;
+}
+
+
+.topbar__user-info small i {
+    font-size: 9px;
+}
+
+
+.topbar__user-info small .bi-shield-fill-check,
+.topbar__user-info small .bi-shield-fill {
+    color: var(--verde-arion-light);
+}
+
+
+/* ==========================================================================
+   17. CONTEÚDO
+   ========================================================================== */
+
+.page-content {
+    flex: 1;
+    min-width: 0;
+
+    width: 100%;
+
+    padding: 22px;
+}
+
+
+/* ==========================================================================
+   18. ALERTAS
+   ========================================================================== */
+
+.alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 11px 14px;
+    margin-bottom: 12px;
+
+    border-radius: var(--radius-md);
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+.alert--success {
+    color: #4ADE80;
+    background: rgba(22, 163, 74, 0.09);
+    border: 1px solid rgba(22, 163, 74, 0.17);
+}
+
+
+.alert--error {
+    color: #F87171;
+    background: rgba(239, 68, 68, 0.09);
+    border: 1px solid rgba(239, 68, 68, 0.17);
+}
+
+
+.alert--warning {
+    color: #FBBF24;
+    background: rgba(245, 158, 11, 0.09);
+    border: 1px solid rgba(245, 158, 11, 0.17);
+}
+
+
+/* ==========================================================================
+   19. CARDS
+   ========================================================================== */
+
+.card {
+    padding: 16px;
+
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* ==========================================================================
+   20. BOTÕES GENÉRICOS
+   ========================================================================== */
+
+.btn {
+    min-height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 8px 14px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        color var(--transition),
+        transform var(--transition);
+}
+
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+
+.btn--primary {
+    background: var(--verde-arion);
+    color: #FFFFFF;
+
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.12);
+}
+
+
+.btn--primary:hover {
+    background: var(--verde-arion-hover);
+}
+
+
+.btn--outline {
+    background: transparent;
+
+    border-color: var(--border-strong);
+
+    color: var(--text-secondary);
+}
+
+
+.btn--outline:hover {
+    background: var(--bg-hover);
+
+    border-color: var(--border-hover);
+
+    color: var(--text-primary);
+}
+
+
+/* ==========================================================================
+   21. SIDEBAR RECOLHIDA — DESKTOP
+   ========================================================================== */
+
+@media (min-width: 769px) {
+
+    body.sidebar-closed .sidebar {
+        width: var(--sidebar-collapsed-width);
+    }
+
+
+    body.sidebar-closed .main-content {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+
+
+    body.sidebar-closed .sidebar__brand {
+        min-height: 74px;
+
+        justify-content: center;
+
+        padding: 14px 8px;
+    }
+
+
+    body.sidebar-closed .sidebar__brand-link {
+        flex: 0 0 auto;
+
+        justify-content: center;
+
+        gap: 0;
+    }
+
+
+    body.sidebar-closed .sidebar__logo {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+    }
+
+
+    body.sidebar-closed .sidebar__logo-img {
+        width: 29px;
+        height: 29px;
+    }
+
+
+    body.sidebar-closed .sidebar__brand-text,
+    body.sidebar-closed .sidebar__section-label,
+    body.sidebar-closed .sidebar__nav-link > span:not(.sidebar__badge),
+    body.sidebar-closed .sidebar__chevron,
+    body.sidebar-closed .sidebar__submenu,
+    body.sidebar-closed .sidebar__action-btn span,
+    body.sidebar-closed .sidebar__badge,
+    body.sidebar-closed .sidebar__credit {
+        display: none;
+    }
+
+
+    body.sidebar-closed .sidebar__section {
+        padding: 7px 0;
+    }
+
+
+    body.sidebar-closed .sidebar__nav {
+        padding-top: 8px;
+    }
+
+
+    body.sidebar-closed .sidebar__nav-link,
+    body.sidebar-closed .sidebar__action-btn {
+        width: 44px;
+        height: 40px;
+        min-height: 40px;
+
+        justify-content: center;
+
+        gap: 0;
+
+        margin: 0 auto;
+        padding: 0;
+
+        border-radius: 10px;
+    }
+
+
+    body.sidebar-closed .sidebar__nav-link--group {
+        width: 44px;
+    }
+
+
+    body.sidebar-closed .sidebar__nav-link::before {
+        left: -8px;
+    }
+
+
+    body.sidebar-closed .sidebar__nav-link i,
+    body.sidebar-closed .sidebar__action-btn i {
+        width: auto;
+        min-width: auto;
+
+        font-size: 16px;
+    }
+
+
+    body.sidebar-closed .sidebar__footer {
+        align-items: center;
+
+        padding: 9px 0;
+    }
+
+
+    body.sidebar-closed .sidebar__close-btn {
+        display: none;
+    }
+}
+
+
+/* ==========================================================================
+   22. TABLET
+   ========================================================================== */
+
+@media (min-width: 769px) and (max-width: 1180px) {
+
+    :root {
+        --sidebar-width: 238px;
+    }
+
+
+    .sidebar__brand {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+
+    .sidebar__nav-link {
+        margin-left: 7px;
+        margin-right: 7px;
+    }
+
+
+    .page-content {
+        padding: 18px;
+    }
+
+
+    .topbar {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+
+    .topbar__user-info strong {
+        max-width: 140px;
+    }
+}
+
+
+/* ==========================================================================
+   23. MOBILE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+    :root {
+        --sidebar-width: 0px;
+        --topbar-height: 60px;
+    }
+
+
+    body {
+        display: block;
+    }
+
+
+    .sidebar {
+        width: min(286px, 86vw);
+
+        transform: translateX(-100%);
+
+        box-shadow: 16px 0 50px rgba(0, 0, 0, 0.32);
+    }
+
+
+    .sidebar.open,
+    body.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+    }
+
+
+    .sidebar__overlay {
+        display: block;
+    }
+
+
+    .sidebar__close-btn {
+        display: inline-flex;
+    }
+
+
+    .sidebar__brand {
+        min-height: 68px;
+
+        padding: 12px 13px;
+    }
+
+
+    .sidebar__logo {
+        width: 41px;
+        height: 41px;
+        min-width: 41px;
+    }
+
+
+    .sidebar__logo-img {
+        width: 29px;
+        height: 29px;
+    }
+
+
+    .sidebar__nav-link {
+        min-height: 42px;
+
+        font-size: 12px;
+    }
+
+
+    .sidebar__submenu-link {
+        font-size: 11px;
+    }
+
+
+    .topbar {
+        padding: 0 13px;
+
+        gap: 10px;
+    }
+
+
+    .topbar__left {
+        gap: 5px;
+    }
+
+
+    .topbar__menu-toggle {
+        display: inline-flex;
+    }
+
+
+    .topbar__collapse-btn {
+        display: none;
+    }
+
+
+    .topbar__title-wrap {
+        margin-left: 2px;
+    }
+
+
+    .topbar__title {
+        font-size: 15px;
+    }
+
+
+    .topbar__right {
+        gap: 6px;
+    }
+
+
+    .topbar__alert {
+        display: none;
+    }
+
+
+    .topbar__user {
+        padding: 3px;
+    }
+
+
+    .topbar__user-avatar {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+
+        font-size: 10px;
+    }
+
+
+    .topbar__user-info {
+        display: none;
+    }
+
+
+    .page-content {
+        padding: 14px;
+    }
+}
+
+
+/* ==========================================================================
+   24. MOBILE PEQUENO
+   ========================================================================== */
+
+@media (max-width: 480px) {
+
+    .sidebar {
+        width: min(278px, 90vw);
+    }
+
+
+    .page-content {
+        padding: 12px;
+    }
+
+
+    .topbar {
+        padding: 0 10px;
+    }
+
+
+    .topbar__title {
+        max-width: calc(100vw - 110px);
+
+        font-size: 14px;
+    }
+}
+
+
+/* ==========================================================================
+   25. LIGHT THEME
+   ========================================================================== */
+
+[data-theme="light"] .sidebar {
+    box-shadow: 5px 0 24px rgba(17, 24, 39, 0.035);
+}
+
+
+[data-theme="light"] .sidebar__logo {
+    background: #F8FAFB;
+
+    border-color: rgba(0, 0, 0, 0.08);
+
+    box-shadow:
+        0 6px 16px rgba(17, 24, 39, 0.07),
+        0 0 0 1px rgba(22, 163, 74, 0.01);
+}
+
+
+[data-theme="light"] .sidebar__nav-link:hover {
+    background: rgba(0, 0, 0, 0.025);
+}
+
+
+[data-theme="light"] .sidebar__submenu-link:hover {
+    background: rgba(0, 0, 0, 0.025);
+}
+
+
+[data-theme="light"] .sidebar__action-btn:hover {
+    background: rgba(0, 0, 0, 0.025);
+}
+
+
+[data-theme="light"] .topbar__user:hover {
+    background: rgba(0, 0, 0, 0.025);
+}
+
+
+/* ==========================================================================
+   26. ACESSIBILIDADE / REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

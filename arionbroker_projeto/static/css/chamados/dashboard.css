@@ -1,0 +1,453 @@
+/* ============================================================
+   ARION BROKER — DASHBOARD NOC / TV MODE (SINGLE SCREEN)
+   v4.0 — Totalmente integrado ao design system do base.css:
+   usa as variáveis de tema (--bg-surface, --text-primary,
+   --verde-arion, etc.) para respeitar claro/escuro automaticamente.
+   Nenhuma cor é inventada fora do que já existe no base.
+   ============================================================ */
+
+:root {
+    /* Cores das operadoras (identidade de marca).
+       O brilho (glow) só é aplicado no tema escuro — ver mais abaixo. */
+    --claro-color: #E4002B;
+    --claro-glow: rgba(228, 0, 43, 0.32);
+
+    --vivo-color: #7C3AED;
+    --vivo-glow: rgba(124, 58, 237, 0.30);
+
+    --algar-color: #0EA5E9;
+    --algar-glow: rgba(14, 165, 233, 0.30);
+
+    --outros-color: #F97316;
+    --outros-glow: rgba(249, 115, 22, 0.30);
+
+    /* Status reaproveitando exatamente as cores já definidas no base.css */
+    --sla-ok: var(--verde-arion);
+    --sla-critico: var(--status-revisao);
+
+    /* Altura do topbar do layout base, usada para o cálculo do modo TV */
+    --topbar-height: 54px;
+}
+
+/* ── WRAPPER PRINCIPAL (MODO TV) ─────────────────────────
+   Usa min-height em vez de height fixo: quando o conteúdo cabe,
+   ocupa a tela toda; quando não cabe (zoom, tela menor, muitos
+   projetos), a página rola normalmente em vez de cortar. */
+.dash-wrap.tv-mode {
+    min-height: calc(100vh - var(--topbar-height));
+    width: 100%;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-sizing: border-box;
+}
+
+/* Remove o padding do container de página apenas quando ele envolve
+   o modo TV, para o dashboard ocupar 100% da largura/altura disponível.
+   (:has é suportado pelos navegadores atuais; sem ele, o modo TV
+   ainda funciona, só sobra uma margem extra do layout padrão.) */
+.page-content:has(> .dash-wrap.tv-mode) {
+    padding: 0;
+}
+
+/* ── KPI STRIP (NÚMEROS GIGANTES NO TOPO) ───────────────── */
+.kpi-strip-giant {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    flex-shrink: 0;
+}
+
+.kpi-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--kpi-accent, var(--border));
+}
+
+.kpi-card__label {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.kpi-card__value {
+    font-family: var(--font-display);
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.kpi-card--total {
+    --kpi-accent: var(--algar-color);
+}
+
+.kpi-card--total .kpi-card__value {
+    color: var(--algar-color);
+}
+
+.kpi-card--aberto {
+    --kpi-accent: var(--text-primary);
+}
+
+.kpi-card--aberto .kpi-card__value {
+    color: var(--text-primary);
+}
+
+.kpi-card--resolv {
+    --kpi-accent: var(--sla-ok);
+}
+
+.kpi-card--resolv .kpi-card__value {
+    color: var(--sla-ok);
+}
+
+.kpi-card--sla {
+    --kpi-accent: var(--sla-critico);
+}
+
+.kpi-card--sla .kpi-card__value {
+    color: var(--sla-critico);
+}
+
+/* Brilho neon apenas no tema escuro — no claro fica só a cor sólida */
+[data-theme="dark"] .kpi-card--total .kpi-card__value {
+    text-shadow: 0 0 20px var(--algar-glow);
+}
+
+[data-theme="dark"] .kpi-card--resolv .kpi-card__value {
+    text-shadow: 0 0 20px rgba(22, 163, 74, 0.30);
+}
+
+[data-theme="dark"] .kpi-card--sla .kpi-card__value {
+    text-shadow: 0 0 20px var(--claro-glow);
+}
+
+/* ── LAYOUT PRINCIPAL (GRID) ────────────────────────────── */
+.dashboard-main-layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    min-height: 0;
+}
+
+/* ── CONTAINER DE OPERADORAS (GRID 2x2) ─────────────────── */
+.operadoras-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.operadora-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 0;
+}
+
+.operadora-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+    flex-shrink: 0;
+}
+
+.operadora-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* Cores por operadora — apenas cor sólida, o brilho é exclusivo do dark */
+.op-title-claro {
+    color: var(--claro-color);
+}
+
+.op-title-vivo {
+    color: var(--vivo-color);
+}
+
+.op-title-algar {
+    color: var(--algar-color);
+}
+
+.op-title-outros {
+    color: var(--outros-color);
+}
+
+[data-theme="dark"] .op-title-claro {
+    text-shadow: 0 0 10px var(--claro-glow);
+}
+
+[data-theme="dark"] .op-title-vivo {
+    text-shadow: 0 0 10px var(--vivo-glow);
+}
+
+[data-theme="dark"] .op-title-algar {
+    text-shadow: 0 0 10px var(--algar-glow);
+}
+
+[data-theme="dark"] .op-title-outros {
+    text-shadow: 0 0 10px var(--outros-glow);
+}
+
+.operadora-total-text {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+    background: var(--bg-elevated);
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.projetos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    flex: 1;
+    align-content: start;
+    overflow-y: auto;
+}
+
+/* ── CARDS DOS PROJETOS (DENTRO DA OPERADORA) ───────────── */
+.projeto-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 0.5rem;
+    text-align: center;
+    position: relative;
+    cursor: default;
+}
+
+.projeto-card:hover {
+    background: var(--bg-hover);
+}
+
+.projeto-card__name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 5px;
+}
+
+.projeto-card__num {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary);
+}
+
+.projeto-card--claro {
+    border-top: 3px solid var(--claro-color);
+}
+
+.projeto-card--vivo {
+    border-top: 3px solid var(--vivo-color);
+}
+
+.projeto-card--algar {
+    border-top: 3px solid var(--algar-color);
+}
+
+.projeto-card--outros {
+    border-top: 3px solid var(--outros-color);
+}
+
+/* ── PAINEL LATERAL (SLA E GRÁFICO) ─────────────────────── */
+.side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+    min-height: 0;
+}
+
+.tv-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.panel-chart {
+    flex: 1;
+}
+
+.tv-panel__title {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Lista de Destaques SLA */
+.sla-highlight-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-y: auto;
+}
+
+.sla-highlight-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--status-revisao-bg);
+    border-left: 4px solid var(--sla-critico);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.sla-highlight-item__name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.sla-highlight-item__op {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sla-highlight-item__count {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--sla-critico);
+}
+
+.sla-highlight-empty {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--sla-ok);
+    font-weight: 700;
+    font-size: 1.1rem;
+    background: var(--status-enviado-bg);
+    border-radius: var(--radius-sm);
+    border: 1px dashed rgba(22, 163, 74, 0.30);
+}
+
+.sla-highlight-empty span {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    font-weight: normal;
+    margin-top: 5px;
+    display: block;
+    color: var(--text-muted);
+}
+
+/* Gráfico */
+.chart-box__legend {
+    display: flex;
+    gap: 15px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.chart-wrap {
+    flex: 1;
+    position: relative;
+    min-height: 180px;
+    width: 100%;
+}
+
+/* Oculta completamente os wrappers antigos de tabela no modo TV */
+.tabela-wrapper {
+    display: none !important;
+}
+
+/* ── RESPONSIVO ──────────────────────────────────────────── */
+@media (max-width: 1400px) {
+    .kpi-card__value {
+        font-size: 3.4rem;
+    }
+
+    .dashboard-main-layout {
+        grid-template-columns: 1fr 320px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .dash-wrap.tv-mode {
+        height: auto;
+        overflow: visible;
+    }
+
+    .page-content:has(> .dash-wrap.tv-mode) {
+        overflow: visible;
+    }
+
+    .kpi-strip-giant {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-main-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .operadoras-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        height: auto;
+    }
+}

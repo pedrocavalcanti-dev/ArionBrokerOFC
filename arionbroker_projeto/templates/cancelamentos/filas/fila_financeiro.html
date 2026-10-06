@@ -1,0 +1,75 @@
+{% extends "cancelamentos/cancelamentos.html" %}
+
+{% block descricao_fila %}Última etapa: cálculo de multa/rescisão e análise antes de concluir o cancelamento.{% endblock %}
+{% block botao_novo %}{% endblock %}
+
+{% block thead %}
+<th class="col-ticket">Ticket</th>
+<th class="col-cliente">Cliente Final</th>
+<th class="col-sigla">ISP</th>
+<th class="col-data">Data do Cancelamento</th>
+<th class="col-valor">Multa/Rescisão</th>
+<th class="col-valor">Equipamento</th>
+<th class="col-valor">Outros</th>
+<th class="col-valor">Total</th>
+<th class="col-status">Status</th>
+<th class="col-responsavel">Responsável</th>
+<th class="col-acoes">Ações</th>
+{% endblock %}
+
+{% block tbody_row %}
+<td class="col-ticket">
+    {% if c.ticket_url %}
+    <a href="{{ c.ticket_url }}" target="_blank" rel="noopener noreferrer" class="ticket-chip ticket-link">{{ c.ticket_arion }}</a>
+    {% else %}
+    <span class="ticket-chip">{{ c.ticket_arion }}</span>
+    {% endif %}
+</td>
+<td class="col-cliente">{{ c.cliente_final|default:"—" }}</td>
+<td class="col-sigla">{{ c.isp|default:"—" }}</td>
+<td class="col-data">{% if c.data_cancelamento_confirmado %}{{ c.data_cancelamento_confirmado|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+<td class="col-valor">
+    <button class="obs-btn {% if not c.valor_multa_rescisao %}obs-btn--empty{% endif %}" data-action="editar-financeiro">
+        {% if c.valor_multa_rescisao %}R$ {{ c.valor_multa_rescisao }}{% else %}Definir{% endif %}
+    </button>
+</td>
+<td class="col-valor">
+    <button class="obs-btn {% if not c.valor_equipamento %}obs-btn--empty{% endif %}" data-action="editar-financeiro">
+        {% if c.valor_equipamento %}R$ {{ c.valor_equipamento }}{% else %}Definir{% endif %}
+    </button>
+</td>
+<td class="col-valor">{% if c.valor_outros %}R$ {{ c.valor_outros }}{% else %}—{% endif %}</td>
+<td class="col-valor"><strong>R$ {{ c.valor_total_financeiro|default:"0,00" }}</strong></td>
+<td class="col-status">
+    <div class="status-cell">
+        <span class="status-badge status-badge--{{ c.status|lower }}">{{ c.get_status_display }}</span>
+        <button class="status-edit-btn" data-action="editar-status" title="Alterar status">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+    </div>
+</td>
+<td class="col-responsavel">
+    {% if not c.responsavel_id %}
+        <span class="text-muted text-sm mr-2">Sem responsável</span>
+        <button class="btn-micro" data-action="apropriar">Apropriar</button>
+    {% elif c.responsavel_id == user.id %}
+        <span class="mr-2">{{ c.responsavel.get_full_name|default:c.responsavel.username }}</span>
+        <button class="btn-micro btn-micro--danger" data-action="liberar">Liberar</button>
+    {% else %}
+        <span>{{ c.responsavel.get_full_name|default:c.responsavel.username }}</span>
+    {% endif %}
+</td>
+<td class="col-acoes">
+    <div class="row-actions">
+        <a href="{% url 'cancelamentos:detalhe' c.id %}" class="row-action-btn" title="Ver detalhes">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </a>
+        <button class="row-action-btn row-action-btn--success" 
+                data-action="concluir" 
+                title="Concluir cancelamento" 
+                {% if not c.pode_concluir %}disabled style="opacity:0.4; cursor:not-allowed;"{% endif %}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+    </div>
+</td>
+{% endblock %}

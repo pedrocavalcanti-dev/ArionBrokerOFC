@@ -1,0 +1,1027 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Detalhes Cancelamento - {{ cancelamento.ticket_arion }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chamados/projetos.css' %}">
+<link rel="stylesheet" href="{% static 'css/cancelamentos/cancelamentos.css' %}">
+<link rel="stylesheet" href="{% static 'css/cancelamentos/detalhe.css' %}">
+<link rel="stylesheet" href="{% static 'css/cancelamentos/modais.css' %}">
+{% endblock %}
+
+{% block content %}
+<div
+    class="canc-wrapper"
+    id="cancDetalheWrapper"
+    data-cancelamento-id="{{ cancelamento.id }}"
+>
+
+    {# ── CABEÇALHO DA PÁGINA ────────────────────────────────── #}
+    <div class="detalhe-header">
+
+        <div class="detalhe-header__left">
+
+            <a
+                href="{% url 'cancelamentos:pedido' %}"
+                class="btn-secondary btn-icon mr-3"
+                title="Voltar"
+                aria-label="Voltar para a lista de pedidos"
+            >
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </a>
+
+            <div>
+
+                <h1 class="detalhe-title">
+                    <span id="detalheTicketArion">
+                        {{ cancelamento.ticket_arion }}
+                    </span>
+                    —
+                    {{ cancelamento.cliente_final|default:"Cliente não informado" }}
+                </h1>
+
+                <div class="detalhe-meta">
+
+                    <span class="badge">
+                        {{ cancelamento.get_fila_display }}
+                    </span>
+
+                    <span
+                        class="status-badge status-badge--{{ cancelamento.status|lower }}"
+                    >
+                        {{ cancelamento.get_status_display }}
+                    </span>
+
+                    <span class="text-muted ml-3">
+                        ISP: {{ cancelamento.isp|default:"—" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="detalhe-header__right">
+
+            {% if cancelamento.ticket_url %}
+            <a
+                href="{{ cancelamento.ticket_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-secondary"
+            >
+                Abrir no OTRS
+            </a>
+            {% endif %}
+
+
+            {% if cancelamento.fila != 'CONCLUIDO' %}
+
+                {% if not cancelamento.responsavel_id %}
+                <button
+                    type="button"
+                    class="btn-primary"
+                    data-action="apropriar-detalhe"
+                >
+                    Apropriar-se
+                </button>
+
+                {% elif cancelamento.responsavel_id == user.id %}
+                <button
+                    type="button"
+                    class="btn-secondary btn--danger"
+                    data-action="liberar-detalhe"
+                >
+                    Liberar Chamado
+                </button>
+                {% endif %}
+
+
+                {% if user.is_staff %}
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    data-action="transferir"
+                >
+                    Transferir
+                </button>
+                {% endif %}
+
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    data-action="editar-detalhe"
+                >
+                    Editar dados
+                </button>
+
+
+                <div class="relative inline-block">
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        data-action="editar-status"
+                    >
+                        Alterar Status
+                    </button>
+
+                    <template id="templateStatusDropdown">
+
+                        <div class="status-dropdown detalhe-dropdown">
+
+                            {% for valor, label in status_choices %}
+
+                                {% if valor != 'CONCLUIDO_CANCELAMENTO' %}
+                                <button
+                                    type="button"
+                                    class="status-option"
+                                    data-status="{{ valor }}"
+                                >
+                                    <span
+                                        class="status-dot status-dot--{{ valor|lower }}"
+                                    ></span>
+
+                                    {{ label }}
+                                </button>
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </div>
+
+                    </template>
+
+                </div>
+
+            {% elif user.preferencias.is_admin %}
+
+                {# CORREÇÃO ADMINISTRATIVA DE CONCLUÍDO #}
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    data-action="editar-detalhe"
+                    title="Corrigir dados deste cancelamento concluído"
+                >
+                    Editar dados
+                </button>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    {# ── CARDS DE RESUMO ────────────────────────────────────── #}
+    <div class="proj-stats mb-4">
+
+        <div class="proj-stat-card">
+            <span class="proj-stat-card__label">
+                Responsável
+            </span>
+
+            <span class="proj-stat-card__value text-md">
+                {% if cancelamento.responsavel_id %}
+                    {{ cancelamento.responsavel.get_full_name|default:cancelamento.responsavel.username }}
+                {% else %}
+                    Sem responsável
+                {% endif %}
+            </span>
+        </div>
+
+
+        <div class="proj-stat-card">
+            <span class="proj-stat-card__label">
+                Data do Chamado
+            </span>
+
+            <span class="proj-stat-card__value text-md">
+                {{ cancelamento.data_criacao_chamado|date:"d/m/Y"|default:"—" }}
+            </span>
+        </div>
+
+
+        <div class="proj-stat-card">
+            <span class="proj-stat-card__label">
+                Aging Geral
+            </span>
+
+            <span class="proj-stat-card__value text-md">
+                {% if cancelamento.aging_dias is not None %}
+                    {{ cancelamento.aging_dias }} dias
+                {% else %}
+                    —
+                {% endif %}
+            </span>
+        </div>
+
+
+        <div class="proj-stat-card">
+            <span class="proj-stat-card__label">
+                Valor Financeiro
+            </span>
+
+            <span class="proj-stat-card__value text-md">
+                R$ {{ cancelamento.valor_total_financeiro|default:"0,00" }}
+            </span>
+        </div>
+
+
+        <div class="proj-stat-card">
+            <span class="proj-stat-card__label">
+                Pendências
+            </span>
+
+            <span class="proj-stat-card__value text-md">
+                {{ pendencias.count }}
+            </span>
+        </div>
+
+    </div>
+
+
+    {# ── PROGRESS BAR ───────────────────────────────────────── #}
+    <div class="canc-progress-bar mb-4">
+
+        {% for f_val, f_label in fila_choices %}
+
+            <div
+                class="canc-step {% if cancelamento.fila == f_val %}active{% endif %}"
+            >
+                <div class="canc-step__circle"></div>
+
+                <span class="canc-step__label">
+                    {{ f_label }}
+                </span>
+            </div>
+
+            {% if not forloop.last %}
+            <div class="canc-step-line"></div>
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+
+    {# ── NAVEGAÇÃO DAS ABAS ─────────────────────────────────── #}
+    <div
+        class="detalhe-tabs-nav"
+        role="tablist"
+        aria-label="Seções do cancelamento"
+    >
+
+        <button
+            class="detalhe-tab-btn detalhe-tab--active"
+            data-aba-trigger="geral"
+            role="tab"
+            aria-selected="true"
+            aria-controls="painel-geral"
+            id="tab-btn-geral"
+        >
+            Visão Geral
+        </button>
+
+
+        <button
+            class="detalhe-tab-btn"
+            data-aba-trigger="link"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="painel-link"
+            id="tab-btn-link"
+        >
+            Dados do Link
+        </button>
+
+
+        <button
+            class="detalhe-tab-btn"
+            data-aba-trigger="observacoes"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="painel-observacoes"
+            id="tab-btn-observacoes"
+        >
+            Observações
+        </button>
+
+
+        <button
+            class="detalhe-tab-btn"
+            id="tab-pendencias"
+            data-aba-trigger="pendencias"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="painel-pendencias"
+            aria-label="Pendências, {{ pendencias.count }} registradas"
+        >
+            Pendências ({{ pendencias.count }})
+        </button>
+
+
+        <button
+            class="detalhe-tab-btn"
+            data-aba-trigger="financeiro"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="painel-financeiro"
+            id="tab-btn-financeiro"
+        >
+            Financeiro
+        </button>
+
+
+        <button
+            class="detalhe-tab-btn"
+            data-aba-trigger="timeline"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="painel-timeline"
+            id="tab-btn-timeline"
+        >
+            Linha do Tempo
+        </button>
+
+    </div>
+
+
+    {# ── CONTEÚDO DAS ABAS ──────────────────────────────────── #}
+    <div class="detalhe-content">
+
+
+        {# ====================================================== #}
+        {# ABA 1 — VISÃO GERAL                                    #}
+        {# ====================================================== #}
+        <div
+            class="detalhe-painel detalhe-painel--active"
+            data-aba-painel="geral"
+            id="painel-geral"
+            role="tabpanel"
+            aria-labelledby="tab-btn-geral"
+        >
+
+            <div class="grid-2-col">
+
+                <div class="data-group">
+                    <label>Fila Atual</label>
+                    <p>{{ cancelamento.get_fila_display }}</p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Status</label>
+                    <p>{{ cancelamento.get_status_display }}</p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Data de Criação</label>
+                    <p>
+                        {{ cancelamento.data_criacao_chamado|date:"d/m/Y"|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Data de Apropriação</label>
+                    <p>
+                        {{ cancelamento.apropriado_em|date:"d/m/Y H:i"|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Primeiro Contato</label>
+                    <p>
+                        {{ cancelamento.data_primeiro_contato|date:"d/m/Y"|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Última Interação</label>
+                    <p>
+                        {{ cancelamento.data_ultima_interacao|date:"d/m/Y H:i"|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Protocolo</label>
+                    <p>
+                        {{ cancelamento.protocolo|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Canal de Contato</label>
+                    <p>
+                        {{ cancelamento.canal_contato|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Próxima Ação</label>
+                    <p>
+                        {{ cancelamento.proxima_acao|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Data Próxima Ação</label>
+                    <p>
+                        {{ cancelamento.data_proxima_acao|date:"d/m/Y"|default:"—" }}
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {# ====================================================== #}
+        {# ABA 2 — DADOS DO LINK                                  #}
+        {# ====================================================== #}
+        <div
+            class="detalhe-painel"
+            data-aba-painel="link"
+            id="painel-link"
+            role="tabpanel"
+            aria-labelledby="tab-btn-link"
+            hidden
+        >
+
+            <div class="grid-2-col mb-4">
+
+                <div class="data-group">
+                    <label>Designação/Circuito</label>
+                    <p class="font-mono">
+                        {{ cancelamento.designacao_circuito|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Código do Cliente</label>
+                    <p>
+                        {{ cancelamento.cod_cliente|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Cliente (Operadora)</label>
+                    <p>
+                        {{ cancelamento.cliente|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Cliente Final</label>
+                    <p>
+                        {{ cancelamento.cliente_final|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>ISP</label>
+                    <p>
+                        {{ cancelamento.isp|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Contato da ISP</label>
+                    <p>
+                        {{ cancelamento.contato_isp|default:"—" }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <h3 class="section-title mt-4">
+                Localização
+            </h3>
+
+
+            <div class="grid-3-col">
+
+                <div class="data-group col-span-2">
+                    <label>Endereço</label>
+
+                    <p>
+                        {{ cancelamento.endereco|default:"—" }}
+
+                        {% if cancelamento.numero %}
+                            , {{ cancelamento.numero }}
+                        {% endif %}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Complemento</label>
+                    <p>
+                        {{ cancelamento.complemento|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Bairro</label>
+                    <p>
+                        {{ cancelamento.bairro|default:"—" }}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>Cidade/UF</label>
+
+                    <p>
+                        {% if cancelamento.cidade %}
+                            {{ cancelamento.cidade }}/{{ cancelamento.uf }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </p>
+                </div>
+
+
+                <div class="data-group">
+                    <label>CEP</label>
+                    <p>
+                        {{ cancelamento.cep|default:"—" }}
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {# ====================================================== #}
+        {# ABA 3 — OBSERVAÇÕES                                    #}
+        {# ====================================================== #}
+        <div
+            class="detalhe-painel"
+            data-aba-painel="observacoes"
+            id="painel-observacoes"
+            role="tabpanel"
+            aria-labelledby="tab-btn-observacoes"
+            hidden
+        >
+
+            {% if cancelamento.fila != 'CONCLUIDO' or user.preferencias.is_admin %}
+            <button
+                type="button"
+                class="btn-primary mb-4"
+                onclick="document.querySelector('[data-action=\'ver-obs\']').click()"
+            >
+                Adicionar Observação
+            </button>
+
+            <button
+                type="button"
+                style="display:none"
+                data-action="ver-obs"
+            ></button>
+            {% endif %}
+
+
+            <div class="timeline-container mt-3">
+
+                {% for obs in cancelamento.observacoes.all reversed %}
+
+                <div class="obs-item">
+
+                    <div class="obs-item__topo">
+
+                        <span class="obs-item__autor">
+                            {% if obs.criado_por_id %}
+                                {{ obs.criado_por.get_full_name|default:obs.criado_por.username }}
+                            {% else %}
+                                Sistema
+                            {% endif %}
+                        </span>
+
+                        <span class="obs-item__data">
+                            {{ obs.criado_em|date:"d/m/Y \à\s H:i" }}
+                        </span>
+
+                    </div>
+
+                    <p class="obs-item__texto mt-1">
+                        {{ obs.texto }}
+                    </p>
+
+                </div>
+
+                {% empty %}
+
+                <p class="empty-state-text">
+                    Nenhuma observação registrada.
+                </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        {# ====================================================== #}
+        {# ABA 4 — PENDÊNCIAS                                     #}
+        {# ====================================================== #}
+        <div
+            class="detalhe-painel"
+            data-aba-painel="pendencias"
+            id="painel-pendencias"
+            role="tabpanel"
+            aria-labelledby="tab-pendencias"
+            hidden
+        >
+
+            {% if cancelamento.fila != 'CONCLUIDO' or user.preferencias.is_admin %}
+            <button
+                type="button"
+                class="btn-primary mb-4"
+                data-action="adicionar-pendencia"
+            >
+                Nova Pendência
+            </button>
+            {% endif %}
+
+
+            <table class="proj-table">
+
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                        <th>Data Prevista</th>
+                        <th>Criada em</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+                    {% for p in pendencias %}
+
+                    <tr>
+
+                        <td>
+                            {{ p.get_tipo_display }}
+                        </td>
+
+                        <td>
+                            {{ p.descricao }}
+                        </td>
+
+                        <td>
+                            {% if p.valor %}
+                                R$ {{ p.valor }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span
+                                class="status-badge status-badge--{{ p.status|lower }}"
+                            >
+                                {{ p.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ p.data_prevista|date:"d/m/Y"|default:"—" }}
+                        </td>
+
+                        <td>
+                            {{ p.criado_em|date:"d/m/Y H:i" }}
+                        </td>
+
+                        <td>
+
+                            {% if cancelamento.fila != 'CONCLUIDO' or user.preferencias.is_admin %}
+                            <div class="row-actions">
+
+                                {% if p.status != 'RESOLVIDA' and p.status != 'DESCARTADA' %}
+                                <button
+                                    type="button"
+                                    class="btn-micro btn-micro--success mr-2"
+                                    data-action="resolver-pendencia"
+                                    data-pendencia-id="{{ p.id }}"
+                                >
+                                    Resolver
+                                </button>
+                                {% endif %}
+
+
+                                {% if p.status != 'DESCARTADA' %}
+                                <button
+                                    type="button"
+                                    class="btn-micro btn-micro--danger"
+                                    data-action="descartar-pendencia"
+                                    data-pendencia-id="{{ p.id }}"
+                                >
+                                    Descartar
+                                </button>
+                                {% endif %}
+
+                            </div>
+
+                            {% else %}
+                                —
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="7"
+                            class="text-center text-muted p-4"
+                        >
+                            Nenhuma pendência registrada.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {# ====================================================== #}
+        {# ABA 5 — FINANCEIRO                                     #}
+        {# ====================================================== #}
+        <div
+            class="detalhe-painel"
+            data-aba-painel="financeiro"
+            id="painel-financeiro"
+            role="tabpanel"
+            aria-labelledby="tab-btn-financeiro"
+            hidden
+        >
+
+            <div class="flex-between mb-4">
+
+                <h3 class="section-title">
+                    Valores
+                </h3>
+
+                {% if cancelamento.fila == 'FINANCEIRO' or user.preferencias.is_admin and cancelamento.fila == 'CONCLUIDO' %}
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    data-action="editar-financeiro"
+                >
+                    Editar Valores
+                </button>
+                {% endif %}
+
+            </div>
+
+
+            <div class="grid-4-col mb-4">
+
+                <div class="financeiro-card">
+                    <label>Multa/Rescisão</label>
+
+                    <p>
+                        R$ {{ cancelamento.valor_multa_rescisao|default:"0,00" }}
+                    </p>
+                </div>
+
+
+                <div class="financeiro-card">
+                    <label>Equipamento</label>
+
+                    <p>
+                        R$ {{ cancelamento.valor_equipamento|default:"0,00" }}
+                    </p>
+                </div>
+
+
+                <div class="financeiro-card">
+                    <label>Outros Valores</label>
+
+                    <p>
+                        R$ {{ cancelamento.valor_outros|default:"0,00" }}
+                    </p>
+                </div>
+
+
+                <div class="financeiro-card highlight">
+                    <label>Total Final</label>
+
+                    <p>
+                        R$ {{ cancelamento.valor_total_financeiro|default:"0,00" }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <h3 class="section-title mt-5">
+                Informações de Cancelamento
+            </h3>
+
+
+            <div class="grid-3-col mt-3">
+
+                <div class="data-group">
+
+                    <label>
+                        Data Cancelamento Confirmado
+                    </label>
+
+                    <p>
+                        {{ cancelamento.data_cancelamento_confirmado|date:"d/m/Y"|default:"—" }}
+                    </p>
+
+                </div>
+
+
+                <div class="data-group">
+
+                    <label>
+                        Última Competência Faturada
+                    </label>
+
+                    <p>
+                        {{ cancelamento.ultima_competencia_faturada|default:"—" }}
+                    </p>
+
+                </div>
+
+
+                <div class="data-group">
+
+                    <label>
+                        Data da Baixa Financeira
+                    </label>
+
+                    <p>
+                        {{ cancelamento.data_baixa_financeira|date:"d/m/Y"|default:"—" }}
+                    </p>
+
+                </div>
+
+
+                <div class="data-group col-span-3">
+
+                    <label>
+                        Observação Financeira
+                    </label>
+
+                    <p class="bg-light p-3 rounded mt-1">
+                        {{ cancelamento.observacao_financeira|default:"Nenhuma observação financeira registrada." }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if cancelamento.fila == 'PENDENCIA' %}
+
+            <div class="mt-5 text-right">
+
+                <button
+                    type="button"
+                    class="btn-primary btn-lg"
+                    data-action="concluir"
+                >
+                    Concluir Cancelamento
+                </button>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        {# ====================================================== #}
+        {# ABA 6 — LINHA DO TEMPO                                 #}
+        {# ====================================================== #}
+        <div
+            class="detalhe-painel"
+            data-aba-painel="timeline"
+            id="painel-timeline"
+            role="tabpanel"
+            aria-labelledby="tab-btn-timeline"
+            hidden
+        >
+
+            <div class="timeline-container timeline-vertical">
+
+                {% for ativ in atividades reversed %}
+
+                <div class="timeline-item">
+
+                    <div class="timeline-item__marker"></div>
+
+
+                    <div class="timeline-item__content">
+
+                        <div class="timeline-item__header flex-between">
+
+                            <strong>
+                                {{ ativ.get_tipo_display }}
+                            </strong>
+
+                            <span class="text-sm text-muted">
+                                {{ ativ.criado_em|date:"d/m/Y \à\s H:i" }}
+                            </span>
+
+                        </div>
+
+
+                        <p class="mt-1">
+                            {{ ativ.descricao }}
+                        </p>
+
+
+                        <span class="text-xs text-muted mt-2 block">
+
+                            Por:
+                            {% if ativ.realizado_por_id %}
+                                {{ ativ.realizado_por.get_full_name|default:ativ.realizado_por.username }}
+                            {% else %}
+                                Sistema
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <p class="empty-state-text">
+                    Nenhuma movimentação registrada.
+                </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% include "cancelamentos/components/modais_cancelamento.html" %}
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="{% static 'js/cancelamentos/cancelamentos.js' %}"></script>
+<script src="{% static 'js/cancelamentos/modais.js' %}"></script>
+<script src="{% static 'js/cancelamentos/detalhes.js' %}"></script>
+{% endblock %}

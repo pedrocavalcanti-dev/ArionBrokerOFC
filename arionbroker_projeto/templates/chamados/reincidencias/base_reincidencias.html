@@ -1,0 +1,1501 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reincidências RREIP — {{ fila_atual_label }}{% endblock %}
+{% block page_title %}Reincidências RREIP{% endblock %}
+
+
+{% block extra_css %}
+{{ block.super }}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/chamados/reincidencias_base.css' %}"
+>
+
+{% block extra_reincidencias_css %}{% endblock %}
+{% endblock %}
+
+
+{% block content %}
+
+<div
+    class="rreip-wrapper"
+    id="rreipWrapper"
+
+    data-fila-atual="{{ fila_atual }}"
+
+    data-url-criar="{% url 'chamados:reincidencias:api_criar' %}"
+    data-url-resumo="{% url 'chamados:reincidencias:api_resumo' %}"
+    data-url-usuarios="{% url 'chamados:reincidencias:api_usuarios' %}"
+
+    data-url-tratamento="{% url 'chamados:reincidencias:tratamento' %}"
+    data-url-monitoramento="{% url 'chamados:reincidencias:monitoramento' %}"
+    data-url-finalizados="{% url 'chamados:reincidencias:finalizados' %}"
+>
+
+
+    <!-- =========================================================
+         CABEÇALHO
+         ========================================================= -->
+    <section class="rreip-header">
+
+        <div class="rreip-header__info">
+
+            <div class="rreip-header__mark">
+                <span class="rreip-header__badge">
+                    RREIP
+                </span>
+            </div>
+
+
+            <div class="rreip-header__titles">
+
+                <span class="rreip-header__eyebrow">
+                    Gestão de reincidências
+                </span>
+
+                <h1 class="rreip-header__title">
+                    {{ fila_atual_label }}
+                </h1>
+
+                <span class="rreip-header__description">
+                    {% block descricao_fila %}
+                        Chamados reincidentes aguardando análise e ação preventiva.
+                    {% endblock %}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="rreip-header__actions">
+
+            {% block botao_novo %}
+
+            <button
+                type="button"
+                class="rreip-btn rreip-btn--primary"
+                id="btnNovaReincidencia"
+                data-action="novo"
+            >
+
+                <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                >
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+
+                Nova Reincidência
+
+            </button>
+
+            {% endblock %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         ABAS
+         ========================================================= -->
+    <nav
+        class="rreip-tabs"
+        aria-label="Filas do RREIP"
+    >
+
+        <a
+            href="{% url 'chamados:reincidencias:tratamento' %}"
+            class="rreip-tab {% if fila_atual == 'TRATAMENTO' %}rreip-tab--active{% endif %}"
+            data-nav-link
+            {% if fila_atual == 'TRATAMENTO' %}aria-current="page"{% endif %}
+        >
+
+            <span class="rreip-tab__icon">
+                <i class="bi bi-arrow-repeat"></i>
+            </span>
+
+            <span class="rreip-tab__label">
+                Tratamento
+            </span>
+
+            <span class="rreip-tab__count">
+                {{ resumo.tratamento|default:0 }}
+            </span>
+
+        </a>
+
+
+        <a
+            href="{% url 'chamados:reincidencias:monitoramento' %}"
+            class="rreip-tab {% if fila_atual == 'MONITORAMENTO' %}rreip-tab--active{% endif %}"
+            data-nav-link
+            {% if fila_atual == 'MONITORAMENTO' %}aria-current="page"{% endif %}
+        >
+
+            <span class="rreip-tab__icon">
+                <i class="bi bi-radar"></i>
+            </span>
+
+            <span class="rreip-tab__label">
+                Monitoramento RREIP
+            </span>
+
+            <span class="rreip-tab__count">
+                {{ resumo.monitoramento|default:0 }}
+            </span>
+
+        </a>
+
+
+        <a
+            href="{% url 'chamados:reincidencias:finalizados' %}"
+            class="rreip-tab {% if fila_atual == 'FINALIZADO' %}rreip-tab--active{% endif %}"
+            data-nav-link
+            {% if fila_atual == 'FINALIZADO' %}aria-current="page"{% endif %}
+        >
+
+            <span class="rreip-tab__icon">
+                <i class="bi bi-check-circle"></i>
+            </span>
+
+            <span class="rreip-tab__label">
+                Finalizados
+            </span>
+
+            <span class="rreip-tab__count">
+                {{ resumo.finalizados|default:0 }}
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!-- =========================================================
+         INDICADORES
+         ========================================================= -->
+    <section class="rreip-stats">
+
+        <div class="rreip-stat-card rreip-stat-card--total">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Total Geral
+                </span>
+
+                <i class="bi bi-grid rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="total"
+            >
+                {{ resumo.total|default:0 }}
+            </span>
+
+        </div>
+
+
+        <div class="rreip-stat-card rreip-stat-card--tratamento">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Tratamento
+                </span>
+
+                <i class="bi bi-arrow-repeat rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="tratamento"
+            >
+                {{ resumo.tratamento|default:0 }}
+            </span>
+
+        </div>
+
+
+        <div class="rreip-stat-card rreip-stat-card--monitoramento">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Monitoramento
+                </span>
+
+                <i class="bi bi-radar rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="monitoramento"
+            >
+                {{ resumo.monitoramento|default:0 }}
+            </span>
+
+        </div>
+
+
+        <div class="rreip-stat-card rreip-stat-card--finalizados">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Finalizados
+                </span>
+
+                <i class="bi bi-check-circle rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="finalizados"
+            >
+                {{ resumo.finalizados|default:0 }}
+            </span>
+
+        </div>
+
+
+        <div class="rreip-stat-card rreip-stat-card--novo">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Novas
+                </span>
+
+                <i class="bi bi-stars rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="novas"
+            >
+                {{ resumo.novas|default:0 }}
+            </span>
+
+        </div>
+
+
+        <div class="rreip-stat-card rreip-stat-card--analise">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Em análise
+                </span>
+
+                <i class="bi bi-search rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="em_analise"
+            >
+                {{ resumo.em_analise|default:0 }}
+            </span>
+
+        </div>
+
+
+        <div class="rreip-stat-card rreip-stat-card--aguardando">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Aguardando ticket
+                </span>
+
+                <i class="bi bi-hourglass-split rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="aguardando_ticket_monitoramento"
+            >
+                {{ resumo.aguardando_ticket_monitoramento|default:0 }}
+            </span>
+
+        </div>
+
+
+        <div class="rreip-stat-card rreip-stat-card--reincidiu">
+
+            <div class="rreip-stat-card__top">
+                <span class="rreip-stat-card__label">
+                    Reincidiram
+                </span>
+
+                <i class="bi bi-exclamation-circle rreip-stat-card__icon"></i>
+            </div>
+
+            <span
+                class="rreip-stat-card__value"
+                data-summary-key="reincidiram"
+            >
+                {{ resumo.reincidiram|default:0 }}
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         FILTROS
+         ========================================================= -->
+    <section class="rreip-filters">
+
+        <div class="rreip-filters__header">
+
+            <div class="rreip-filters__header-info">
+
+                <span class="rreip-filters__icon">
+                    <i class="bi bi-funnel"></i>
+                </span>
+
+                <div>
+
+                    <span class="rreip-filters__title">
+                        Filtros
+                    </span>
+
+                    <span class="rreip-filters__subtitle">
+                        Refine os resultados exibidos na fila
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="rreip-btn rreip-btn--text rreip-btn--small rreip-filter-toggle"
+                id="btnToggleFiltros"
+                aria-expanded="false"
+                aria-controls="rreipFiltersBody"
+            >
+                Expandir filtros
+            </button>
+
+        </div>
+
+
+        <form
+            method="get"
+            id="rreipFilterForm"
+            class="rreip-filters__body"
+            data-body
+        >
+
+            <!-- BUSCA -->
+            <div class="rreip-filter-search">
+
+                <label
+                    class="rreip-form-label"
+                    for="rreipFiltroBusca"
+                >
+                    Busca geral
+                </label>
+
+
+                <div class="rreip-search-input">
+
+                    <i class="bi bi-search"></i>
+
+                    <input
+                        type="text"
+                        class="rreip-form-input"
+                        name="busca"
+                        id="rreipFiltroBusca"
+                        value="{{ filtros.busca }}"
+                        placeholder="Ticket, designação, cliente, CI, BRAD, ISP..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- GRID -->
+            <div
+                class="rreip-filters__grid"
+                id="rreipFiltersBody"
+            >
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroStatus"
+                    >
+                        Status
+                    </label>
+
+                    <select
+                        class="rreip-form-select"
+                        name="status"
+                        id="rreipFiltroStatus"
+                    >
+
+                        <option value="">
+                            Todos os status
+                        </option>
+
+                        {% for valor, label in status_choices|default:opcoes_filtros.status_choices %}
+
+                        <option
+                            value="{{ valor }}"
+                            {% if filtros.status == valor %}selected{% endif %}
+                        >
+                            {{ label }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroClassificacao"
+                    >
+                        Classificação
+                    </label>
+
+                    <select
+                        class="rreip-form-select"
+                        name="classificacao"
+                        id="rreipFiltroClassificacao"
+                    >
+
+                        <option value="">
+                            Todas as classificações
+                        </option>
+
+                        {% for valor, label in classificacao_choices|default:opcoes_filtros.classificacao_choices %}
+
+                        <option
+                            value="{{ valor }}"
+                            {% if filtros.classificacao == valor %}selected{% endif %}
+                        >
+                            {{ label }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroResponsavel"
+                    >
+                        Responsável
+                    </label>
+
+                    <select
+                        class="rreip-form-select"
+                        name="responsavel"
+                        id="rreipFiltroResponsavel"
+                    >
+
+                        <option
+                            value="todos"
+                            {% if not filtros.responsavel or filtros.responsavel == "todos" %}selected{% endif %}
+                        >
+                            Todos
+                        </option>
+
+                        <option
+                            value="meus"
+                            {% if filtros.responsavel == "meus" %}selected{% endif %}
+                        >
+                            Meus chamados
+                        </option>
+
+                        <option
+                            value="sem_responsavel"
+                            {% if filtros.responsavel == "sem_responsavel" %}selected{% endif %}
+                        >
+                            Sem responsável
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroOperadora"
+                    >
+                        Operadora
+                    </label>
+
+                    <select
+                        class="rreip-form-select"
+                        name="operadora"
+                        id="rreipFiltroOperadora"
+                    >
+
+                        <option value="">
+                            Todas as operadoras
+                        </option>
+
+                        {% for operadora in opcoes_filtros.operadoras|default:operadoras %}
+
+                        <option
+                            value="{{ operadora }}"
+                            {% if filtros.operadora == operadora %}selected{% endif %}
+                        >
+                            {{ operadora }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroProjeto"
+                    >
+                        Projeto
+                    </label>
+
+                    <select
+                        class="rreip-form-select"
+                        name="projeto"
+                        id="rreipFiltroProjeto"
+                    >
+
+                        <option value="">
+                            Todos os projetos
+                        </option>
+
+                        {% for projeto in opcoes_filtros.projetos|default:projetos %}
+
+                        <option
+                            value="{{ projeto }}"
+                            {% if filtros.projeto == projeto %}selected{% endif %}
+                        >
+                            {{ projeto }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroDataInicio"
+                    >
+                        Data inicial
+                    </label>
+
+                    <input
+                        class="rreip-form-input"
+                        type="date"
+                        name="data_inicio"
+                        id="rreipFiltroDataInicio"
+                        value="{{ filtros.data_inicio }}"
+                    >
+
+                </div>
+
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroDataFim"
+                    >
+                        Data final
+                    </label>
+
+                    <input
+                        class="rreip-form-input"
+                        type="date"
+                        name="data_fim"
+                        id="rreipFiltroDataFim"
+                        value="{{ filtros.data_fim }}"
+                    >
+
+                </div>
+
+
+                <div class="rreip-form-group">
+
+                    <label
+                        class="rreip-form-label"
+                        for="rreipFiltroOrdenacao"
+                    >
+                        Ordenação
+                    </label>
+
+                    <select
+                        class="rreip-form-select"
+                        name="ordenacao"
+                        id="rreipFiltroOrdenacao"
+                    >
+
+                        <option
+                            value="recentes"
+                            {% if filtros.ordenacao == "recentes" or not filtros.ordenacao %}selected{% endif %}
+                        >
+                            Mais recentes
+                        </option>
+
+                        <option
+                            value="antigos"
+                            {% if filtros.ordenacao == "antigos" %}selected{% endif %}
+                        >
+                            Mais antigos
+                        </option>
+
+                        <option
+                            value="mais_reincidentes"
+                            {% if filtros.ordenacao == "mais_reincidentes" %}selected{% endif %}
+                        >
+                            Mais reincidentes
+                        </option>
+
+                        <option
+                            value="fim_monitoramento"
+                            {% if filtros.ordenacao == "fim_monitoramento" %}selected{% endif %}
+                        >
+                            Fim do monitoramento
+                        </option>
+
+                        <option
+                            value="mais_recentes_origem"
+                            {% if filtros.ordenacao == "mais_recentes_origem" %}selected{% endif %}
+                        >
+                            Mais recentes (origem)
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="rreip-filters__actions">
+
+                <a
+                    href="{{ request.path }}"
+                    class="rreip-btn rreip-btn--secondary rreip-btn--small"
+                >
+                    Limpar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="rreip-btn rreip-btn--primary rreip-btn--small"
+                >
+
+                    <i class="bi bi-funnel"></i>
+
+                    Aplicar filtros
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- =========================================================
+         CABEÇALHO DA LISTA
+         ========================================================= -->
+    <div class="rreip-list-toolbar">
+
+        <div class="rreip-list-toolbar__left">
+
+            <div class="rreip-list-title">
+
+                <span class="rreip-list-title__icon">
+                    <i class="bi bi-list-ul"></i>
+                </span>
+
+                <div>
+
+                    <strong>
+                        Registros
+                    </strong>
+
+                    <span class="rreip-record-count">
+                        {{ reincidencias|length }} registro(s)
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <span
+                class="rreip-selection-count"
+                id="rreipSelectedCount"
+                hidden
+            ></span>
+
+        </div>
+
+
+        <div class="rreip-list-toolbar__right">
+
+            <button
+                type="button"
+                class="rreip-btn rreip-btn--secondary rreip-btn--small"
+                id="btnAtualizarLista"
+            >
+
+                <i class="bi bi-arrow-clockwise"></i>
+
+                Atualizar
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         TABELA
+         ========================================================= -->
+    <section class="rreip-table-wrapper">
+
+        <div class="rreip-table-scroll">
+
+            <table
+                class="rreip-table"
+                id="rreipTable"
+                aria-label="Lista de reincidências"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th class="rreip-col-checkbox">
+
+                            <input
+                                type="checkbox"
+                                id="rreipSelectAll"
+                                class="rreip-checkbox"
+                                aria-label="Selecionar todos os registros"
+                            >
+
+                        </th>
+
+                        {% block thead %}
+                        {% endblock %}
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="rreipTableBody">
+
+                    {% block tbody %}
+                    {% endblock %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         ESTADO VAZIO
+         ========================================================= -->
+    {% if not reincidencias %}
+
+        {% block estado_vazio %}
+
+        <div class="rreip-empty rreip-empty-state">
+
+            <div class="rreip-empty-state__icon-wrap">
+
+                <svg
+                    class="rreip-empty-state__icon"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                >
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                </svg>
+
+            </div>
+
+
+            <p class="rreip-empty-state__title">
+                Nenhum registro encontrado
+            </p>
+
+
+            <span class="rreip-empty-state__description">
+                Não há reincidências que correspondam aos filtros selecionados.
+            </span>
+
+
+            {% if filtros.busca or filtros.status or filtros.classificacao or filtros.responsavel or filtros.operadora or filtros.projeto or filtros.data_inicio or filtros.data_fim %}
+
+            <div class="rreip-empty-state__actions">
+
+                <a
+                    href="{{ request.path }}"
+                    class="rreip-btn rreip-btn--secondary rreip-btn--small"
+                >
+                    Limpar filtros
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endblock %}
+
+    {% endif %}
+
+
+    <!-- =========================================================
+         PAGINAÇÃO
+         ========================================================= -->
+    {% if reincidencias.paginator %}
+
+    <nav
+        class="rreip-pagination"
+        aria-label="Paginação de reincidências"
+    >
+
+        <span class="rreip-pagination__info">
+            Página {{ reincidencias.number }}
+            de {{ reincidencias.paginator.num_pages }}
+        </span>
+
+
+        <div class="rreip-pagination__controls">
+
+            {% if reincidencias.has_previous %}
+
+                <a
+                    class="rreip-pagination__link"
+                    href="?{{ request.GET.urlencode|default:'' }}&page=1"
+                >
+                    Primeira
+                </a>
+
+                <a
+                    class="rreip-pagination__link"
+                    href="?{{ request.GET.urlencode|default:'' }}&page={{ reincidencias.previous_page_number }}"
+                >
+                    Anterior
+                </a>
+
+            {% else %}
+
+                <span class="rreip-pagination__link rreip-pagination__link--disabled">
+                    Primeira
+                </span>
+
+                <span class="rreip-pagination__link rreip-pagination__link--disabled">
+                    Anterior
+                </span>
+
+            {% endif %}
+
+
+            <span class="rreip-pagination__link rreip-pagination__link--active">
+                {{ reincidencias.number }}
+            </span>
+
+
+            {% if reincidencias.has_next %}
+
+                <a
+                    class="rreip-pagination__link"
+                    href="?{{ request.GET.urlencode|default:'' }}&page={{ reincidencias.next_page_number }}"
+                >
+                    Próxima
+                </a>
+
+                <a
+                    class="rreip-pagination__link"
+                    href="?{{ request.GET.urlencode|default:'' }}&page={{ reincidencias.paginator.num_pages }}"
+                >
+                    Última
+                </a>
+
+            {% else %}
+
+                <span class="rreip-pagination__link rreip-pagination__link--disabled">
+                    Próxima
+                </span>
+
+                <span class="rreip-pagination__link rreip-pagination__link--disabled">
+                    Última
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+    {% endif %}
+
+
+    <!-- =========================================================
+         CONTEÚDO DAS PÁGINAS FILHAS
+         ========================================================= -->
+    {% block conteudo_extra %}{% endblock %}
+    {% block modais %}{% endblock %}
+
+
+    <!-- =========================================================
+         MODAL — NOVA REINCIDÊNCIA
+         ========================================================= -->
+    <div
+        class="rreip-modal-overlay"
+        id="rreipModalNovo"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+        aria-labelledby="rreipModalNovoTitulo"
+    >
+
+        <div class="rreip-modal rreip-modal--large">
+
+            <div class="rreip-modal__header">
+
+                <div>
+
+                    <span class="rreip-modal__eyebrow">
+                        Novo registro
+                    </span>
+
+                    <h3
+                        class="rreip-modal__title"
+                        id="rreipModalNovoTitulo"
+                    >
+                        Nova reincidência
+                    </h3>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="rreip-modal__close"
+                    data-close-modal="rreipModalNovo"
+                    aria-label="Fechar"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form
+                id="rreipFormNovo"
+                novalidate
+                autocomplete="off"
+            >
+
+                {% csrf_token %}
+
+
+                <div class="rreip-modal__body">
+
+                    <div
+                        class="rreip-form-error-summary"
+                        data-form-error-summary
+                        hidden
+                    ></div>
+
+
+                    <div class="rreip-form-grid">
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoTicketOrigem"
+                            >
+                                Ticket de origem
+                                <span class="rreip-form-required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                class="rreip-form-input"
+                                id="rreipNovoTicketOrigem"
+                                name="ticket_origem"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoUrlTicketOrigem"
+                            >
+                                URL do ticket de origem
+                            </label>
+
+                            <input
+                                type="text"
+                                class="rreip-form-input"
+                                id="rreipNovoUrlTicketOrigem"
+                                name="url_ticket_origem"
+                                placeholder="Cole a URL do ticket"
+                            >
+
+                        </div>
+
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoDataTicketOrigem"
+                            >
+                                Data do ticket de origem
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                class="rreip-form-input"
+                                id="rreipNovoDataTicketOrigem"
+                                name="data_ticket_origem"
+                            >
+
+                        </div>
+
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoOperadora"
+                            >
+                                Operadora
+                                <span class="rreip-form-required">*</span>
+                            </label>
+
+                            <select
+                                class="rreip-form-select"
+                                id="rreipNovoOperadora"
+                                name="operadora"
+                                required
+                            >
+
+                                <option value="">
+                                    Selecione a operadora
+                                </option>
+
+                                {% for operadora in opcoes_filtros.operadoras|default:operadoras %}
+
+                                <option value="{{ operadora }}">
+                                    {{ operadora }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoProjeto"
+                            >
+                                Projeto
+                                <span class="rreip-form-required">*</span>
+                            </label>
+
+                            <select
+                                class="rreip-form-select"
+                                id="rreipNovoProjeto"
+                                name="projeto"
+                                required
+                            >
+                                <option value="">
+                                    Selecione o projeto
+                                </option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                id="rreipNovoIdentificadorLabel"
+                                for="rreipNovoIdentificador"
+                            >
+                                Identificador
+                            </label>
+
+                            <input
+                                type="text"
+                                class="rreip-form-input"
+                                id="rreipNovoIdentificador"
+                                name="identificador_projeto"
+                            >
+
+                        </div>
+
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoDesignacao"
+                            >
+                                Designação
+                                <span class="rreip-form-required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                class="rreip-form-input"
+                                id="rreipNovoDesignacao"
+                                name="designacao"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="rreip-form-group">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoCliente"
+                            >
+                                Cliente
+                            </label>
+
+                            <input
+                                type="text"
+                                class="rreip-form-input"
+                                id="rreipNovoCliente"
+                                name="cliente"
+                            >
+
+                        </div>
+
+
+                        <div class="rreip-form-group rreip-form-group--full">
+
+                            <label
+                                class="rreip-form-label"
+                                for="rreipNovoISP"
+                            >
+                                ISP
+                            </label>
+
+                            <input
+                                type="text"
+                                class="rreip-form-input"
+                                id="rreipNovoISP"
+                                name="isp"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="rreip-modal__footer">
+
+                    <button
+                        type="button"
+                        class="rreip-btn rreip-btn--secondary"
+                        data-close-modal="rreipModalNovo"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="rreip-btn rreip-btn--primary"
+                        id="rreipBtnSalvarNovo"
+                    >
+                        Cadastrar reincidência
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         MODAL — TRANSFERÊNCIA
+         ========================================================= -->
+    <div
+        class="rreip-modal-overlay"
+        id="rreipModalTransferir"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+        aria-labelledby="rreipModalTransferirTitulo"
+    >
+
+        <div class="rreip-modal">
+
+            <div class="rreip-modal__header">
+
+                <div>
+
+                    <span class="rreip-modal__eyebrow">
+                        Responsável
+                    </span>
+
+                    <h3
+                        class="rreip-modal__title"
+                        id="rreipModalTransferirTitulo"
+                    >
+                        Transferir reincidência
+                    </h3>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="rreip-modal__close"
+                    data-close-modal="rreipModalTransferir"
+                    aria-label="Fechar"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form
+                id="rreipFormTransferir"
+                novalidate
+                autocomplete="off"
+            >
+
+                {% csrf_token %}
+
+
+                <div class="rreip-modal__body">
+
+                    <div
+                        class="rreip-form-error-summary"
+                        data-form-error-summary
+                        hidden
+                    ></div>
+
+
+                    <input
+                        type="hidden"
+                        id="rreipTransferirId"
+                        name="id"
+                    >
+
+
+                    <div class="rreip-form-group">
+
+                        <label
+                            class="rreip-form-label"
+                            for="rreipTransferirUsuario"
+                        >
+                            Novo responsável
+                        </label>
+
+                        <select
+                            class="rreip-form-select"
+                            id="rreipTransferirUsuario"
+                            name="responsavel_id"
+                            aria-label="Selecionar novo responsável"
+                        >
+                            <option value="">
+                                Carregando usuários...
+                            </option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="rreip-modal__footer">
+
+                    <button
+                        type="button"
+                        class="rreip-btn rreip-btn--secondary"
+                        data-close-modal="rreipModalTransferir"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="rreip-btn rreip-btn--primary"
+                    >
+                        Transferir
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         CONFIRMAÇÃO
+         ========================================================= -->
+    <div
+        class="rreip-modal-overlay"
+        id="rreipConfirmModal"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+        aria-labelledby="rreipConfirmTitle"
+    >
+
+        <div class="rreip-modal">
+
+            <div class="rreip-modal__header">
+
+                <h3
+                    class="rreip-modal__title"
+                    id="rreipConfirmTitle"
+                >
+                    Confirmar ação
+                </h3>
+
+
+                <button
+                    type="button"
+                    class="rreip-modal__close"
+                    data-close-modal="rreipConfirmModal"
+                    aria-label="Fechar"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <div
+                class="rreip-modal__body"
+                id="rreipConfirmMessage"
+            ></div>
+
+
+            <div class="rreip-modal__footer">
+
+                <button
+                    type="button"
+                    class="rreip-btn rreip-btn--secondary"
+                    id="rreipConfirmCancel"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="button"
+                    class="rreip-btn rreip-btn--primary"
+                    id="rreipConfirmAccept"
+                >
+                    Confirmar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOAST -->
+    <div
+        id="rreipToastContainer"
+        class="rreip-toast-container"
+        aria-live="polite"
+    ></div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+{{ block.super }}
+
+<script src="{% static 'js/chamados/reincidencias.js' %}"></script>
+
+{% block extra_reincidencias_js %}{% endblock %}
+{% block scripts_fila %}{% endblock %}
+
+{% endblock %}

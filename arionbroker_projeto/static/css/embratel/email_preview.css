@@ -1,0 +1,111 @@
+/* ============================================================
+   AUTOMAÇÃO EMBRATEL — CSS DA CAIXA DE PREVIEW DE E-MAIL
+   ============================================================ */
+
+/* 
+   Este arquivo estiliza a área ADMNISTRATIVA de preview dentro do Broker
+   (ex: na tela rec_embratel_detalhe.html). 
+   Não substitui nem afeta o HTML do e-mail que é enviado externamente.
+*/
+
+.embratel-email-preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-top: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Barra de Metadados do E-mail (Para, De, Assunto) */
+.embratel-email-preview-header {
+    background: var(--bg-elevated);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.embratel-email-preview-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.embratel-email-preview-meta strong {
+    color: var(--text-muted);
+    min-width: 60px;
+    font-weight: 600;
+}
+
+.embratel-email-preview-subject {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 0.25rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border-strong);
+}
+
+/* Área de renderização do conteúdo HTML (Iframe ou Box) */
+.embratel-email-preview-body {
+    background: #f3f4f6; /* Fundo forçado para simular cliente de e-mail neutro */
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    position: relative;
+}
+
+/* 
+   Opcional: Caso o backend não injete via Iframe mas sim via marcação HTML direta 
+   a caixa abaixo impede a quebra do painel Broker 
+*/
+.embratel-email-preview-frame {
+    width: 100%;
+    max-width: 640px; /* Largura padrão de e-mails */
+    min-height: 400px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 4px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Badges e Ferramentas do Preview */
+.embratel-email-preview-tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* Tema Escuro do Painel não deve vazar para o corpo principal do preview se este não for Iframe,
+   por isso isolamos .embratel-email-preview-frame com background fixo branco */
+[data-theme="dark"] .embratel-email-preview-body {
+    background: #111111;
+}
+
+[data-theme="dark"] .embratel-email-preview-frame {
+    /* Mantém o template visualizado com fundo claro para fidelidade ao e-mail real 
+       (que tem bg #f3f4f6 e card #ffffff hardcoded na tabela) */
+    opacity: 0.95; /* Suaviza o brilho do branco em tela escura */
+}
+
+/* Responsividade do Preview Administrativo */
+@media (max-width: 768px) {
+    .embratel-email-preview-header {
+        padding: 1rem;
+    }
+    .embratel-email-preview-body {
+        padding: 1rem 0.5rem;
+    }
+}

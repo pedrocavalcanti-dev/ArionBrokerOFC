@@ -1,0 +1,14 @@
+Django
+asgiref
+sqlparse
+tzdata
+python-dotenv
+python-decouple
+Pillow
+requests
+urllib3
+certifi
+playwright
+django-apscheduler
+mysqlclient
+openpyxl

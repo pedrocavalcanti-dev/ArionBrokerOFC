@@ -1,0 +1,1052 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cancelamentos — {{ fila_atual_label }}{% endblock %}
+{% block page_title %}Cancelamentos{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cancelamentos/cancelamentos.css' %}">
+<link rel="stylesheet" href="{% static 'css/cancelamentos/modais.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="canc-wrapper"
+     id="cancWrapper"
+     data-fila-atual="{{ fila_atual }}"
+     data-proxima-fila="{{ proxima_fila|default:'' }}"
+     data-url-criar="{% url 'cancelamentos:api_criar' %}">
+
+    {# --------------------------------------------------------------------- #}
+    {# CABEÇALHO                                                             #}
+    {# --------------------------------------------------------------------- #}
+    <div class="canc-page-header">
+        <div class="canc-page-header__content">
+            <div class="canc-page-header__eyebrow">
+                <span class="canc-page-header__badge">CANCELAMENTOS</span>
+
+                <span class="canc-page-header__separator"></span>
+
+                <span class="canc-page-header__current">
+                    {{ fila_atual_label }}
+                </span>
+            </div>
+
+            <div class="canc-page-header__title-row">
+                <div>
+                    <h1 class="canc-page-header__title">{{ fila_atual_label }}</h1>
+
+                    <p class="canc-page-header__description">
+                        {% block descricao_fila %}
+                        Chamados que chegaram, mas ainda não tiveram tratativa.
+                        {% endblock %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="canc-page-header__actions">
+            <a
+                class="btn-secondary canc-btn-export"
+                href="{% url 'cancelamentos:exportar_relatorio_excel' %}"
+                title="Gerar relatório Excel completo"
+                aria-label="Gerar relatório Excel completo"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <path d="M8 13l2.5 3L8 19"/>
+                    <path d="M15 13l-2.5 3L15 19"/>
+                </svg>
+
+                Gerar Excel
+            </a>
+
+            {% block botao_novo %}
+            <button class="btn-primary canc-btn-new" id="btnNovoCancelamento" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+
+                Novo Cancelamento
+            </button>
+            {% endblock %}
+        </div>
+    </div>
+
+
+    {# --------------------------------------------------------------------- #}
+    {# NAVEGAÇÃO ENTRE FILAS                                                 #}
+    {# --------------------------------------------------------------------- #}
+    <div class="canc-tabs-wrapper">
+        <nav class="canc-tabs" aria-label="Filas de cancelamento">
+
+            <a href="{% url 'cancelamentos:pedido' %}"
+               class="canc-tab {% if fila_atual == 'PEDIDO' %}canc-tab--active{% endif %}"
+               data-fila="PEDIDO">
+
+                <span class="canc-tab__icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                </span>
+
+                <span class="canc-tab__label">Pedido</span>
+
+                <span class="canc-tab__count">
+                    {{ kpis.PEDIDO.total }}
+                </span>
+            </a>
+
+
+            <a href="{% url 'cancelamentos:solicitacao' %}"
+               class="canc-tab {% if fila_atual == 'SOLICITACAO' %}canc-tab--active{% endif %}"
+               data-fila="SOLICITACAO">
+
+                <span class="canc-tab__icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16v16H4z"/>
+                        <path d="M8 9h8"/>
+                        <path d="M8 13h6"/>
+                    </svg>
+                </span>
+
+                <span class="canc-tab__label">Solicitação</span>
+
+                <span class="canc-tab__count">
+                    {{ kpis.SOLICITACAO.total }}
+                </span>
+            </a>
+
+
+            <a href="{% url 'cancelamentos:pendencia' %}"
+               class="canc-tab {% if fila_atual == 'PENDENCIA' %}canc-tab--active{% endif %}"
+               data-fila="PENDENCIA">
+
+                <span class="canc-tab__icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"/>
+                        <line x1="12" y1="7" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </span>
+
+                <span class="canc-tab__label">Pendências</span>
+
+                <span class="canc-tab__count">
+                    {{ kpis.PENDENCIA.total }}
+                </span>
+            </a>
+
+
+            <a href="{% url 'cancelamentos:concluido' %}"
+               class="canc-tab {% if fila_atual == 'CONCLUIDO' %}canc-tab--active{% endif %}"
+               data-fila="CONCLUIDO">
+
+                <span class="canc-tab__icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"/>
+                        <polyline points="8 12 11 15 16 9"/>
+                    </svg>
+                </span>
+
+                <span class="canc-tab__label">Concluídos</span>
+
+                <span class="canc-tab__count">
+                    {{ kpis.CONCLUIDO.total }}
+                </span>
+            </a>
+
+        </nav>
+    </div>
+
+
+    {# --------------------------------------------------------------------- #}
+    {# KPIs                                                                 #}
+    {# --------------------------------------------------------------------- #}
+    <section class="canc-kpis">
+
+        <article class="canc-kpi-card canc-kpi-card--total">
+            <div class="canc-kpi-card__top">
+                <div class="canc-kpi-card__icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                </div>
+
+                <span class="canc-kpi-card__label">Total Geral</span>
+            </div>
+
+            <div class="canc-kpi-card__content">
+                <strong class="canc-kpi-card__value">
+                    {{ kpis.TOTAL_GERAL }}
+                </strong>
+
+                <span class="canc-kpi-card__meta">
+                    cancelamentos registrados
+                </span>
+            </div>
+        </article>
+
+
+        <article class="canc-kpi-card canc-kpi-card--pedido">
+            <div class="canc-kpi-card__top">
+                <div class="canc-kpi-card__icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                </div>
+
+                <span class="canc-kpi-card__label">Pedidos</span>
+            </div>
+
+            <div class="canc-kpi-card__content">
+                <strong class="canc-kpi-card__value">
+                    {{ kpis.PEDIDO.total }}
+                </strong>
+
+                <span class="canc-kpi-card__meta">
+                    aguardando início
+                </span>
+            </div>
+        </article>
+
+
+        <article class="canc-kpi-card canc-kpi-card--solicitacao">
+            <div class="canc-kpi-card__top">
+                <div class="canc-kpi-card__icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="3" width="16" height="18" rx="2"/>
+                        <line x1="8" y1="8" x2="16" y2="8"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                        <line x1="8" y1="16" x2="13" y2="16"/>
+                    </svg>
+                </div>
+
+                <span class="canc-kpi-card__label">Solicitações</span>
+            </div>
+
+            <div class="canc-kpi-card__content">
+                <strong class="canc-kpi-card__value">
+                    {{ kpis.SOLICITACAO.total }}
+                </strong>
+
+                <span class="canc-kpi-card__meta">
+                    em tratativa
+                </span>
+            </div>
+        </article>
+
+
+        <article class="canc-kpi-card canc-kpi-card--pendencia">
+            <div class="canc-kpi-card__top">
+                <div class="canc-kpi-card__icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"/>
+                        <line x1="12" y1="7" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+
+                <span class="canc-kpi-card__label">Pendências</span>
+            </div>
+
+            <div class="canc-kpi-card__content">
+                <strong class="canc-kpi-card__value">
+                    {{ kpis.PENDENCIA.total }}
+                </strong>
+
+                <span class="canc-kpi-card__meta">
+                    com acompanhamento
+                </span>
+            </div>
+        </article>
+
+
+        <article class="canc-kpi-card canc-kpi-card--concluido">
+            <div class="canc-kpi-card__top">
+                <div class="canc-kpi-card__icon">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"/>
+                        <polyline points="8 12 11 15 16 9"/>
+                    </svg>
+                </div>
+
+                <span class="canc-kpi-card__label">Concluídos</span>
+            </div>
+
+            <div class="canc-kpi-card__content">
+                <strong class="canc-kpi-card__value">
+                    {{ kpis.CONCLUIDO.total }}
+                </strong>
+
+                <span class="canc-kpi-card__meta">
+                    encerrados
+                </span>
+            </div>
+        </article>
+
+    </section>
+
+
+    {# --------------------------------------------------------------------- #}
+    {# BUSCA E FILTROS                                                       #}
+    {# --------------------------------------------------------------------- #}
+    <section class="canc-filters">
+
+        <div class="canc-filters__main">
+
+            <div class="canc-search-wrapper">
+                <div class="canc-search">
+
+                    <svg class="canc-search__icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="7"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+
+                    <input
+                        type="search"
+                        name="busca"
+                        class="canc-search__input"
+                        id="cancBusca"
+                        placeholder="Pesquisar em todos os cancelamentos..."
+                        value=""
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+
+                    <button class="canc-search__clear" id="cancBuscaClear" type="button" title="Limpar pesquisa" aria-label="Limpar pesquisa">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <span class="canc-search__hint">
+                    Pesquisa em todas as filas. Os resultados aparecem nesta mesma tabela com a fila atual de cada chamado; clique na linha, ticket ou designação para abrir os detalhes.
+                </span>
+            </div>
+
+
+            <form class="canc-filter-form" id="cancFormFiltros" data-responsavel-ativo="{{ filtros.responsavel }}">
+
+                <select name="status" class="canc-filter-control">
+                    <option value="">Todos os status</option>
+
+                    {% for valor, label in status_choices %}
+                    <option value="{{ valor }}" {% if filtros.status == valor %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+
+                <div class="canc-date-filter" id="cancDateRange">
+                    <button type="button" class="canc-filter-control canc-date-filter__trigger" id="cancDateTrigger">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+
+                        <span id="cancDateLabel">Período</span>
+
+                        <svg class="canc-date-filter__arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+
+                    <div class="canc-date-filter__popover" id="cancDatePopover">
+
+                        <div class="canc-date-filter__header">
+                            <strong>Período do chamado</strong>
+                            <span>Selecione uma data inicial e/ou final.</span>
+                        </div>
+
+                        <div class="canc-date-filter__fields">
+                            <div class="canc-date-filter__field">
+                                <label for="cancDataInicio">De</label>
+                                <input type="date" name="data_inicio" id="cancDataInicio" value="{{ filtros.data_inicio }}">
+                            </div>
+
+                            <div class="canc-date-filter__field">
+                                <label for="cancDataFim">Até</label>
+                                <input type="date" name="data_fim" id="cancDataFim" value="{{ filtros.data_fim }}">
+                            </div>
+                        </div>
+
+                        <div class="canc-date-filter__actions">
+                            <button type="button" class="btn-text btn-micro" id="cancDateLimpar">
+                                Limpar
+                            </button>
+
+                            <button type="button" class="btn-secondary btn-micro" id="cancDateAplicar">
+                                Aplicar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <select name="ordenacao" class="canc-filter-control">
+                    <option value="">Ordenação padrão</option>
+
+                    <option value="antigos" {% if filtros.ordenacao == 'antigos' %}selected{% endif %}>
+                        Mais antigos primeiro
+                    </option>
+
+                    <option value="recentes" {% if filtros.ordenacao == 'recentes' %}selected{% endif %}>
+                        Mais recentes primeiro
+                    </option>
+
+                    <option value="ultima_interacao" {% if filtros.ordenacao == 'ultima_interacao' %}selected{% endif %}>
+                        Última interação
+                    </option>
+                </select>
+
+
+                <button type="submit" class="btn-secondary canc-filter-apply">
+                    Aplicar filtros
+                </button>
+
+                <button type="button" class="btn-text canc-filter-clear" data-limpar-filtros>
+                    Limpar
+                </button>
+
+            </form>
+        </div>
+
+
+        {# ----------------------------------------------------------------- #}
+        {# FILTRO DE RESPONSÁVEL                                             #}
+        {# ----------------------------------------------------------------- #}
+        <div class="canc-responsavel-filter">
+
+            <span class="canc-responsavel-filter__label">
+                Visualizar
+            </span>
+
+            <div class="canc-responsavel-filter__options">
+
+                <button
+                    type="button"
+                    class="canc-responsavel-filter__btn {% if filtros.responsavel == 'todos' %}active{% endif %}"
+                    data-filtro-responsavel="todos"
+                >
+                    Todos
+                </button>
+
+
+                <button
+                    type="button"
+                    class="canc-responsavel-filter__btn {% if filtros.responsavel == 'meus' %}active{% endif %}"
+                    data-filtro-responsavel="meus"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21a8 8 0 0 0-16 0"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+
+                    Meus Cancelamentos
+                </button>
+
+
+                <button
+                    type="button"
+                    class="canc-responsavel-filter__btn {% if filtros.responsavel == 'sem_responsavel' %}active{% endif %}"
+                    data-filtro-responsavel="sem_responsavel"
+                >
+                    Sem responsável
+                </button>
+
+            </div>
+        </div>
+
+    </section>
+
+
+    {# --------------------------------------------------------------------- #}
+    {# CABEÇALHO DA LISTAGEM                                                 #}
+    {# --------------------------------------------------------------------- #}
+    <div class="canc-list-header">
+
+        <div class="canc-list-header__left">
+            <div class="canc-list-header__title" id="cancListTitulo">
+                {{ fila_atual_label }}
+            </div>
+
+            <div class="canc-list-header__count">
+                <span id="cancContagemVisivel" aria-live="polite">{{ cancelamentos|length }}</span>
+                registro{% if cancelamentos|length != 1 %}s{% endif %}
+            </div>
+        </div>
+
+        <div class="canc-list-header__right">
+            {% if filtros.responsavel == 'meus' %}
+            <span class="canc-active-filter">
+                Meus Cancelamentos
+            </span>
+            {% endif %}
+
+            {% if filtros.status %}
+            <span class="canc-active-filter">
+                Status aplicado
+            </span>
+            {% endif %}
+
+            {% if filtros.data_inicio or filtros.data_fim %}
+            <span class="canc-active-filter">
+                Período aplicado
+            </span>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+    {# --------------------------------------------------------------------- #}
+    {# TABELA                                                               #}
+    {# --------------------------------------------------------------------- #}
+    <div class="canc-table-wrapper">
+
+        <div class="canc-table-scroll">
+
+            <table class="canc-table" id="cancTabela">
+
+                <thead>
+                    <tr>
+                        <th class="col-checkbox">
+                            <input type="checkbox" class="canc-checkbox" id="cancSelecionarTodos" aria-label="Selecionar todos">
+                        </th>
+
+                        {% block thead %}
+                        <th class="col-ticket">Ticket</th>
+                        <th class="col-designacao">Designação</th>
+                        <th class="col-cliente">Cliente Final</th>
+                        <th class="col-cidade">Cidade/UF</th>
+                        <th class="col-sigla">ISP</th>
+                        <th class="col-data">Data do chamado</th>
+                        <th class="col-status">Status</th>
+                        <th class="col-responsavel">Responsável</th>
+                        <th class="col-obs">Observações</th>
+                        <th class="col-acoes">Ações</th>
+                        {% endblock %}
+                    </tr>
+                </thead>
+
+
+                <tbody id="cancTabelaBody">
+
+                    {% for c in cancelamentos %}
+
+                    <tr
+                        class="canc-row"
+                        data-id="{{ c.id }}"
+                        data-status="{{ c.status }}"
+                        data-fila="{{ c.fila }}"
+                        data-busca="{{ c.ticket_arion }} {{ c.designacao_circuito }} {{ c.cod_cliente }} {{ c.cliente }} {{ c.cliente_final }} {{ c.isp }} {{ c.protocolo }} {{ c.cidade }} {{ c.uf }} {% if c.responsavel_id %}{{ c.responsavel.get_full_name }} {{ c.responsavel.username }}{% endif %}"
+                    >
+
+                        <td class="col-checkbox">
+                            <input
+                                type="checkbox"
+                                class="canc-checkbox canc-row-checkbox"
+                                data-id="{{ c.id }}"
+                                aria-label="Selecionar cancelamento {{ c.ticket_arion }}"
+                            >
+                        </td>
+
+
+                        {% block tbody_row %}
+
+                        <td class="col-ticket">
+                            {% if c.ticket_url %}
+                            <a href="{{ c.ticket_url }}" target="_blank" rel="noopener noreferrer" class="ticket-chip ticket-link">
+                                {{ c.ticket_arion }}
+                            </a>
+                            {% else %}
+                            <span class="ticket-chip">
+                                {{ c.ticket_arion }}
+                            </span>
+                            {% endif %}
+                        </td>
+
+
+                        <td class="col-designacao font-mono">
+                            {{ c.designacao_circuito|default:"—" }}
+                        </td>
+
+
+                        <td class="col-cliente canc-cliente">
+                            {{ c.cliente_final|default:"—" }}
+                        </td>
+
+
+                        <td class="col-cidade">
+                            {% if c.cidade or c.uf %}
+                            {{ c.cidade|default:"—" }}/{{ c.uf|default:"—" }}
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+
+
+                        <td class="col-sigla">
+                            {{ c.isp|default:"—" }}
+                        </td>
+
+
+                        <td class="col-data">
+                            {{ c.data_criacao_chamado|date:"d/m/Y"|default:"—" }}
+                        </td>
+
+
+                        <td class="col-status">
+                            <div class="status-cell">
+
+                                <span class="status-badge status-badge--{{ c.status|lower }}">
+                                    <span class="status-dot"></span>
+                                    {{ c.get_status_display }}
+                                </span>
+
+                                {% if fila_atual != 'CONCLUIDO' %}
+                                <button class="status-edit-btn" data-action="editar-status" title="Alterar status" type="button">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                                {% endif %}
+
+                            </div>
+                        </td>
+
+
+                        <td class="col-responsavel">
+
+                            {% if not c.responsavel_id %}
+
+                            <div class="responsavel-cell responsavel-cell--empty">
+                                <span class="responsavel-vazio">
+                                    Sem responsável
+                                </span>
+
+                                {% if fila_atual != 'CONCLUIDO' %}
+                                <button class="btn-micro" data-action="apropriar" type="button">
+                                    Apropriar-se
+                                </button>
+                                {% endif %}
+                            </div>
+
+
+                            {% elif c.responsavel_id == user.id %}
+
+                            <div class="responsavel-cell">
+
+                                <span class="responsavel-avatar">
+                                    {{ c.responsavel.get_full_name|default:c.responsavel.username|slice:":2"|upper }}
+                                </span>
+
+                                <span class="responsavel-nome">
+                                    {{ c.responsavel.get_full_name|default:c.responsavel.username }}
+                                </span>
+
+                                {% if fila_atual != 'CONCLUIDO' %}
+                                <button class="btn-micro btn-micro--danger" data-action="liberar" type="button">
+                                    Liberar
+                                </button>
+                                {% endif %}
+
+                            </div>
+
+
+                            {% else %}
+
+                            <div class="responsavel-cell">
+
+                                <span class="responsavel-avatar">
+                                    {{ c.responsavel.get_full_name|default:c.responsavel.username|slice:":2"|upper }}
+                                </span>
+
+                                <span class="responsavel-nome">
+                                    {{ c.responsavel.get_full_name|default:c.responsavel.username }}
+                                </span>
+
+                            </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="col-obs">
+                            <button class="obs-btn" data-action="ver-obs" type="button">
+
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+
+                                Ver
+
+                                {% if c.observacoes.count %}
+                                <span class="obs-btn__count">
+                                    {{ c.observacoes.count }}
+                                </span>
+                                {% endif %}
+
+                            </button>
+                        </td>
+
+
+                        <td class="col-acoes">
+
+                            <div class="row-actions">
+
+                                <a
+                                    href="{% url 'cancelamentos:detalhe' c.id %}"
+                                    class="row-action-btn"
+                                    title="Ver detalhes"
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </a>
+
+
+                                {% if fila_atual != 'CONCLUIDO' and proxima_fila %}
+                                <button
+                                    class="row-action-btn"
+                                    data-action="mover-fila"
+                                    data-fila-destino="{{ proxima_fila }}"
+                                    title="Mover para {{ proxima_fila_label }}"
+                                    type="button"
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                        <polyline points="12 5 19 12 12 19"/>
+                                    </svg>
+                                </button>
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                        {% endblock %}
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="12" class="empty-state">
+
+                            <div class="empty-state__icon">
+                                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                                </svg>
+                            </div>
+
+                            <strong>Nenhum cancelamento encontrado</strong>
+
+                            <p>
+                                Não existem registros nesta fila com os filtros selecionados.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {# Estado usado pela pesquisa JavaScript #}
+        <div class="canc-search-empty" id="cancBuscaVazia" style="display:none;">
+            <div class="canc-search-empty__icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                    <circle cx="11" cy="11" r="7"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </div>
+
+            <strong>Nenhum resultado encontrado</strong>
+
+            <span>
+                Nenhum chamado foi encontrado em Pedido, Solicitação, Pendências ou Concluídos.
+            </span>
+        </div>
+
+    </div>
+
+
+    {# --------------------------------------------------------------------- #}
+    {# BARRA DE SELEÇÃO EM LOTE                                              #}
+    {# --------------------------------------------------------------------- #}
+    {% if fila_atual != 'CONCLUIDO' %}
+    <div class="canc-bulkbar" id="cancBulkbar">
+
+        <span class="canc-bulkbar__count">
+            <strong id="cancBulkCount">0</strong>
+            selecionado(s)
+        </span>
+
+        <div class="canc-bulkbar__actions">
+
+            {% if proxima_fila %}
+            <button type="button" class="canc-bulkbar__btn" data-action="mover-fila-lote">
+                Mover para {{ proxima_fila_label }}
+            </button>
+            {% endif %}
+
+            <button type="button" class="canc-bulkbar__btn canc-bulkbar__btn--cancel" id="cancBulkCancelar">
+                Cancelar seleção
+            </button>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+
+
+{% include "cancelamentos/components/modais_cancelamento.html" %}
+
+{{ cancelamentos_json|json_script:"cancelamentos-data" }}
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="{% static 'js/cancelamentos/cancelamentos.js' %}"></script>
+<script src="{% static 'js/cancelamentos/modais.js' %}"></script>
+
+<script>
+(function () {
+    'use strict';
+
+    /* -------------------------------------------------------------------------
+     * FILTRO DE PERÍODO
+     * ---------------------------------------------------------------------- */
+    var wrapper = document.getElementById('cancDateRange');
+    var trigger = document.getElementById('cancDateTrigger');
+    var popover = document.getElementById('cancDatePopover');
+    var label = document.getElementById('cancDateLabel');
+    var inputInicio = document.getElementById('cancDataInicio');
+    var inputFim = document.getElementById('cancDataFim');
+    var btnAplicar = document.getElementById('cancDateAplicar');
+    var btnLimpar = document.getElementById('cancDateLimpar');
+
+    if (
+        wrapper &&
+        trigger &&
+        popover &&
+        label &&
+        inputInicio &&
+        inputFim
+    ) {
+        function formatarBR(dataISO) {
+            if (!dataISO) return '';
+
+            var partes = dataISO.split('-');
+
+            if (partes.length !== 3) {
+                return dataISO;
+            }
+
+            return partes[2] + '/' + partes[1] + '/' + partes[0];
+        }
+
+        function atualizarLabel() {
+            var inicio = inputInicio.value;
+            var fim = inputFim.value;
+
+            if (inicio && fim) {
+                label.textContent = formatarBR(inicio) + ' – ' + formatarBR(fim);
+                trigger.classList.add('is-active');
+                return;
+            }
+
+            if (inicio) {
+                label.textContent = 'A partir de ' + formatarBR(inicio);
+                trigger.classList.add('is-active');
+                return;
+            }
+
+            if (fim) {
+                label.textContent = 'Até ' + formatarBR(fim);
+                trigger.classList.add('is-active');
+                return;
+            }
+
+            label.textContent = 'Período';
+            trigger.classList.remove('is-active');
+        }
+
+        function abrirPopover() {
+            popover.classList.add('is-open');
+        }
+
+        function fecharPopover() {
+            popover.classList.remove('is-open');
+        }
+
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+
+            if (popover.classList.contains('is-open')) {
+                fecharPopover();
+            } else {
+                abrirPopover();
+            }
+        });
+
+        popover.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        document.addEventListener('click', function () {
+            fecharPopover();
+        });
+
+        if (btnAplicar) {
+            btnAplicar.addEventListener('click', function () {
+                atualizarLabel();
+                fecharPopover();
+
+                var form = document.getElementById('cancFormFiltros');
+
+                if (form) {
+                    if (typeof form.requestSubmit === 'function') {
+                        form.requestSubmit();
+                    } else {
+                        form.dispatchEvent(new Event('submit', {
+                            bubbles: true,
+                            cancelable: true
+                        }));
+                    }
+                }
+            });
+        }
+
+        if (btnLimpar) {
+            btnLimpar.addEventListener('click', function () {
+                inputInicio.value = '';
+                inputFim.value = '';
+
+                atualizarLabel();
+            });
+        }
+
+        atualizarLabel();
+    }
+
+
+    /* -------------------------------------------------------------------------
+     * SELEÇÃO DE LINHAS
+     * ---------------------------------------------------------------------- */
+    var selecionarTodos = document.getElementById('cancSelecionarTodos');
+    var bulkbar = document.getElementById('cancBulkbar');
+    var bulkCount = document.getElementById('cancBulkCount');
+    var bulkCancelar = document.getElementById('cancBulkCancelar');
+    var tabelaBody = document.getElementById('cancTabelaBody');
+
+    if (tabelaBody && bulkbar && bulkCount) {
+        function checkboxesLinha() {
+            return Array.prototype.slice.call(
+                tabelaBody.querySelectorAll('.canc-row-checkbox')
+            );
+        }
+
+        function atualizarBulkbar() {
+            var checkboxes = checkboxesLinha();
+
+            var marcados = checkboxes.filter(function (checkbox) {
+                return checkbox.checked;
+            });
+
+            bulkCount.textContent = marcados.length;
+
+            bulkbar.classList.toggle(
+                'canc-bulkbar--visible',
+                marcados.length > 0
+            );
+
+            checkboxes.forEach(function (checkbox) {
+                var row = checkbox.closest('tr');
+
+                if (row) {
+                    row.classList.toggle(
+                        'is-selected',
+                        checkbox.checked
+                    );
+                }
+            });
+
+            if (selecionarTodos) {
+                var todasMarcadas =
+                    checkboxes.length > 0 &&
+                    marcados.length === checkboxes.length;
+
+                selecionarTodos.checked = todasMarcadas;
+
+                selecionarTodos.indeterminate =
+                    marcados.length > 0 &&
+                    !todasMarcadas;
+            }
+        }
+
+        function limparSelecao() {
+            checkboxesLinha().forEach(function (checkbox) {
+                checkbox.checked = false;
+            });
+
+            if (selecionarTodos) {
+                selecionarTodos.checked = false;
+                selecionarTodos.indeterminate = false;
+            }
+
+            atualizarBulkbar();
+        }
+
+        tabelaBody.addEventListener('change', function (e) {
+            if (e.target.classList.contains('canc-row-checkbox')) {
+                atualizarBulkbar();
+            }
+        });
+
+        if (selecionarTodos) {
+            selecionarTodos.addEventListener('change', function () {
+                checkboxesLinha().forEach(function (checkbox) {
+                    if (checkbox.closest('tr').style.display !== 'none') {
+                        checkbox.checked = selecionarTodos.checked;
+                    }
+                });
+
+                atualizarBulkbar();
+            });
+        }
+
+        if (bulkCancelar) {
+            bulkCancelar.addEventListener('click', limparSelecao);
+        }
+
+        atualizarBulkbar();
+    }
+})();
+</script>
+{% endblock %}

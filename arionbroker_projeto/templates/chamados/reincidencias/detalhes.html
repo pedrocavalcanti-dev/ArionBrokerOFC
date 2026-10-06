@@ -1,0 +1,847 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Detalhes RREIP — {% firstof reincidencia.ticket_origem reincidencia.ticket_atual %}
+{% endblock %}
+
+{% block page_title %}
+Detalhes da Reincidência
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/chamados/reincidencias_base.css' %}">
+<link rel="stylesheet" href="{% static 'css/chamados/reincidencias_detalhes.css' %}">
+{% endblock %}
+
+{% block content %}
+<div
+    class="rreip-details-page"
+    id="rreipDetailsPage"
+    data-reincidencia-id="{{ reincidencia.id }}"
+    data-fila="{{ reincidencia.fila }}"
+    data-status="{{ reincidencia.status }}"
+    data-classificacao="{{ reincidencia.classificacao }}"
+    data-url-detalhes="{% url 'chamados:reincidencias:api_detalhes' reincidencia.id %}"
+    data-url-historico="{% url 'chamados:reincidencias:api_historico' reincidencia.id %}"
+    data-url-editar="{% url 'chamados:reincidencias:api_editar' reincidencia.id %}"
+    data-url-apropriar="{% url 'chamados:reincidencias:api_apropriar' reincidencia.id %}"
+    data-url-liberar="{% url 'chamados:reincidencias:api_liberar' reincidencia.id %}"
+    data-url-transferir="{% url 'chamados:reincidencias:api_transferir' reincidencia.id %}"
+    data-url-classificar="{% url 'chamados:reincidencias:api_classificar' reincidencia.id %}"
+    data-url-salvar-analise="{% url 'chamados:reincidencias:api_salvar_analise' reincidencia.id %}"
+    data-url-texto-otrs="{% url 'chamados:reincidencias:api_texto_otrs' reincidencia.id %}"
+    data-url-previa-email="{% url 'chamados:reincidencias:api_previa_email_monitoramento' reincidencia.id %}"
+    data-url-enviar-email="{% url 'chamados:reincidencias:api_enviar_email_monitoramento' reincidencia.id %}"
+    data-url-registrar-ticket="{% url 'chamados:reincidencias:api_registrar_ticket_monitoramento' reincidencia.id %}"
+    data-url-iniciar-monitoramento="{% url 'chamados:reincidencias:api_mover_monitoramento' reincidencia.id %}"
+    data-url-reabrir="{% url 'chamados:reincidencias:api_reabrir' reincidencia.id %}"
+    data-url-reabrir-finalizado="{% url 'chamados:reincidencias:api_reabrir_finalizado' reincidencia.id %}"
+    data-url-concluir="{% url 'chamados:reincidencias:api_concluir' reincidencia.id %}"
+    data-url-excluir="{% url 'chamados:reincidencias:api_excluir' reincidencia.id %}"
+>
+
+    <!-- NAVEGAÇÃO DE RETORNO -->
+    <nav class="rreip-details-nav">
+        {% if reincidencia.fila == "MONITORAMENTO" %}
+            <a class="rreip-details-nav__back" href="{% url 'chamados:reincidencias:monitoramento' %}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Voltar para Monitoramento RREIP
+            </a>
+        {% elif reincidencia.fila == "FINALIZADO" %}
+            <a class="rreip-details-nav__back" href="{% url 'chamados:reincidencias:finalizados' %}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Voltar para Finalizados
+            </a>
+        {% else %}
+            <a class="rreip-details-nav__back" href="{% url 'chamados:reincidencias:tratamento' %}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Voltar para Tratamento
+            </a>
+        {% endif %}
+    </nav>
+
+    <!-- CABEÇALHO -->
+    <header class="rreip-details-header">
+        <div class="rreip-details-header__content">
+            <div class="rreip-details-header__meta-badges">
+                <span class="rreip-header__badge">RREIP</span>
+                
+                {% if reincidencia.fila == "TRATAMENTO" %}
+                    <span class="rreip-fila-badge rreip-fila-badge--tratamento">Tratamento</span>
+                {% elif reincidencia.fila == "MONITORAMENTO" %}
+                    <span class="rreip-fila-badge rreip-fila-badge--monitoramento">Monitoramento RREIP</span>
+                {% else %}
+                    <span class="rreip-fila-badge rreip-fila-badge--finalizado">Finalizado</span>
+                {% endif %}
+
+                <span class="rreip-status 
+                    {% if reincidencia.status == 'NOVO' %}rreip-status--novo
+                    {% elif reincidencia.status == 'EM_ANALISE' %}rreip-status--em-analise
+                    {% elif reincidencia.status == 'EM_TRATATIVA' %}rreip-status--em-tratativa
+                    {% elif reincidencia.status == 'AGUARDANDO_TICKET_MONITORAMENTO' %}rreip-status--aguardando-ticket
+                    {% elif reincidencia.status == 'MONITORANDO' %}rreip-status--monitorando
+                    {% elif reincidencia.status == 'REINCIDIU' %}rreip-status--reincidiu
+                    {% elif reincidencia.status == 'CONCLUIDO' %}rreip-status--concluido
+                    {% elif reincidencia.status == 'DESCARTADO' %}rreip-status--descartado
+                    {% endif %}
+                ">
+                    <span class="rreip-status__dot"></span>
+                    {{ reincidencia.get_status_display }}
+                </span>
+
+                {% if reincidencia.classificacao and reincidencia.classificacao != 'PENDENTE' %}
+                <span class="rreip-classificacao 
+                    {% if reincidencia.classificacao == 'REINCIDENCIA_CONFIRMADA' %}rreip-classificacao--confirmada
+                    {% elif reincidencia.classificacao == 'MASSIVA' %}rreip-classificacao--massiva
+                    {% elif reincidencia.classificacao == 'FALSO_POSITIVO' %}rreip-classificacao--falso-positivo
+                    {% elif reincidencia.classificacao == 'FALHA_ISOLADA' %}rreip-classificacao--falha-isolada
+                    {% else %}rreip-classificacao--pendente
+                    {% endif %}
+                ">
+                    {{ reincidencia.get_classificacao_display }}
+                </span>
+                {% endif %}
+            </div>
+
+            <h1 class="rreip-details-header__title">
+                Reincidência RREIP — <span class=" font-mono">{{ reincidencia.designacao }}</span>
+            </h1>
+
+            <p class="rreip-details-header__subtitle">
+                {{ reincidencia.operadora|default:"Operadora não informada" }} — {{ reincidencia.projeto|default:"Projeto não informado" }}
+            </p>
+        </div>
+
+        <div class="rreip-details-header__actions">
+            {% if not reincidencia.responsavel %}
+                <button type="button" class="rreip-btn rreip-btn--secondary" data-action="apropriar" data-id="{{ reincidencia.id }}">
+                    Apropriar-se
+                </button>
+            {% elif reincidencia.responsavel_id == user.id %}
+                <button type="button" class="rreip-btn rreip-btn--text" data-action="liberar" data-id="{{ reincidencia.id }}">
+                    Liberar
+                </button>
+            {% endif %}
+
+            {% if reincidencia.pode_editar or user.is_staff %}
+                <button type="button" class="rreip-btn rreip-btn--secondary" data-action="editar" data-id="{{ reincidencia.id }}">
+                    Editar cadastro
+                </button>
+                <button type="button" class="rreip-btn rreip-btn--secondary" data-action="analise" data-id="{{ reincidencia.id }}">
+                    Editar análise
+                </button>
+                <button type="button" class="rreip-btn rreip-btn--secondary" data-action="classificar" data-id="{{ reincidencia.id }}">
+                    Classificação
+                </button>
+            {% endif %}
+
+            <!-- Ações específicas de TRATAMENTO -->
+            {% if reincidencia.fila == "TRATAMENTO" and reincidencia.classificacao == 'REINCIDENCIA_CONFIRMADA' and reincidencia.analise_completa %}
+                {% if not reincidencia.email_monitoramento_enviado %}
+                    <button type="button" class="rreip-btn rreip-btn--primary" data-action="enviar-email-monitoramento" data-id="{{ reincidencia.id }}">
+                        Enviar solicitação de monitoramento
+                    </button>
+                {% elif not reincidencia.ticket_monitoramento %}
+                    <button type="button" class="rreip-btn rreip-btn--primary" data-action="registrar-ticket-monitoramento" data-id="{{ reincidencia.id }}">
+                        Registrar ticket de monitoramento
+                    </button>
+                {% elif reincidencia.pode_iniciar_monitoramento %}
+                    <button type="button" class="rreip-btn rreip-btn--success" data-action="iniciar-monitoramento" data-id="{{ reincidencia.id }}">
+                        Iniciar monitoramento de 30 dias
+                    </button>
+                {% endif %}
+            {% endif %}
+
+            <!-- Ações específicas de MONITORAMENTO -->
+            {% if reincidencia.fila == "MONITORAMENTO" %}
+                <button type="button" class="rreip-btn rreip-btn--warning" data-action="reabrir" data-id="{{ reincidencia.id }}">
+                    Registrar nova reincidência
+                </button>
+                <button type="button" class="rreip-btn rreip-btn--success" data-action="concluir" data-id="{{ reincidencia.id }}">
+                    Concluir monitoramento
+                </button>
+            {% endif %}
+
+            <!-- Ações específicas de FINALIZADO -->
+            {% if reincidencia.fila == "FINALIZADO" and user.is_staff %}
+                <button type="button" class="rreip-btn rreip-btn--secondary" data-action="reabrir-finalizado" data-id="{{ reincidencia.id }}">
+                    Reabrir para análise
+                </button>
+            {% endif %}
+
+            {% if user.is_staff %}
+                <button type="button" class="rreip-btn rreip-btn--text" data-action="transferir" data-id="{{ reincidencia.id }}">
+                    Transferir
+                </button>
+                <button type="button" class="rreip-btn rreip-btn--danger" data-action="excluir" data-id="{{ reincidencia.id }}">
+                    Excluir
+                </button>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- CARDS DE RESUMO -->
+    <section class="rreip-details-summary">
+        <div class="rreip-details-summary__card">
+            <span class="rreip-details-summary__label">Qtd. Reincidências</span>
+            <span class="rreip-details-summary__value {% if reincidencia.quantidade_reincidencias >= 3 %}rreip-quantidade--critica{% endif %}">
+                {{ reincidencia.quantidade_reincidencias|default:1 }}
+            </span>
+        </div>
+
+        <div class="rreip-details-summary__card">
+            <span class="rreip-details-summary__label">Responsável</span>
+            <span class="rreip-details-summary__value">
+                {% if reincidencia.responsavel %}
+                    {{ reincidencia.responsavel.get_full_name|default:reincidencia.responsavel.username }}
+                {% else %}
+                    Sem responsável
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="rreip-details-summary__card">
+            <span class="rreip-details-summary__label">Classificação</span>
+            <span class="rreip-details-summary__value" style="font-size: 1rem;">
+                {{ reincidencia.get_classificacao_display }}
+            </span>
+        </div>
+
+        <div class="rreip-details-summary__card">
+            <span class="rreip-details-summary__label">Data de Origem</span>
+            <span class="rreip-details-summary__value" style="font-size: 1rem;">
+                {% firstof reincidencia.data_ticket_origem reincidencia.data_ticket "" as dt_origem %}
+                {% if dt_origem %}{{ dt_origem|date:"d/m/Y H:i" }}{% else %}—{% endif %}
+            </span>
+        </div>
+
+        {% if reincidencia.fila == "MONITORAMENTO" %}
+        <div class="rreip-details-summary__card">
+            <span class="rreip-details-summary__label">Prazo Restante</span>
+            <span class="rreip-details-summary__value" style="font-size: 1rem;">
+                {% with dias=reincidencia.dias_restantes_monitoramento %}
+                    {% if dias > 0 %}{{ dias }} dia(s){% else %}Prazo encerrado{% endif %}
+                {% endwith %}
+            </span>
+        </div>
+        {% elif reincidencia.data_finalizacao %}
+        <div class="rreip-details-summary__card">
+            <span class="rreip-details-summary__label">Data de Finalização</span>
+            <span class="rreip-details-summary__value" style="font-size: 1rem;">
+                {{ reincidencia.data_finalizacao|date:"d/m/Y H:i" }}
+            </span>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="rreip-details-layout">
+        <main class="rreip-details-main">
+            
+            <!-- 1. IDENTIFICAÇÃO -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Identificação Básica</h2>
+                </header>
+
+                <div class="rreip-details-grid">
+                    <div class="rreip-details-item" data-detail-field="operadora">
+                        <span class="rreip-details-item__label">Operadora</span>
+                        <span class="rreip-details-item__value">{{ reincidencia.operadora|default:"—" }}</span>
+                    </div>
+
+                    <div class="rreip-details-item" data-detail-field="projeto">
+                        <span class="rreip-details-item__label">Projeto</span>
+                        <span class="rreip-details-item__value">{{ reincidencia.projeto|default:"—" }}</span>
+                    </div>
+
+                    <div class="rreip-details-item" data-detail-field="identificador_projeto">
+                        <span class="rreip-details-item__label">Identificador</span>
+                        <span class="rreip-details-item__value">
+                            {% if reincidencia.identificador_projeto %}
+                                <div class="rreip-identificador">
+                                    <span class="rreip-identificador__label">{{ reincidencia.get_identificador_label }}</span>
+                                    <span class="rreip-identificador__value">{{ reincidencia.identificador_projeto }}</span>
+                                </div>
+                            {% else %}—{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="rreip-details-item" data-detail-field="designacao">
+                        <span class="rreip-details-item__label">Designação</span>
+                        <span class="rreip-details-item__value font-mono">{{ reincidencia.designacao|default:"—" }}</span>
+                    </div>
+
+                    <div class="rreip-details-item" data-detail-field="cliente">
+                        <span class="rreip-details-item__label">Cliente</span>
+                        <span class="rreip-details-item__value">{{ reincidencia.cliente|default:"—" }}</span>
+                    </div>
+
+                    <div class="rreip-details-item" data-detail-field="isp">
+                        <span class="rreip-details-item__label">ISP</span>
+                        <span class="rreip-details-item__value">{{ reincidencia.isp|default:"—" }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. TICKET DE ORIGEM -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Ticket de Origem</h2>
+                </header>
+
+                <div class="rreip-details-grid">
+                    <div class="rreip-details-item">
+                        <span class="rreip-details-item__label">Número</span>
+                        <span class="rreip-details-item__value">
+                            {% firstof reincidencia.ticket_origem reincidencia.ticket_atual "—" as tk_origem %}
+                            {% firstof reincidencia.url_ticket_origem reincidencia.url_ticket "" as url_origem %}
+                            {% if url_origem %}
+                                <a href="{{ url_origem }}" target="_blank" rel="noopener noreferrer" class="rreip-ticket rreip-ticket--link">{{ tk_origem }}</a>
+                            {% else %}
+                                <span class="rreip-ticket">{{ tk_origem }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="rreip-details-item">
+                        <span class="rreip-details-item__label">Abertura</span>
+                        <span class="rreip-details-item__value">
+                            {% firstof reincidencia.data_ticket_origem reincidencia.data_ticket "" as dt_orig %}
+                            {% if dt_orig %}{{ dt_orig|date:"d/m/Y H:i" }}{% else %}—{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="rreip-details-item rreip-details-item--full">
+                        <span class="rreip-details-item__label">Encerramento da Origem</span>
+                        <span class="rreip-details-item__value">
+                            {% if reincidencia.data_encerramento_origem %}
+                                {{ reincidencia.data_encerramento_origem|date:"d/m/Y H:i" }}
+                            {% else %}
+                                Não informado
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. TICKET DE MONITORAMENTO -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Ticket de Monitoramento</h2>
+                </header>
+
+                {% if reincidencia.ticket_monitoramento %}
+                <div class="rreip-details-grid">
+                    <div class="rreip-details-item">
+                        <span class="rreip-details-item__label">Número (Fila Reincidentes)</span>
+                        <span class="rreip-details-item__value">
+                            {% if reincidencia.url_ticket_monitoramento %}
+                                <a href="{{ reincidencia.url_ticket_monitoramento }}" target="_blank" rel="noopener noreferrer" class="rreip-ticket rreip-ticket--link">{{ reincidencia.ticket_monitoramento }}</a>
+                            {% else %}
+                                <span class="rreip-ticket">{{ reincidencia.ticket_monitoramento }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="rreip-details-item">
+                        <span class="rreip-details-item__label">Data de Registro</span>
+                        <span class="rreip-details-item__value">
+                            {% if reincidencia.data_ticket_monitoramento %}{{ reincidencia.data_ticket_monitoramento|date:"d/m/Y H:i" }}{% else %}—{% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="rreip-text-muted" style="font-size: 0.875rem; font-style: italic;">
+                    Ticket de monitoramento ainda não registrado no sistema.
+                </p>
+                {% endif %}
+            </section>
+
+            <!-- 4. ANÁLISE RREIP -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Análise Técnica e Investigação</h2>
+                    <span class="rreip-fila-badge {% if reincidencia.analise_completa %}rreip-fila-badge--monitoramento{% else %}rreip-fila-badge--tratamento{% endif %}">
+                        {% if reincidencia.analise_completa %}Análise Completa{% else %}Análise Incompleta{% endif %}
+                    </span>
+                </header>
+
+                <div class="rreip-analysis-grid">
+                    <div class="rreip-analysis-item" data-analysis-field="motivo_identificado">
+                        <span class="rreip-analysis-item__label">Motivo Identificado</span>
+                        <div class="rreip-analysis-item__content">{{ reincidencia.motivo_identificado|default:"Não informado."|linebreaksbr }}</div>
+                    </div>
+                    <div class="rreip-analysis-item" data-analysis-field="causa_raiz">
+                        <span class="rreip-analysis-item__label">Causa Raiz</span>
+                        <div class="rreip-analysis-item__content">{{ reincidencia.causa_raiz|default:"Não informado."|linebreaksbr }}</div>
+                    </div>
+                    <div class="rreip-analysis-item" data-analysis-field="acao_realizada">
+                        <span class="rreip-analysis-item__label">Ação Realizada</span>
+                        <div class="rreip-analysis-item__content">{{ reincidencia.acao_realizada|default:"Não informado."|linebreaksbr }}</div>
+                    </div>
+                    <div class="rreip-analysis-item" data-analysis-field="acao_preventiva">
+                        <span class="rreip-analysis-item__label">Ação Preventiva</span>
+                        <div class="rreip-analysis-item__content">{{ reincidencia.acao_preventiva|default:"Não informado."|linebreaksbr }}</div>
+                    </div>
+                    <div class="rreip-analysis-item" data-analysis-field="conclusao">
+                        <span class="rreip-analysis-item__label">Conclusão / Retorno</span>
+                        <div class="rreip-analysis-item__content">{{ reincidencia.conclusao|default:"Não informado."|linebreaksbr }}</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. TEXTO PARA OTRS -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Gerador de Texto para OTRS</h2>
+                    <button type="button" class="rreip-btn rreip-btn--secondary rreip-btn--small" id="rreipBtnCarregarTextoOtrs" data-action="carregar-texto-otrs" data-id="{{ reincidencia.id }}">Gerar / Atualizar Texto</button>
+                </header>
+                <div class="rreip-copy-panel">
+                    <textarea class="rreip-form-textarea font-mono" id="rreipTextoOtrsInline" readonly style="min-height: 140px; font-size: 0.8rem;" placeholder="Clique em Gerar para carregar a formatação padrão da análise..."></textarea>
+                    <div style="margin-top: 0.75rem; display: flex; justify-content: flex-end;">
+                        <button type="button" class="rreip-btn rreip-btn--primary rreip-btn--small" id="rreipBtnCopiarTextoOtrs" data-action="copiar-texto-otrs">Copiar Texto</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. HISTÓRICO -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Histórico de Eventos</h2>
+                </header>
+
+                <div class="rreip-history-list" id="rreipDetailsHistory">
+                    {% for item in historico %}
+                    <article class="rreip-history-item">
+                        <div class="rreip-history-item__marker"></div>
+                        <div class="rreip-history-item__content">
+                            <header class="rreip-history-item__header">
+                                <strong class="rreip-history-item__title">{{ item.get_tipo_evento_display|default:item.tipo_evento }}</strong>
+                                <time class="rreip-history-item__date" datetime="{{ item.criado_em|date:'c' }}">{{ item.criado_em|date:"d/m/Y H:i:s" }}</time>
+                            </header>
+                            <p class="rreip-history-item__description">{{ item.descricao|default:"—" }}</p>
+                            <span class="rreip-history-item__user">Por: {% if item.usuario %}{{ item.usuario.get_full_name|default:item.usuario.username }}{% else %}Sistema{% endif %}</span>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <p class="rreip-text-muted">Nenhum evento registrado.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </main>
+
+        <aside class="rreip-details-sidebar">
+            
+            <!-- STATUS DO E-MAIL DE MONITORAMENTO -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Status do E-mail</h2>
+                </header>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div>
+                        <span class="rreip-details-item__label">Disparo via SMTP</span>
+                        <div style="margin-top: 0.3rem;">
+                            {% if reincidencia.email_monitoramento_enviado %}
+                                <span class="rreip-email-status rreip-email-status--sent">Enviado com sucesso</span>
+                            {% else %}
+                                <span class="rreip-email-status rreip-email-status--pending">Aguardando envio</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if reincidencia.email_monitoramento_enviado %}
+                    <div class="rreip-details-item">
+                        <span class="rreip-details-item__label">Data do Envio</span>
+                        <span class="rreip-details-item__value">{{ reincidencia.data_envio_monitoramento|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- TRIAGEM E CLASSIFICAÇÃO -->
+            <section class="rreip-details-card">
+                <header class="rreip-details-card__header">
+                    <h2 class="rreip-details-card__title">Triagem</h2>
+                </header>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="rreip-details-item">
+                        <span class="rreip-details-item__label">Classificação Atual</span>
+                        <span class="rreip-details-item__value">{{ reincidencia.get_classificacao_display }}</span>
+                    </div>
+                    {% if reincidencia.motivo_classificacao %}
+                    <div class="rreip-details-item">
+                        <span class="rreip-details-item__label">Motivo da Triagem</span>
+                        <span class="rreip-details-item__value">{{ reincidencia.motivo_classificacao }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+        </aside>
+    </div>
+
+</div>
+
+<!-- ==========================================================================
+     MODAIS OPERACIONAIS DA PÁGINA DE DETALHES
+     ========================================================================== -->
+
+<!-- MODAL: EDITAR -->
+<div class="rreip-modal-overlay" id="rreipModalEditar" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalEditarTitulo">
+    <div class="rreip-modal rreip-modal--large">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalEditarTitulo">Editar dados cadastrais</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalEditar" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormEditar" novalidate autocomplete="off">
+            {% csrf_token %}
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipEditarId" name="id" value="{{ reincidencia.id }}">
+
+                <div class="rreip-form-grid">
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarTicketOrigem">Ticket de origem</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarTicketOrigem" name="ticket_origem" value="{{ reincidencia.ticket_origem|default:reincidencia.ticket_atual }}">
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarUrlTicketOrigem">URL do ticket de origem</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarUrlTicketOrigem" name="url_ticket_origem" value="{{ reincidencia.url_ticket_origem|default:reincidencia.url_ticket }}">
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarDataTicketOrigem">Data de abertura (Origem)</label>
+                        <input type="datetime-local" class="rreip-form-input" id="rreipEditarDataTicketOrigem" name="data_ticket_origem">
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarDataEncerramentoOrigem">Data de encerramento (Origem)</label>
+                        <input type="datetime-local" class="rreip-form-input" id="rreipEditarDataEncerramentoOrigem" name="data_encerramento_origem">
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarOperadora">Operadora</label>
+                        <select class="rreip-form-select" id="rreipEditarOperadora" name="operadora">
+                            <option value="">Selecione...</option>
+                            <option value="Claro" {% if reincidencia.operadora == 'Claro' %}selected{% endif %}>Claro</option>
+                            <option value="Vivo" {% if reincidencia.operadora == 'Vivo' %}selected{% endif %}>Vivo</option>
+                            <option value="Algar" {% if reincidencia.operadora == 'Algar' %}selected{% endif %}>Algar</option>
+                            <option value="Outros" {% if reincidencia.operadora == 'Outros' %}selected{% endif %}>Outros</option>
+                        </select>
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarProjeto">Projeto</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarProjeto" name="projeto" value="{{ reincidencia.projeto }}">
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" id="rreipEditarIdentificadorLabel" for="rreipEditarIdentificador">Identificador</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarIdentificador" name="identificador_projeto" value="{{ reincidencia.identificador_projeto }}">
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarDesignacao">Designação <span class="rreip-form-required">*</span></label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarDesignacao" name="designacao" value="{{ reincidencia.designacao }}" required>
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarCliente">Cliente</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarCliente" name="cliente" value="{{ reincidencia.cliente }}">
+                    </div>
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarISP">ISP</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarISP" name="isp" value="{{ reincidencia.isp }}">
+                    </div>
+                </div>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalEditar">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Salvar alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: CLASSIFICAÇÃO -->
+<div class="rreip-modal-overlay" id="rreipModalClassificar" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalClassificarTitulo">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalClassificarTitulo">Classificar Triagem</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalClassificar" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormClassificar" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipClassificarId" name="id" value="{{ reincidencia.id }}">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipClassificarValor">Resultado da Triagem <span class="rreip-form-required">*</span></label>
+                    <select class="rreip-form-select" id="rreipClassificarValor" name="classificacao" required>
+                        <option value="PENDENTE" {% if reincidencia.classificacao == 'PENDENTE' %}selected{% endif %}>Pendente de classificação</option>
+                        <option value="REINCIDENCIA_CONFIRMADA" {% if reincidencia.classificacao == 'REINCIDENCIA_CONFIRMADA' %}selected{% endif %}>Reincidência confirmada (Avançar)</option>
+                        <option value="MASSIVA" {% if reincidencia.classificacao == 'MASSIVA' %}selected{% endif %}>Massiva (Descartar)</option>
+                        <option value="FALSO_POSITIVO" {% if reincidencia.classificacao == 'FALSO_POSITIVO' %}selected{% endif %}>Falso positivo (Descartar)</option>
+                        <option value="FALHA_ISOLADA" {% if reincidencia.classificacao == 'FALHA_ISOLADA' %}selected{% endif %}>Falha isolada (Descartar)</option>
+                        <option value="DUPLICADO" {% if reincidencia.classificacao == 'DUPLICADO' %}selected{% endif %}>Duplicado (Descartar)</option>
+                        <option value="NAO_SE_APLICA" {% if reincidencia.classificacao == 'NAO_SE_APLICA' %}selected{% endif %}>Não se aplica (Descartar)</option>
+                    </select>
+                </div>
+                
+                <div class="rreip-form-group" style="margin-top: 1rem;">
+                    <label class="rreip-form-label" for="rreipClassificarMotivo">Motivo / Justificativa</label>
+                    <textarea class="rreip-form-textarea" id="rreipClassificarMotivo" name="motivo" placeholder="Justificativa obrigatória para descartes...">{{ reincidencia.motivo_classificacao }}</textarea>
+                </div>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalClassificar">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Salvar Classificação</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ANÁLISE -->
+<div class="rreip-modal-overlay" id="rreipModalAnalise" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalAnaliseTitulo">
+    <div class="rreip-modal rreip-modal--large">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalAnaliseTitulo">Análise Técnica</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalAnalise" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormAnalise" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipAnaliseId" name="id" value="{{ reincidencia.id }}">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseMotivo">Motivo Identificado</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseMotivo" name="motivo_identificado">{{ reincidencia.motivo_identificado }}</textarea>
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseCausa">Causa Raiz</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseCausa" name="causa_raiz">{{ reincidencia.causa_raiz }}</textarea>
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseAcaoRealizada">Ação Realizada</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseAcaoRealizada" name="acao_realizada">{{ reincidencia.acao_realizada }}</textarea>
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseAcaoPreventiva">Ação Preventiva</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseAcaoPreventiva" name="acao_preventiva">{{ reincidencia.acao_preventiva }}</textarea>
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseConclusao">Conclusão / Retorno</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseConclusao" name="conclusao">{{ reincidencia.conclusao }}</textarea>
+                </div>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalAnalise">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Salvar Análise</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: PRÉVIA E-MAIL DE MONITORAMENTO -->
+<div class="rreip-modal-overlay" id="rreipModalEmailMonitoramento" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalEmailTitulo">
+    <div class="rreip-modal rreip-modal--large">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalEmailTitulo">Solicitação de Monitoramento via SMTP</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalEmailMonitoramento" aria-label="Fechar">&times;</button>
+        </div>
+        <div class="rreip-modal__body">
+            <input type="hidden" id="rreipEmailRegistroId" value="{{ reincidencia.id }}">
+            <div class="rreip-email-preview">
+                <div class="rreip-email-preview__header">
+                    <div class="rreip-email-preview__recipients" id="rreipEmailDestinatarios"></div>
+                    <div class="rreip-email-preview__recipients" id="rreipEmailCc"></div>
+                    <div class="rreip-email-preview__subject" id="rreipEmailAssunto"></div>
+                </div>
+                <div class="rreip-email-preview__body" id="rreipEmailCorpo">Carregando prévia...</div>
+            </div>
+        </div>
+        <div class="rreip-modal__footer">
+            <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalEmailMonitoramento">Cancelar</button>
+            <button type="button" class="rreip-btn rreip-btn--primary" id="rreipBtnConfirmarEnvioEmail">Enviar solicitação</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: REGISTRAR TICKET MONITORAMENTO -->
+<div class="rreip-modal-overlay" id="rreipModalTicketMonitoramento" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalTicketTitulo">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalTicketTitulo">Registrar Ticket de Monitoramento</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalTicketMonitoramento" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormTicketMonitoramento" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipTicketMonitoramentoId" name="id" value="{{ reincidencia.id }}">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipTicketMonitoramentoNumero">Número do Ticket <span class="rreip-form-required">*</span></label>
+                    <input type="text" class="rreip-form-input" id="rreipTicketMonitoramentoNumero" name="ticket_monitoramento" required>
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipTicketMonitoramentoUrl">URL do Ticket</label>
+                    <input type="text" class="rreip-form-input" id="rreipTicketMonitoramentoUrl" name="url_ticket_monitoramento">
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipTicketMonitoramentoData">Data do Ticket</label>
+                    <input type="datetime-local" class="rreip-form-input" id="rreipTicketMonitoramentoData" name="data_ticket_monitoramento">
+                </div>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalTicketMonitoramento">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Salvar Ticket</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: REGISTRAR NOVA OCORRÊNCIA (REINCIDÊNCIA) -->
+<div class="rreip-modal-overlay" id="rreipModalNovaOcorrencia" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalOcorrenciaTitulo">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalOcorrenciaTitulo">Registrar Nova Ocorrência (Reincidiu)</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalNovaOcorrencia" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormNovaOcorrencia" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipNovaOcorrenciaId" name="id" value="{{ reincidencia.id }}">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipNovaOcorrenciaTicket">Novo Ticket <span class="rreip-form-required">*</span></label>
+                    <input type="text" class="rreip-form-input" id="rreipNovaOcorrenciaTicket" name="novo_ticket" required>
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipNovaOcorrenciaUrl">URL do Novo Ticket</label>
+                    <input type="text" class="rreip-form-input" id="rreipNovaOcorrenciaUrl" name="url_ticket">
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipNovaOcorrenciaData">Data do Novo Ticket</label>
+                    <input type="datetime-local" class="rreip-form-input" id="rreipNovaOcorrenciaData" name="data_ticket">
+                </div>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalNovaOcorrencia">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--danger">Registrar Reincidência</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: CONCLUIR -->
+<div class="rreip-modal-overlay" id="rreipModalConcluir" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalConcluirTitulo">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalConcluirTitulo">Concluir Monitoramento</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalConcluir" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormConcluir" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <input type="hidden" id="rreipConcluirId" name="id" value="{{ reincidencia.id }}">
+                <p>Confirma a conclusão bem-sucedida do período de monitoramento?</p>
+                {% if request.user.is_staff %}
+                <div class="rreip-form-group" style="margin-top: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700;">
+                        <input type="checkbox" id="rreipConcluirForcar" name="forcar" value="true"> Forçar conclusão antecipada
+                    </label>
+                </div>
+                {% endif %}
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalConcluir">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--success">Concluir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: REABRIR FINALIZADO -->
+<div class="rreip-modal-overlay" id="rreipModalReabrirFinalizado" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalReabrirTitulo">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalReabrirTitulo">Reabrir Registro Finalizado</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalReabrirFinalizado" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormReabrirFinalizado" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <input type="hidden" id="rreipReabrirFinalizadoId" name="id" value="{{ reincidencia.id }}">
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipReabrirFinalizadoMotivo">Motivo da Reabertura <span class="rreip-form-required">*</span></label>
+                    <textarea class="rreip-form-textarea" id="rreipReabrirFinalizadoMotivo" name="motivo" required placeholder="Justifique o retorno deste registro para Tratamento..."></textarea>
+                </div>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalReabrirFinalizado">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Reabrir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: TRANSFERIR -->
+<div class="rreip-modal-overlay" id="rreipModalTransferir" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title">Transferir Responsável</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalTransferir" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormTransferir" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <input type="hidden" id="rreipTransferirId" name="id" value="{{ reincidencia.id }}">
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipTransferirUsuario">Novo Responsável <span class="rreip-form-required">*</span></label>
+                    <select id="rreipTransferirUsuario" name="responsavel_id" class="rreip-form-select" required>
+                        <option value="">Carregando usuários...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalTransferir">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Transferir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: TEXTO OTRS -->
+<div class="rreip-modal-overlay" id="rreipModalTextoOtrs" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title">Texto Estruturado para OTRS</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalTextoOtrs" aria-label="Fechar">&times;</button>
+        </div>
+        <div class="rreip-modal__body">
+            <textarea class="rreip-form-textarea font-mono" id="rreipTextoOtrsConteudo" readonly style="min-height: 220px; font-size: 0.8rem;"></textarea>
+        </div>
+        <div class="rreip-modal__footer">
+            <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalTextoOtrs">Fechar</button>
+            <button type="button" class="rreip-btn rreip-btn--primary" id="rreipBtnCopiarTextoOtrs" data-action="confirmar-copiar-otrs">Copiar Texto</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMAÇÃO E TOAST CONTAINER -->
+<div class="rreip-modal-overlay" id="rreipConfirmModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="rreip-modal rreip-modal-dialog--small">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipConfirmTitle">Confirmar ação</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipConfirmModal" aria-label="Fechar">&times;</button>
+        </div>
+        <div class="rreip-modal__body" id="rreipConfirmMessage"></div>
+        <div class="rreip-modal__footer">
+            <button type="button" class="rreip-btn rreip-btn--text" id="rreipConfirmCancel">Cancelar</button>
+            <button type="button" class="rreip-btn rreip-btn--primary" id="rreipConfirmAccept">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<div id="rreipToastContainer" class="rreip-toast-container" aria-live="polite"></div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'js/chamados/reincidencias.js' %}"></script>
+<script src="{% static 'js/chamados/reincidencias_detalhes.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — ARION BROKER{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="{% static 'css/painel/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-page">
+
+{% if messages %}
+<div class="system-logs">
+    {% for message in messages %}
+    <div class="sys-log-alert
+                {% if message.tags == 'error' %}sys-log-error
+                {% elif message.tags == 'success' %}sys-log-success
+                {% elif message.tags == 'warning' %}sys-log-warning
+                {% else %}sys-log-info{% endif %}">
+        <i class="bi
+                    {% if message.tags == 'error' %}bi-exclamation-triangle-fill
+                    {% elif message.tags == 'success' %}bi-check-circle-fill
+                    {% elif message.tags == 'warning' %}bi-exclamation-circle-fill
+                    {% else %}bi-info-circle-fill{% endif %}"></i>
+        <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="summary-grid">
+    <div class="summary-card">
+        <div class="summary-card__icon summary-card__icon--total">
+            <i class="bi bi-collection"></i>
+        </div>
+        <div class="summary-card__info">
+            <span class="summary-card__label">Total de RECs</span>
+            <span class="summary-card__value" id="card-total">{{ total_recs }}</span>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-card__icon summary-card__icon--novo">
+            <i class="bi bi-inbox"></i>
+        </div>
+        <div class="summary-card__info">
+            <span class="summary-card__label">Novas</span>
+            <span class="summary-card__value" id="card-novos">{{ total_novos }}</span>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-card__icon summary-card__icon--aguardando">
+            <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div class="summary-card__info">
+            <span class="summary-card__label">Aguardando OTRS</span>
+            <span class="summary-card__value" id="card-enviados">{{ total_enviados }}</span>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-card__icon summary-card__icon--concluido">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <div class="summary-card__info">
+            <span class="summary-card__label">Concluídas</span>
+            <span class="summary-card__value" id="card-concluidos">{{ total_concluidos }}</span>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-card__icon summary-card__icon--revisao">
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <div class="summary-card__info">
+            <span class="summary-card__label">Em Revisão</span>
+            <span class="summary-card__value" id="card-revisao">{{ total_revisao }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="dash-toolbar">
+    <div class="dash-tabs" id="statusTabs">
+        <button class="dash-tab dash-tab--urgente" data-filter="PENDENTE">
+            <i class="bi bi-clock-fill"></i> Pendentes
+            {% if total_novos or total_revisao %}
+            <span class="dash-tab__badge" id="badge-pendentes">{{ total_novos|add:total_revisao }}</span>
+            {% endif %}
+        </button>
+        <button class="dash-tab active" data-filter="todos">Todas</button>
+        <button class="dash-tab" data-filter="NOVO">Novas</button>
+        <button class="dash-tab" data-filter="ENVIADO">Aguardando OTRS</button>
+        <button class="dash-tab" data-filter="REGISTRADO">Concluídas</button>
+        <button class="dash-tab" data-filter="REVISAO">Revisão</button>
+    </div>
+
+    <div class="dash-toolbar__right">
+
+        {% if request.user.preferencias.is_admin %}
+            <button class="btn-robo {% if robo_ativo %}btn-robo--ativo{% else %}btn-robo--pausado{% endif %}"
+                id="btnToggleRobo" data-ativo="{{ robo_ativo|yesno:'true,false' }}"
+                title="Clique para {% if robo_ativo %}pausar{% else %}ativar{% endif %} o modo automático">
+                <i class="bi {% if robo_ativo %}bi-robot{% else %}bi-pause-circle{% endif %}" id="iconRobo"></i>
+                <span id="textoRobo">Robô: {% if robo_ativo %}Ativo{% else %}Pausado{% endif %}</span>
+            </button>
+        {% else %}
+            <div class="btn-robo {% if robo_ativo %}btn-robo--ativo{% else %}btn-robo--pausado{% endif %}"
+                style="cursor: default;"
+                title="O robô está {% if robo_ativo %}ativo{% else %}pausado{% endif %} (Apenas administradores podem alterar)">
+                <i class="bi {% if robo_ativo %}bi-robot{% else %}bi-pause-circle{% endif %}"></i>
+                <span>Robô: {% if robo_ativo %}Ativo{% else %}Pausado{% endif %}</span>
+            </div>
+        {% endif %}
+
+        <button class="btn btn--primary" id="btnSincronizar">
+            <i class="bi bi-arrow-repeat"></i> Sincronizar Portal
+        </button>
+
+        <button class="btn btn--outline" id="btnSelecionarPendentes">
+            <i class="bi bi-check-all"></i> Selecionar Pendentes
+        </button>
+
+        <div class="filter-group" id="projetoFilter">
+            <button class="filter-btn active" data-proj="todos">
+                <i class="bi bi-funnel"></i> Todos
+            </button>
+            <button class="filter-btn filter-btn--correios" data-proj="CORREIOS">
+                <i class="bi bi-envelope"></i> Correios
+            </button>
+            <button class="filter-btn filter-btn--caixa" data-proj="CAIXA">
+                <i class="bi bi-bank"></i> Caixa
+            </button>
+            <button class="filter-btn filter-btn--bb" data-proj="BB">
+                <i class="bi bi-building"></i> BB
+            </button>
+        </div>
+
+        <div class="filter-group filter-group--chamado" id="chamadoFilter">
+            <button class="chamado-btn active" data-chamado="todos">Todos chamados</button>
+            <button class="chamado-btn chamado-btn--sem" data-chamado="nao">
+                <i class="bi bi-hourglass-split"></i> Sem chamado
+            </button>
+            <button class="chamado-btn chamado-btn--com" data-chamado="sim">
+                <i class="bi bi-check2-circle"></i> Com chamado
+            </button>
+        </div>
+
+        <div class="search-wrap">
+            <i class="bi bi-search search-wrap__icon"></i>
+            <input type="text" class="search-wrap__input" id="searchInput" placeholder="Buscar REC, BL, Chamado...">
+        </div>
+
+    </div>
+</div>
+
+<div class="bulk-bar" id="bulkBar">
+    <span class="bulk-bar__count">
+        <span id="selectedCount">0</span> selecionada(s)
+    </span>
+    <div class="bulk-bar__actions">
+        <button class="btn btn--primary btn--sm" id="btnDispararSelecionados" disabled>
+            <i class="bi bi-send"></i> Disparar selecionadas
+        </button>
+        <button class="btn btn--outline btn--sm" id="btnBaixarSemEmail" disabled>
+            <i class="bi bi-check2-all"></i> Marcar Lidas (Sem E-mail)
+        </button>
+        <button class="btn btn--outline btn--sm" id="btnDesmarcar">
+            <i class="bi bi-x"></i> Desmarcar tudo
+        </button>
+    </div>
+</div>
+
+<div class="table-wrapper">
+    <table class="table" id="recsTable">
+        <thead>
+            <tr>
+                <th style="width:42px;">
+                    <input type="checkbox" class="check" id="checkAll" title="Selecionar todos">
+                </th>
+                <th>REC</th>
+                <th>Designação Claro</th>
+                <th>BL / Operadora</th>
+                <th>Projeto</th>
+                <th>Chamado ARION</th>
+                <th>Status</th>
+                <th>Coleta / Envio</th>
+                <th>Data Portal</th>
+                <th style="width:90px; text-align:center;">Ações</th>
+            </tr>
+        </thead>
+        <tbody id="recsBody">
+
+            {% if recs %}
+            {% for rec in recs %}
+            <tr class="rec-row proj-{{ rec.projeto|lower }}" data-id="{{ rec.rec_id }}"
+                data-status="{{ rec.status_envio }}" data-proj="{{ rec.projeto }}"
+                data-tem-chamado="{% if rec.chamado_operadora %}sim{% else %}nao{% endif %}"
+                data-data-portal="{% if rec.data_abertura_portal %}{{ rec.data_abertura_portal|date:'Y-m-d H:i' }}{% elif rec.data_registro_operadora %}{{ rec.data_registro_operadora|date:'Y-m-d H:i' }}{% elif rec.data_atualizacao_portal %}{{ rec.data_atualizacao_portal|date:'Y-m-d H:i' }}{% else %}{{ rec.data_coleta|date:'Y-m-d H:i' }}{% endif %}"
+                data-search="{{ rec.rec_id }} {{ rec.bl_dados }} {{ rec.designacao_claro }} {{ rec.chamado_operadora|default:'' }}">
+
+                <td>
+                    <input type="checkbox" class="check rec-check" value="{{ rec.rec_id }}">
+                </td>
+
+                <td><span class="rec-id">{{ rec.rec_id }}</span></td>
+                <td><span class="text-mono">{{ rec.designacao_claro }}</span></td>
+                <td><span class="text-mono">{{ rec.bl_dados }}</span></td>
+
+                <td>
+                    {% if rec.projeto == 'CORREIOS' %}
+                    <span class="badge badge--correios"><i class="bi bi-envelope-fill"></i> Correios</span>
+                    {% elif rec.projeto == 'CAIXA' %}
+                    <span class="badge badge--caixa"><i class="bi bi-bank2"></i> Caixa</span>
+                    {% elif rec.projeto == 'BB' %}
+                    <span class="badge badge--bb"><i class="bi bi-building-fill"></i> BB</span>
+                    {% elif rec.projeto == 'CARREFOUR' %}
+                    <span class="badge badge--carrefour"><i class="bi bi-cart-fill"></i> Carrefour</span>
+                    {% else %}
+                    <span class="badge badge--revisao"><i class="bi bi-question-circle-fill"></i> Diversos</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if rec.chamado_operadora %}
+                    <span class="text-mono chamado-id">
+                        {{ rec.chamado_operadora }}
+                    </span>
+                    {% else %}
+                    <span class="text-muted-sm" style="font-style:italic;">Sem chamado</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if rec.status_envio == 'NOVO' %}
+                    <span class="badge badge--novo">Novo</span>
+                    {% elif rec.status_envio == 'ENVIADO' %}
+                    <span class="badge badge--aguardando">Aguardando OTRS</span>
+                    {% elif rec.status_envio == 'REGISTRADO' %}
+                    <span class="badge badge--registrado">Concluído</span>
+                    {% else %}
+                    <span class="badge badge--revisao">Revisão</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <div class="rastr-row">
+                        {% if rec.origem_coleta == 'AUTOMATICA' %}
+                        <span class="badge--rastr badge--rastr-auto-coleta"
+                            title="Coletado por: {{ rec.coletado_por|default:'robô' }}">
+                            <i class="bi bi-robot"></i> Robô
+                        </span>
+                        {% else %}
+                        <span class="badge--rastr badge--rastr-manual-coleta"
+                            title="Coletado por: {{ rec.coletado_por|default:'—' }}">
+                            <i class="bi bi-person-fill"></i> {{ rec.coletado_por|default:"Manual" }}
+                        </span>
+                        {% endif %}
+
+                        <span class="rastr-sep">/</span>
+
+                        {% if rec.origem_envio == 'AUTOMATICA' %}
+                        <span class="badge--rastr badge--rastr-auto-envio"
+                            title="Enviado por: {{ rec.enviado_por|default:'robô' }}">
+                            <i class="bi bi-send-fill"></i> Auto
+                        </span>
+                        {% elif rec.origem_envio == 'MANUAL' %}
+                        <span class="badge--rastr badge--rastr-manual-envio"
+                            title="Enviado por: {{ rec.enviado_por|default:'—' }}">
+                            <i class="bi bi-person-fill"></i> {{ rec.enviado_por|default:"Manual" }}
+                        </span>
+                        {% else %}
+                        <span class="text-muted-sm">— envio</span>
+                        {% endif %}
+                    </div>
+                </td>
+
+                <td class="text-muted-sm">
+                    {% if rec.data_abertura_portal %}
+                    {{ rec.data_abertura_portal|date:"d/m/Y H:i" }}
+                    {% elif rec.data_registro_operadora %}
+                    {{ rec.data_registro_operadora|date:"d/m/Y H:i" }}
+                    {% elif rec.data_atualizacao_portal %}
+                    {{ rec.data_atualizacao_portal|date:"d/m/Y H:i" }}
+                    {% else %}
+                    {{ rec.data_coleta|date:"d/m/Y H:i" }}
+                    {% endif %}
+                </td>
+
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action row-action--view" title="Ver detalhes"
+                            onclick="abrirModal('{{ rec.rec_id }}','{{ rec.bl_dados }}','{{ rec.projeto }}',`{{ rec.sintoma }}`)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+
+                        {% if rec.status_envio == 'NOVO' or rec.status_envio == 'REVISAO' %}
+                        <button class="row-action row-action--send" title="Enviar e-mail" data-rec="{{ rec.rec_id }}">
+                            <i class="bi bi-send"></i>
+                        </button>
+                        {% elif rec.status_envio == 'ENVIADO' or rec.status_envio == 'REGISTRADO' %}
+                            {% if request.user.preferencias.is_admin %}
+                            <button class="row-action row-action--resend" title="Reenviar (uso manual/teste)"
+                                onclick="reenviarRec('{{ rec.rec_id }}')">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </button>
+                            {% endif %}
+                        {% endif %}
+
+                        <button class="row-action row-action--delete" title="Descartar REC"
+                            onclick="descartarRec('{{ rec.rec_id }}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </td>
+
+            </tr>
+            {% endfor %}
+
+            {% else %}
+            <tr id="emptyRow">
+                <td colspan="10">
+                    <div class="empty-state">
+                        <i class="bi bi-inbox empty-state__icon"></i>
+                        <p class="empty-state__title">Nenhuma REC encontrada</p>
+                        <p class="empty-state__sub">Aguardando sincronização com o portal da Claro.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+
+        </tbody>
+    </table>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-box__header">
+            <div>
+                <h2 class="modal-box__title">REC <span id="modalRecId">—</span></h2>
+                <p class="modal-box__sub">Dados capturados do portal da Claro</p>
+            </div>
+            <button class="modal-box__close" onclick="fecharModal()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="modal-box__meta">
+            <div class="meta-item">
+                <span class="meta-item__label"><i class="bi bi-hdd-network"></i> BL / Operadora</span>
+                <span class="meta-item__value" id="modalBl">—</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-item__label"><i class="bi bi-folder2"></i> Projeto</span>
+                <span class="meta-item__value" id="modalProjeto">—</span>
+            </div>
+        </div>
+        <div class="modal-box__sintoma">
+            <p class="modal-box__sintoma-label">
+                <i class="bi bi-file-text"></i> Sintoma capturado
+            </p>
+            <pre class="modal-box__sintoma-text" id="modalSintoma">—</pre>
+        </div>
+        <div class="modal-box__footer">
+            <button class="btn btn--outline" onclick="fecharModal()">
+                <i class="bi bi-x"></i> Fechar
+            </button>
+            <button class="btn btn--primary" id="modalBtnEnviar">
+                <i class="bi bi-send"></i> Enviar esta REC
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalSync">
+    <div class="modal-box modal-box--wide">
+        <div class="modal-box__header">
+            <div>
+                <h2 class="modal-box__title">Relatório de Sincronização</h2>
+                <p class="modal-box__sub">Console de execução do robô Arion</p>
+            </div>
+            <button class="modal-box__close" onclick="fecharModalSync()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="modal-box__content sync-results" id="syncResultsContent">
+            <div class="sync-results__loading">
+                <i class="bi bi-gear spin-icon sync-results__icon"></i>
+                <p>Aguardando processamento...</p>
+            </div>
+        </div>
+        <div class="modal-box__footer">
+            <button class="btn btn--outline" onclick="fecharModalSync()">Fechar</button>
+            <button class="btn btn--primary" onclick="window.location.reload()">
+                <i class="bi bi-arrow-clockwise"></i> Atualizar Tabela
+            </button>
+        </div>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/painel/dashboard.js' %}"></script>
+{% endblock %}

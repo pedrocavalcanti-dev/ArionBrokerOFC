@@ -1,0 +1,275 @@
+
+{% extends "cancelamentos/cancelamentos.html" %}
+
+{% block descricao_fila %}
+Histórico de cancelamentos totalmente finalizados e baixados.
+{% endblock %}
+
+{% block botao_novo %}{% endblock %}
+
+
+{% block thead %}
+<th class="col-ticket">Ticket</th>
+<th class="col-cliente">Cliente Final</th>
+<th class="col-sigla">ISP</th>
+<th class="col-protocolo">Protocolo</th>
+<th class="col-data">Data Cancelamento</th>
+<th class="col-valor">Multa/Rescisão</th>
+<th class="col-valor">Equipamento</th>
+<th class="col-valor">Outros</th>
+<th class="col-valor">Total</th>
+<th class="col-data">Concluído em</th>
+<th class="col-responsavel">Responsável</th>
+<th class="col-acoes text-right">Ações</th>
+{% endblock %}
+
+
+{% block tbody_row %}
+
+{# ============================================================= #}
+{# TICKET                                                        #}
+{# ============================================================= #}
+<td class="col-ticket">
+
+    {% if c.ticket_url %}
+
+    <a
+        href="{{ c.ticket_url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="ticket-chip ticket-link"
+        title="Abrir chamado no OTRS"
+    >
+        {{ c.ticket_arion }}
+    </a>
+
+    {% else %}
+
+    <span class="ticket-chip">
+        {{ c.ticket_arion }}
+    </span>
+
+    {% endif %}
+
+</td>
+
+
+{# ============================================================= #}
+{# CLIENTE FINAL                                                 #}
+{# ============================================================= #}
+<td class="col-cliente">
+    {{ c.cliente_final|default:"—" }}
+</td>
+
+
+{# ============================================================= #}
+{# ISP                                                           #}
+{# ============================================================= #}
+<td class="col-sigla">
+    {{ c.isp|default:"—" }}
+</td>
+
+
+{# ============================================================= #}
+{# PROTOCOLO                                                     #}
+{# ============================================================= #}
+<td class="col-protocolo">
+    {{ c.protocolo|default:"—" }}
+</td>
+
+
+{# ============================================================= #}
+{# DATA DO CANCELAMENTO                                          #}
+{# ============================================================= #}
+<td class="col-data">
+
+    {% if c.data_cancelamento_confirmado %}
+        {{ c.data_cancelamento_confirmado|date:"d/m/Y" }}
+    {% else %}
+        —
+    {% endif %}
+
+</td>
+
+
+{# ============================================================= #}
+{# MULTA / RESCISÃO                                              #}
+{# ============================================================= #}
+<td class="col-valor">
+
+    {% if c.valor_multa_rescisao %}
+        R$ {{ c.valor_multa_rescisao }}
+    {% else %}
+        —
+    {% endif %}
+
+</td>
+
+
+{# ============================================================= #}
+{# EQUIPAMENTO                                                   #}
+{# ============================================================= #}
+<td class="col-valor">
+
+    {% if c.valor_equipamento %}
+        R$ {{ c.valor_equipamento }}
+    {% else %}
+        —
+    {% endif %}
+
+</td>
+
+
+{# ============================================================= #}
+{# OUTROS                                                        #}
+{# ============================================================= #}
+<td class="col-valor">
+
+    {% if c.valor_outros %}
+        R$ {{ c.valor_outros }}
+    {% else %}
+        —
+    {% endif %}
+
+</td>
+
+
+{# ============================================================= #}
+{# TOTAL                                                         #}
+{# ============================================================= #}
+<td class="col-valor">
+    <strong>
+        R$ {{ c.valor_total_financeiro|default:"0,00" }}
+    </strong>
+</td>
+
+
+{# ============================================================= #}
+{# CONCLUÍDO EM                                                  #}
+{# ============================================================= #}
+<td class="col-data">
+
+    {% if c.concluido_em %}
+
+        {{ c.concluido_em|date:"d/m/Y H:i" }}
+
+    {% else %}
+
+        <span class="text-muted text-sm">
+            —
+        </span>
+
+    {% endif %}
+
+</td>
+
+
+{# ============================================================= #}
+{# RESPONSÁVEL                                                   #}
+{# ============================================================= #}
+<td class="col-responsavel">
+
+    {% if c.responsavel_id %}
+
+        <span>
+            {{ c.responsavel.get_full_name|default:c.responsavel.username }}
+        </span>
+
+    {% else %}
+
+        <span class="text-muted text-sm">
+            Sem responsável
+        </span>
+
+    {% endif %}
+
+</td>
+
+
+{# ============================================================= #}
+{# AÇÕES                                                         #}
+{# ============================================================= #}
+<td class="col-acoes text-right">
+
+    <div class="row-actions justify-content-end">
+
+        {# VER DETALHES #}
+        <a
+            href="{% url 'cancelamentos:detalhe' c.id %}"
+            class="row-action-btn"
+            title="Ver detalhes"
+            aria-label="Ver detalhes"
+        >
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </a>
+
+
+        {% if user.preferencias.is_admin %}
+
+        {# EDITAR DADOS — SOMENTE ADMINISTRADOR #}
+        <button
+            type="button"
+            class="row-action-btn"
+            data-action="editar"
+            title="Editar dados do cancelamento concluído"
+            aria-label="Editar dados do cancelamento concluído"
+        >
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+            </svg>
+        </button>
+
+
+        {# EXCLUIR — SOMENTE ADMINISTRADOR #}
+        <button
+            type="button"
+            class="row-action-btn row-action-btn--danger"
+            data-action="excluir"
+            title="Excluir definitivamente"
+            aria-label="Excluir definitivamente"
+        >
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14H6L5 6"/>
+                <path d="M8 6V4h8v2"/>
+                <line x1="10" y1="11" x2="10" y2="17"/>
+                <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+        </button>
+
+        {% endif %}
+
+    </div>
+
+</td>
+
+{% endblock %}

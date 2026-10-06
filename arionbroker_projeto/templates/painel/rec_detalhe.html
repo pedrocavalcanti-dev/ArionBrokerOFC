@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}REC {{ rec.rec_id }} — ARION BROKER{% endblock %}
+{% block page_title %}Detalhe da REC{% endblock %}
+{% block nav_abertas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="{% static 'css/painel/rec_detalhe.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ── BREADCRUMB + AÇÕES DO TOPO ──────────────────────────── -->
+<div class="detalhe-topbar">
+    <div class="detalhe-topbar__left">
+        <a href="{% url 'painel:dashboard' %}" class="btn-back">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-label">REC {{ rec.rec_id }}</span>
+    </div>
+
+    <div class="detalhe-topbar__right">
+        {% if rec.status_envio == 'REVISAO' %}
+        <button class="btn btn--outline" id="btnClassificar">
+            <i class="bi bi-tag"></i> Classificar Projeto
+        </button>
+        {% endif %}
+
+        {% if rec.status_envio != 'ENVIADO' %}
+        <button class="btn btn--primary" id="btnEnviar" data-rec="{{ rec.rec_id }}">
+            <i class="bi bi-send"></i> Enviar E-mail
+        </button>
+        {% else %}
+        <span class="status-enviado-label">
+            <i class="bi bi-check-circle-fill"></i> Enviado em {{ rec.data_envio|date:"d/m/Y H:i" }}
+        </span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ── CABEÇALHO DA REC ────────────────────────────────────── -->
+<div class="detalhe-header">
+    <div class="detalhe-header__id">
+        <span class="detalhe-header__rec-label">REC</span>
+        <span class="detalhe-header__rec-num">{{ rec.rec_id }}</span>
+    </div>
+
+    <div class="detalhe-header__badges">
+        {% if rec.projeto == 'CORREIOS' %}
+            <span class="badge badge--correios"><i class="bi bi-envelope-fill"></i> Correios</span>
+        {% elif rec.projeto == 'CAIXA' %}
+            <span class="badge badge--caixa"><i class="bi bi-bank2"></i> Caixa</span>
+        {% elif rec.projeto == 'BB' %}
+            <span class="badge badge--bb"><i class="bi bi-building-fill"></i> BB</span>
+        {% else %}
+            <span class="badge badge--revisao"><i class="bi bi-question-circle-fill"></i> Revisão</span>
+        {% endif %}
+
+        {% if rec.status_envio == 'NOVO' %}
+            <span class="badge badge--novo"><i class="bi bi-inbox"></i> Novo</span>
+        {% elif rec.status_envio == 'ENVIADO' %}
+            <span class="badge badge--enviado"><i class="bi bi-send-check"></i> Enviado</span>
+        {% else %}
+            <span class="badge badge--revisao"><i class="bi bi-exclamation-triangle"></i> Revisão</span>
+        {% endif %}
+
+        {% if rec.status_interface == 'down' %}
+            <span class="badge badge--iface-down"><i class="bi bi-arrow-down-circle-fill"></i> Interface down</span>
+        {% else %}
+            <span class="badge badge--iface-up"><i class="bi bi-arrow-up-circle-fill"></i> Interface up</span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ── GRID PRINCIPAL ─────────────────────────────────────── -->
+<div class="detalhe-grid">
+
+    <!-- Coluna esquerda: dados + sintoma -->
+    <div class="detalhe-col detalhe-col--main">
+
+        <!-- Dados do circuito -->
+        <div class="detalhe-card">
+            <h3 class="detalhe-card__title">
+                <i class="bi bi-hdd-network"></i> Dados do Circuito
+            </h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-item__label">Designação Claro</span>
+                    <span class="info-item__value mono">{{ rec.designacao_claro|default:"—" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-item__label">BL / Operadora</span>
+                    <span class="info-item__value mono">{{ rec.bl_dados|default:"—" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-item__label">Cliente</span>
+                    <span class="info-item__value">{{ rec.cliente|default:"—" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-item__label">Projeto</span>
+                    <span class="info-item__value">{{ rec.projeto|default:"—" }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-item__label">Status Interface</span>
+                    <span class="info-item__value">
+                        {% if rec.status_interface == 'down' %}
+                            <span class="iface iface--down"><i class="bi bi-arrow-down-circle-fill"></i> down</span>
+                        {% else %}
+                            <span class="iface iface--up"><i class="bi bi-arrow-up-circle-fill"></i> up</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-item__label">Status Equipamento</span>
+                    <span class="info-item__value">{{ rec.status_equip|default:"—" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sintoma -->
+        <div class="detalhe-card">
+            <h3 class="detalhe-card__title">
+                <i class="bi bi-file-text"></i> Sintoma Capturado
+            </h3>
+            <pre class="sintoma-box">{{ rec.sintoma|default:"Nenhum sintoma registrado." }}</pre>
+        </div>
+
+        <!-- Preview do e-mail -->
+        <div class="detalhe-card">
+            <h3 class="detalhe-card__title">
+                <i class="bi bi-envelope"></i> Preview do E-mail
+                <span class="detalhe-card__title-sub">exatamente o que será enviado</span>
+            </h3>
+            <div class="email-preview">
+                <div class="email-preview__field">
+                    <span class="email-preview__label">Assunto:</span>
+                    <span class="email-preview__value mono">
+                        [{{ rec.projeto }}] - REC: {{ rec.rec_id }} - BL: {{ rec.bl_dados }}
+                    </span>
+                </div>
+                <div class="email-preview__body">
+                    <pre>SOLICITAÇÃO DE TRATATIVA - ARION
+
+Projeto : {{ rec.projeto }}
+REC     : {{ rec.rec_id }}
+Link BL : {{ rec.bl_dados }}
+
+Sintoma extraído do Portal:
+{{ rec.sintoma|default:"—" }}
+
+---
+Gerado automaticamente pelo Integrador Arion</pre>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Coluna direita: histórico + screenshot + classificar -->
+    <div class="detalhe-col detalhe-col--side">
+
+        <!-- Histórico / Timeline -->
+        <div class="detalhe-card">
+            <h3 class="detalhe-card__title">
+                <i class="bi bi-clock-history"></i> Histórico
+            </h3>
+      <ul class="timeline">
+    <li class="timeline__item timeline__item--done">
+        <span class="timeline__dot"></span>
+        <div class="timeline__content">
+            {% if rec.origem_coleta == 'AUTOMATICA' %}
+                <span class="timeline__label"><i class="bi bi-robot"></i> Coletado pelo robô</span>
+            {% else %}
+                <span class="timeline__label"><i class="bi bi-person-fill"></i> Coletado por {{ rec.coletado_por|default:"usuário" }}</span>
+            {% endif %}
+            <span class="timeline__date">{{ rec.data_coleta|date:"d/m/Y H:i"|default:"—" }}</span>
+        </div>
+    </li>
+    <li class="timeline__item {% if rec.status_envio == 'ENVIADO' %}timeline__item--done{% else %}timeline__item--pending{% endif %}">
+        <span class="timeline__dot"></span>
+        <div class="timeline__content">
+            {% if rec.status_envio == 'ENVIADO' %}
+                {% if rec.origem_envio == 'AUTOMATICA' %}
+                    <span class="timeline__label"><i class="bi bi-send-fill"></i> Enviado automaticamente</span>
+                {% else %}
+                    <span class="timeline__label"><i class="bi bi-person-fill"></i> Enviado por {{ rec.enviado_por|default:"usuário" }}</span>
+                {% endif %}
+            {% else %}
+                <span class="timeline__label">E-mail disparado</span>
+            {% endif %}
+            <span class="timeline__date">
+                {% if rec.data_envio %}
+                    {{ rec.data_envio|date:"d/m/Y H:i" }}
+                {% else %}
+                    Aguardando
+                {% endif %}
+            </span>
+        </div>
+    </li>
+</ul>
+        </div>
+
+        <!-- Screenshot -->
+        <div class="detalhe-card">
+            <h3 class="detalhe-card__title">
+                <i class="bi bi-image"></i> Evidência (Screenshot)
+            </h3>
+            {% if rec.screenshot %}
+                <img src="{{ rec.screenshot.url }}" alt="Screenshot da REC {{ rec.rec_id }}" class="screenshot-img">
+            {% else %}
+                <div class="screenshot-empty">
+                    <i class="bi bi-image"></i>
+                    <p>Nenhum screenshot disponível</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Classificar projeto (só aparece se REVISAO) -->
+        {% if rec.status_envio == 'REVISAO' %}
+        <div class="detalhe-card detalhe-card--alerta" id="cardClassificar">
+            <h3 class="detalhe-card__title">
+                <i class="bi bi-exclamation-triangle"></i> Classificar Projeto
+            </h3>
+            <p class="classify-desc">
+                Cliente <strong>{{ rec.cliente }}</strong> não foi reconhecido automaticamente.
+                Selecione o projeto correto para liberar o envio.
+            </p>
+            <form method="POST" action="{% url 'painel:classificar_rec' rec.rec_id %}">
+                {% csrf_token %}
+                <div class="classify-group">
+                    <select name="projeto" class="classify-select" required>
+                        <option value="">Selecione o projeto...</option>
+                        <option value="CORREIOS">📫 Correios (ECT)</option>
+                        <option value="CAIXA">🏦 Caixa Econômica (CEF)</option>
+                        <option value="BB">🏛️ Banco do Brasil</option>
+                    </select>
+                    <button type="submit" class="btn btn--primary">
+                        <i class="bi bi-check-lg"></i> Confirmar
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/painel/rec_detalhe.js' %}"></script>
+{% endblock %}

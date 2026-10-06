@@ -1,0 +1,153 @@
+/* ============================================================
+   ARION BROKER — erros.css
+   Páginas de erro 400 / 403 / 404 / 500
+   ============================================================ */
+
+/* ── PÁGINA DE ERRO — SEM SIDEBAR ────────────────────────── */
+.erro-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--bg-base);
+    font-family: var(--font-body);
+    padding: 2rem;
+}
+
+.erro-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 3rem 2.5rem;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+}
+
+/* ── CÓDIGO DO ERRO ───────────────────────────────────────── */
+.erro-code {
+    font-family: var(--font-mono);
+    font-size: 5.5rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 0.5rem;
+    /* cor muda por variável em cada página */
+    color: var(--erro-cor, var(--verde-arion));
+    opacity: 0.18;
+    user-select: none;
+}
+
+/* ── ÍCONE ────────────────────────────────────────────────── */
+.erro-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    background: var(--erro-icon-bg, var(--verde-arion-muted));
+    color: var(--erro-cor, var(--verde-arion));
+}
+
+/* ── TEXTOS ───────────────────────────────────────────────── */
+.erro-titulo {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+    margin-bottom: 0.6rem;
+}
+
+.erro-descricao {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 2rem;
+}
+
+/* ── AÇÕES ────────────────────────────────────────────────── */
+.erro-acoes {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ── DIVISOR ──────────────────────────────────────────────── */
+.erro-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0 1.5rem;
+}
+
+/* ── RODAPÉ DA MARCA ──────────────────────────────────────── */
+.erro-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.erro-brand-logo {
+    width: 22px;
+    height: 22px;
+    background: var(--verde-arion);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.65rem;
+    color: #fff;
+}
+
+/* ── VARIAÇÕES DE COR POR ERRO ────────────────────────────── */
+
+/* 404 — azul info */
+.erro--404 {
+    --erro-cor:     #3B82F6;
+    --erro-icon-bg: rgba(59, 130, 246, 0.10);
+}
+
+/* 403 — amarelo aviso */
+.erro--403 {
+    --erro-cor:     #F59E0B;
+    --erro-icon-bg: rgba(245, 158, 11, 0.10);
+}
+
+/* 500 — vermelho crítico */
+.erro--500 {
+    --erro-cor:     #EF4444;
+    --erro-icon-bg: rgba(239, 68, 68, 0.10);
+}
+
+/* 400 — laranja */
+.erro--400 {
+    --erro-cor:     #F97316;
+    --erro-icon-bg: rgba(249, 115, 22, 0.10);
+}
+
+/* ── RESPONSIVO ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .erro-card {
+        padding: 2rem 1.5rem;
+    }
+    .erro-code {
+        font-size: 4rem;
+    }
+    .erro-acoes {
+        flex-direction: column;
+    }
+    .erro-acoes .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

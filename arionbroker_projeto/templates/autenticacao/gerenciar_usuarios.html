@@ -1,0 +1,867 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Usuários | Arion Broker{% endblock %}
+{% block page_title %}Gerenciar Usuários{% endblock %}
+{% block nav_usuarios %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/autenticacao/gerenciar_usuarios.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="usuarios-page">
+
+    <!-- =========================================================
+         CABEÇALHO
+         ========================================================= -->
+    <section class="usuarios-page-header">
+
+        <div class="usuarios-page-header__content">
+
+            <div class="usuarios-page-header__icon">
+                <i class="bi bi-people"></i>
+            </div>
+
+            <div>
+                <h2 class="usuarios-page-header__title">
+                    Usuários do sistema
+                </h2>
+
+                <p class="usuarios-page-header__subtitle">
+                    Gerencie contas, permissões, cargos e acessos ao Arion Broker.
+                </p>
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="usuarios-btn usuarios-btn--primary"
+            id="btnNovoUsuario"
+        >
+            <i class="bi bi-person-plus"></i>
+            Novo usuário
+        </button>
+
+    </section>
+
+
+    <!-- =========================================================
+         MENSAGENS DJANGO
+         ========================================================= -->
+    {% if messages %}
+    <div class="system-logs">
+
+        {% for message in messages %}
+
+        <div
+            class="sys-log-alert
+            {% if message.tags == 'success' %}
+                sys-log-success
+            {% elif message.tags == 'error' %}
+                sys-log-error
+            {% elif message.tags == 'warning' %}
+                sys-log-warning
+            {% else %}
+                sys-log-info
+            {% endif %}"
+        >
+
+            {% if message.tags == 'success' %}
+                <i class="bi bi-check-circle"></i>
+            {% elif message.tags == 'error' %}
+                <i class="bi bi-x-circle"></i>
+            {% elif message.tags == 'warning' %}
+                <i class="bi bi-exclamation-triangle"></i>
+            {% else %}
+                <i class="bi bi-info-circle"></i>
+            {% endif %}
+
+            <span>
+                {{ message }}
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+    {% endif %}
+
+
+    <!-- =========================================================
+         TOOLBAR
+         ========================================================= -->
+    <section class="usuarios-toolbar">
+
+        <div class="usuarios-toolbar__info">
+
+            <span class="usuarios-toolbar__label">
+                Contas cadastradas
+            </span>
+
+            <span class="usuarios-toolbar__count">
+                {{ usuarios|length }}
+            </span>
+
+        </div>
+
+
+        <div class="usuarios-search">
+
+            <i class="bi bi-search usuarios-search__icon"></i>
+
+            <input
+                type="search"
+                id="usuariosSearch"
+                class="usuarios-search__input"
+                placeholder="Buscar nome, usuário ou e-mail..."
+                autocomplete="off"
+            >
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         TABELA
+         ========================================================= -->
+    <section class="usuarios-card">
+
+        <div class="usuarios-table-wrapper">
+
+            <table class="usuarios-table">
+
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Nome</th>
+                        <th class="col-hide-mobile">E-mail</th>
+                        <th>Cargo</th>
+                        <th>Status</th>
+                        <th class="col-hide-tablet">Último acesso</th>
+                        <th class="usuarios-col-actions">Ações</th>
+                    </tr>
+                </thead>
+
+
+                <tbody id="usuariosTableBody">
+
+                    {% for u in usuarios %}
+
+                    <tr
+                        id="row-user-{{ u.id }}"
+                        class="usuario-row {% if u.preferencias.is_admin %}is-admin-row{% endif %}"
+                        data-search="{{ u.username|lower }} {{ u.first_name|lower }} {{ u.last_name|lower }} {{ u.email|lower }} {{ u.preferencias.get_cargo_display|lower }}"
+                    >
+
+                        <!-- USUÁRIO -->
+                        <td>
+
+                            <div class="user-avatar-cell">
+
+                                <div
+                                    class="user-avatar-mini
+                                    {% if u.preferencias.is_admin %}
+                                        user-avatar-mini--admin
+                                    {% endif %}
+                                    {% if not u.is_active %}
+                                        user-avatar-mini--inactive
+                                    {% endif %}"
+                                >
+                                    {{ u.username|first|upper }}
+                                </div>
+
+
+                                <div class="user-main-info">
+
+                                    <div>
+                                        <span class="user-handle">
+                                            {{ u.username }}
+                                        </span>
+
+                                        {% if u.id == user.id %}
+                                        <span class="user-self-tag">
+                                            você
+                                        </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <span class="user-created">
+                                        ID #{{ u.id }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- NOME -->
+                        <td>
+
+                            {% if u.get_full_name %}
+
+                                <span class="user-fullname">
+                                    {{ u.get_full_name }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="user-empty">
+                                    Não informado
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- EMAIL -->
+                        <td class="col-hide-mobile">
+
+                            {% if u.email %}
+
+                                <span class="user-email">
+                                    {{ u.email }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="user-empty">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- CARGO -->
+                        <td>
+
+                            {% if u.id == user.id %}
+
+                                {% if u.preferencias.is_admin %}
+
+                                <span class="usuario-badge usuario-badge--admin">
+                                    <i class="bi bi-shield-check"></i>
+                                    Administrador
+                                </span>
+
+                                {% else %}
+
+                                <span class="usuario-badge usuario-badge--operador">
+                                    <i class="bi bi-person"></i>
+                                    Operador
+                                </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'autenticacao:alterar_cargo' u.id %}"
+                                    class="cargo-form"
+                                >
+                                    {% csrf_token %}
+
+                                    <select
+                                        name="cargo"
+                                        class="classify-select"
+                                        aria-label="Alterar cargo de {{ u.username }}"
+                                    >
+                                        {% for valor, label in cargos %}
+                                        <option
+                                            value="{{ valor }}"
+                                            {% if u.preferencias.cargo == valor %}selected{% endif %}
+                                        >
+                                            {{ label }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+
+                                </form>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+                        <td>
+
+                            {% if u.is_active %}
+
+                                <span
+                                    id="status-{{ u.id }}"
+                                    class="usuario-badge usuario-badge--active"
+                                >
+                                    <span class="usuario-status-dot"></span>
+                                    Ativo
+                                </span>
+
+                            {% else %}
+
+                                <span
+                                    id="status-{{ u.id }}"
+                                    class="usuario-badge usuario-badge--inactive"
+                                >
+                                    <span class="usuario-status-dot"></span>
+                                    Inativo
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ÚLTIMO ACESSO -->
+                        <td class="col-hide-tablet">
+
+                            {% if u.last_login %}
+
+                                <span class="user-date">
+                                    {{ u.last_login|date:"d/m/Y H:i" }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="user-empty">
+                                    Nunca acessou
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- AÇÕES -->
+                        <td class="usuarios-col-actions">
+
+                            <div class="row-actions">
+
+                                <!-- REDEFINIR SENHA -->
+                                <button
+                                    type="button"
+                                    class="row-action row-action--password"
+                                    data-action="password"
+                                    data-user-id="{{ u.id }}"
+                                    data-username="{{ u.username }}"
+                                    title="Redefinir senha"
+                                    aria-label="Redefinir senha de {{ u.username }}"
+                                >
+                                    <i class="bi bi-key"></i>
+                                </button>
+
+
+                                {% if u.id != user.id %}
+
+                                    {% if u.is_active %}
+
+                                    <button
+                                        type="button"
+                                        class="row-action row-action--danger"
+                                        data-action="toggle"
+                                        data-user-id="{{ u.id }}"
+                                        data-username="{{ u.username }}"
+                                        data-url="{% url 'autenticacao:toggle_usuario' u.id %}"
+                                        title="Desativar usuário"
+                                        aria-label="Desativar usuário {{ u.username }}"
+                                    >
+                                        <i
+                                            class="bi bi-person-slash"
+                                            id="icon-toggle-{{ u.id }}"
+                                        ></i>
+                                    </button>
+
+                                    {% else %}
+
+                                    <button
+                                        type="button"
+                                        class="row-action row-action--success"
+                                        data-action="toggle"
+                                        data-user-id="{{ u.id }}"
+                                        data-username="{{ u.username }}"
+                                        data-url="{% url 'autenticacao:toggle_usuario' u.id %}"
+                                        title="Ativar usuário"
+                                        aria-label="Ativar usuário {{ u.username }}"
+                                    >
+                                        <i
+                                            class="bi bi-person-check"
+                                            id="icon-toggle-{{ u.id }}"
+                                        ></i>
+                                    </button>
+
+                                    {% endif %}
+
+                                {% else %}
+
+                                <span
+                                    class="row-action row-action--locked"
+                                    title="Você não pode desativar sua própria conta"
+                                >
+                                    <i class="bi bi-lock"></i>
+                                </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="7">
+
+                            <div class="usuarios-empty">
+
+                                <div class="usuarios-empty__icon">
+                                    <i class="bi bi-people"></i>
+                                </div>
+
+                                <strong>
+                                    Nenhum usuário cadastrado
+                                </strong>
+
+                                <span>
+                                    Crie a primeira conta para começar.
+                                </span>
+
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- BUSCA SEM RESULTADO -->
+        <div
+            class="usuarios-empty usuarios-empty--search"
+            id="usuariosSearchEmpty"
+            hidden
+        >
+
+            <div class="usuarios-empty__icon">
+                <i class="bi bi-search"></i>
+            </div>
+
+            <strong>
+                Nenhum usuário encontrado
+            </strong>
+
+            <span>
+                Tente buscar por outro nome, usuário ou e-mail.
+            </span>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- ============================================================
+     MODAL — NOVO USUÁRIO
+     ============================================================ -->
+<div
+    class="usuarios-modal-overlay"
+    id="modalNovoUsuario"
+    aria-hidden="true"
+>
+
+    <div
+        class="usuarios-modal usuarios-modal--large"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalNovoUsuarioTitulo"
+    >
+
+        <div class="usuarios-modal__header">
+
+            <div>
+
+                <div class="usuarios-modal__eyebrow">
+                    <i class="bi bi-person-plus"></i>
+                    Nova conta
+                </div>
+
+                <h3
+                    class="usuarios-modal__title"
+                    id="modalNovoUsuarioTitulo"
+                >
+                    Criar usuário
+                </h3>
+
+                <p class="usuarios-modal__sub">
+                    Cadastre uma nova conta e defina o nível de acesso.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="usuarios-modal__close"
+                data-close-modal="modalNovoUsuario"
+                aria-label="Fechar"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{% url 'autenticacao:criar_usuario' %}"
+            id="formNovoUsuario"
+        >
+            {% csrf_token %}
+
+            <div class="usuarios-modal__body">
+
+                <div class="usuarios-form-grid">
+
+                    <div class="usuarios-form-field">
+
+                        <label for="novoNome">
+                            Nome
+                        </label>
+
+                        <input
+                            type="text"
+                            id="novoNome"
+                            name="nome"
+                            class="usuarios-form-control"
+                            autocomplete="given-name"
+                            placeholder="Ex.: Pedro"
+                        >
+
+                    </div>
+
+
+                    <div class="usuarios-form-field">
+
+                        <label for="novoSobrenome">
+                            Sobrenome
+                        </label>
+
+                        <input
+                            type="text"
+                            id="novoSobrenome"
+                            name="sobrenome"
+                            class="usuarios-form-control"
+                            autocomplete="family-name"
+                            placeholder="Ex.: Cavalcanti"
+                        >
+
+                    </div>
+
+
+                    <div class="usuarios-form-field">
+
+                        <label for="novoUsername">
+                            Usuário
+                            <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="novoUsername"
+                            name="username"
+                            class="usuarios-form-control"
+                            autocomplete="off"
+                            placeholder="Ex.: Pedro.Cavalcanti"
+                            required
+                        >
+
+                        <small>
+                            Letras, números e os caracteres . @ + - _
+                        </small>
+
+                    </div>
+
+
+                    <div class="usuarios-form-field">
+
+                        <label for="novoEmail">
+                            E-mail
+                        </label>
+
+                        <input
+                            type="email"
+                            id="novoEmail"
+                            name="email"
+                            class="usuarios-form-control"
+                            autocomplete="email"
+                            placeholder="nome@empresa.com.br"
+                        >
+
+                    </div>
+
+
+                    <div class="usuarios-form-field">
+
+                        <label for="novoCargo">
+                            Cargo
+                            <span>*</span>
+                        </label>
+
+                        <select
+                            id="novoCargo"
+                            name="cargo"
+                            class="usuarios-form-control usuarios-form-control--select"
+                            required
+                        >
+                            {% for valor, label in cargos %}
+                                <option value="{{ valor }}">
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+
+
+                    <div class="usuarios-form-field">
+
+                        <label for="novoPassword">
+                            Senha inicial
+                            <span>*</span>
+                        </label>
+
+                        <div class="usuarios-password-field">
+
+                            <input
+                                type="password"
+                                id="novoPassword"
+                                name="password"
+                                class="usuarios-form-control"
+                                autocomplete="new-password"
+                                minlength="6"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="usuarios-password-toggle"
+                                data-password-toggle="novoPassword"
+                                title="Mostrar senha"
+                                aria-label="Mostrar senha"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                        </div>
+
+                        <small>
+                            Mínimo de 6 caracteres.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="usuarios-admin-note">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        O cargo Administrador concede permissões administrativas
+                        dentro do Arion Broker, sem liberar automaticamente o
+                        painel administrativo interno do Django.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="usuarios-modal__footer">
+
+                <button
+                    type="button"
+                    class="usuarios-btn usuarios-btn--secondary"
+                    data-close-modal="modalNovoUsuario"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="usuarios-btn usuarios-btn--primary"
+                >
+                    <i class="bi bi-person-check"></i>
+                    Criar usuário
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     MODAL — REDEFINIR SENHA
+     ============================================================ -->
+<div
+    class="usuarios-modal-overlay"
+    id="modalSenha"
+    aria-hidden="true"
+>
+
+    <div
+        class="usuarios-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalSenhaTitulo"
+    >
+
+        <div class="usuarios-modal__header">
+
+            <div>
+
+                <div class="usuarios-modal__eyebrow">
+                    <i class="bi bi-key"></i>
+                    Segurança
+                </div>
+
+                <h3
+                    class="usuarios-modal__title"
+                    id="modalSenhaTitulo"
+                >
+                    Redefinir senha
+                </h3>
+
+                <p
+                    class="usuarios-modal__sub"
+                    id="modalSenhaDesc"
+                ></p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="usuarios-modal__close"
+                data-close-modal="modalSenha"
+                aria-label="Fechar"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+
+        <form
+            method="POST"
+            id="formSenha"
+            data-action-template="{% url 'autenticacao:redefinir_senha' 999999 %}"
+        >
+            {% csrf_token %}
+
+            <div class="usuarios-modal__body">
+
+                <div class="usuarios-form-field">
+
+                    <label for="novaSenha">
+                        Nova senha
+                        <span>*</span>
+                    </label>
+
+                    <div class="usuarios-password-field">
+
+                        <input
+                            type="password"
+                            id="novaSenha"
+                            name="nova_senha"
+                            class="usuarios-form-control"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="usuarios-password-toggle"
+                            data-password-toggle="novaSenha"
+                            title="Mostrar senha"
+                            aria-label="Mostrar senha"
+                        >
+                            <i class="bi bi-eye"></i>
+                        </button>
+
+                    </div>
+
+                    <small>
+                        A nova senha deve possuir pelo menos 6 caracteres.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="usuarios-modal__footer">
+
+                <button
+                    type="button"
+                    class="usuarios-btn usuarios-btn--secondary"
+                    data-close-modal="modalSenha"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="usuarios-btn usuarios-btn--primary"
+                >
+                    <i class="bi bi-key"></i>
+                    Redefinir senha
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- TOASTS -->
+<div
+    id="usuariosToastContainer"
+    class="usuarios-toast-container"
+    aria-live="polite"
+    aria-atomic="true"
+></div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="{% static 'js/autenticacao/gerenciar_usuarios.js' %}"></script>
+{% endblock %}

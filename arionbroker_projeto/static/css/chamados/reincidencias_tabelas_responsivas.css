@@ -1,0 +1,1540 @@
+/* ==========================================================================
+   ARION BROKER — RREIP
+   TABELAS + RESPONSIVIDADE v7
+   Arquivo: static/css/chamados/reincidencias_responsividade.css
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. BASE DA TABELA
+   ========================================================================== */
+
+.rreip-table-wrapper {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    isolation: isolate;
+
+    overflow: hidden;
+
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.025) inset,
+        0 5px 20px rgba(0, 0, 0, 0.055);
+}
+
+
+/* O scroll fica AQUI, não na tabela */
+.rreip-table-scroll {
+    position: relative;
+
+    width: 100%;
+    max-width: 100%;
+
+    overflow-x: auto;
+    overflow-y: visible;
+
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+
+.rreip-table-scroll::-webkit-scrollbar {
+    height: 7px;
+}
+
+
+.rreip-table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.rreip-table-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+}
+
+
+.rreip-table-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+
+/* ==========================================================================
+   2. TABELA
+   ========================================================================== */
+
+.rreip-wrapper .rreip-table {
+    width: max-content;
+    min-width: 100%;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    table-layout: auto !important;
+
+    background: transparent;
+
+    font-family: var(--font-secondary);
+}
+
+
+/*
+ * Cada fila possui uma quantidade diferente de colunas.
+ * Damos espaço real para cada tabela ao invés de esmagar tudo.
+ */
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-table {
+    min-width: 1540px;
+}
+
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table {
+    min-width: 1420px;
+}
+
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-table {
+    min-width: 1260px;
+}
+
+
+/* ==========================================================================
+   3. CABEÇALHO DA TABELA
+   ========================================================================== */
+
+.rreip-wrapper .rreip-table thead {
+    position: relative;
+    z-index: 20;
+}
+
+
+.rreip-wrapper .rreip-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    height: 43px;
+
+    padding: 0 11px;
+
+    color: var(--text-muted);
+    background: var(--bg-surface-2);
+
+    border-bottom: 1px solid var(--border-strong);
+
+    font-family: var(--font-family);
+    font-size: 7px;
+    font-weight: 700;
+
+    letter-spacing: 0.065em;
+
+    line-height: 1.2;
+
+    text-align: left;
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+}
+
+
+/* Pequeno brilho inferior no cabeçalho */
+
+.rreip-wrapper .rreip-table thead th::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: -1px;
+
+    height: 1px;
+
+    background: rgba(255, 255, 255, 0.015);
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================================
+   4. LINHAS
+   ========================================================================== */
+
+.rreip-wrapper .rreip-table tbody tr {
+    position: relative;
+
+    transition:
+        background 0.12s ease,
+        box-shadow 0.12s ease;
+}
+
+
+.rreip-wrapper .rreip-table tbody td {
+    height: 55px;
+
+    padding: 8px 11px;
+
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+
+    border-bottom: 1px solid var(--border);
+
+    font-size: 8px;
+    font-weight: 450;
+
+    line-height: 1.4;
+
+    vertical-align: middle;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.12s ease,
+        color 0.12s ease;
+}
+
+
+/* Alternância extremamente leve */
+
+.rreip-wrapper .rreip-table tbody tr:nth-child(even) td {
+    background:
+        color-mix(
+            in srgb,
+            var(--bg-surface) 98%,
+            var(--text-primary) 2%
+        );
+}
+
+
+/* Hover */
+
+.rreip-wrapper .rreip-table tbody tr:hover td {
+    background: var(--bg-hover);
+}
+
+
+/* Marca verde discreta no hover */
+
+.rreip-wrapper .rreip-table tbody tr:hover td:first-child {
+    box-shadow:
+        inset 2px 0 0
+        rgba(34, 197, 94, 0.65);
+}
+
+
+/* Última linha */
+
+.rreip-wrapper .rreip-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+
+/* Linha selecionada */
+
+.rreip-wrapper .rreip-table tbody tr.is-selected td,
+.rreip-wrapper .rreip-row.is-selected td {
+    background:
+        rgba(59, 130, 246, 0.055) !important;
+}
+
+
+/* ==========================================================================
+   5. CHECKBOX FIXO
+   ========================================================================== */
+
+.rreip-col-checkbox {
+    position: sticky !important;
+
+    left: 0;
+    z-index: 25;
+
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+
+    padding: 0 !important;
+
+    text-align: center !important;
+
+    background: var(--bg-surface) !important;
+
+    box-shadow:
+        1px 0 0
+        var(--border);
+}
+
+
+.rreip-table thead .rreip-col-checkbox {
+    z-index: 40;
+
+    background: var(--bg-surface-2) !important;
+}
+
+
+.rreip-row:hover .rreip-col-checkbox {
+    background: var(--bg-hover) !important;
+}
+
+
+.rreip-checkbox {
+    width: 14px;
+    height: 14px;
+
+    margin: 0;
+
+    accent-color: #16A34A;
+
+    cursor: pointer;
+
+    vertical-align: middle;
+}
+
+
+/* ==========================================================================
+   6. AÇÕES FIXAS À DIREITA
+   ========================================================================== */
+
+.rreip-col-acoes {
+    position: sticky !important;
+
+    right: 0;
+    z-index: 25;
+
+    width: 82px;
+    min-width: 82px;
+    max-width: 82px;
+
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+
+    text-align: center !important;
+
+    background: var(--bg-surface) !important;
+
+    box-shadow:
+        -1px 0 0
+        var(--border);
+}
+
+
+.rreip-table thead .rreip-col-acoes {
+    z-index: 40;
+
+    background: var(--bg-surface-2) !important;
+}
+
+
+.rreip-row:hover .rreip-col-acoes {
+    background: var(--bg-hover) !important;
+}
+
+
+.rreip-table tbody td.rreip-col-acoes:hover,
+.rreip-table tbody td.rreip-col-acoes:focus-within,
+.rreip-table tbody td.rreip-col-acoes:has(details[open]) {
+    z-index: 1000 !important;
+}
+
+
+/* ==========================================================================
+   7. LARGURAS — TRATAMENTO
+   ========================================================================== */
+
+/*
+   Ordem atual da tabela de Tratamento:
+
+   1  Checkbox
+   2  Ticket de origem
+   3  Classificação
+   4  Status
+   5  Operadora
+   6  Projeto
+   7  Identificador
+   8  Designação
+   9  Cliente
+   10 Reincidências
+   11 Responsável
+   12 Data de origem
+   13 Ações
+*/
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(2),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(2) {
+    width: 155px;
+    min-width: 155px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(3),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(3) {
+    width: 145px;
+    min-width: 145px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(4),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(4) {
+    width: 125px;
+    min-width: 125px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(5),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(5) {
+    width: 95px;
+    min-width: 95px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(6),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(6) {
+    width: 110px;
+    min-width: 110px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(7),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(7) {
+    width: 125px;
+    min-width: 125px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(8),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(8) {
+    width: 160px;
+    min-width: 160px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(9),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(9) {
+    width: 180px;
+    min-width: 180px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(10),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(10) {
+    width: 95px;
+    min-width: 95px;
+
+    text-align: center;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(11),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(11) {
+    width: 155px;
+    min-width: 155px;
+}
+
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table th:nth-child(12),
+.rreip-wrapper[data-fila-atual="TRATAMENTO"]
+.rreip-table td:nth-child(12) {
+    width: 145px;
+    min-width: 145px;
+}
+
+
+/* ==========================================================================
+   8. CONTEÚDOS DE TEXTO
+   ========================================================================== */
+
+.rreip-wrapper .rreip-ticket,
+.rreip-wrapper .rreip-ticket-card__number,
+.rreip-wrapper .rreip-projeto,
+.rreip-wrapper .rreip-designacao,
+.rreip-wrapper .rreip-cliente,
+.rreip-wrapper .rreip-operadora,
+.rreip-wrapper .rreip-responsavel__nome,
+.rreip-wrapper .rreip-identificador__value,
+.rreip-wrapper .rreip-data time {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   9. TICKET
+   ========================================================================== */
+
+.rreip-wrapper .rreip-ticket-card {
+    min-width: 0;
+    max-width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+
+    padding: 0;
+
+    background: transparent;
+}
+
+
+.rreip-wrapper .rreip-ticket-card__label {
+    color: var(--text-muted);
+
+    font-size: 6px;
+    font-weight: 700;
+
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+
+.rreip-wrapper .rreip-ticket {
+    color: #3B82F6;
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 650;
+
+    text-decoration: none;
+}
+
+
+.rreip-wrapper .rreip-ticket:hover {
+    color: #60A5FA;
+}
+
+
+.rreip-wrapper .rreip-ticket-card__number {
+    color: var(--text-muted);
+
+    font-family: var(--font-mono);
+    font-size: 7px;
+}
+
+
+/* ==========================================================================
+   10. IDENTIFICADOR
+   ========================================================================== */
+
+.rreip-wrapper .rreip-identificador {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.rreip-wrapper .rreip-identificador__label {
+    color: var(--text-muted);
+
+    font-size: 6px;
+    font-weight: 700;
+
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+
+.rreip-wrapper .rreip-identificador__value {
+    width: fit-content;
+    max-width: 100%;
+
+    padding: 3px 6px;
+
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    font-family: var(--font-mono);
+    font-size: 7px;
+    font-weight: 600;
+}
+
+
+/* ==========================================================================
+   11. CLIENTE
+   ========================================================================== */
+
+.rreip-wrapper .rreip-cliente {
+    color: var(--text-primary);
+
+    font-weight: 550;
+}
+
+
+/* ==========================================================================
+   12. DESIGNACAO
+   ========================================================================== */
+
+.rreip-wrapper .rreip-designacao {
+    color: var(--text-secondary);
+
+    font-family: var(--font-mono);
+    font-size: 7px;
+}
+
+
+/* ==========================================================================
+   13. OPERADORA / PROJETO
+   ========================================================================== */
+
+.rreip-wrapper .rreip-operadora,
+.rreip-wrapper .rreip-projeto {
+    color: var(--text-secondary);
+
+    font-size: 8px;
+    font-weight: 500;
+}
+
+
+/* ==========================================================================
+   14. RESPONSÁVEL
+   ========================================================================== */
+
+.rreip-wrapper .rreip-responsavel {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.rreip-wrapper .rreip-responsavel__avatar {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: #FFFFFF;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16A34A,
+            #22C55E
+        );
+
+    font-size: 7px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(255, 255, 255, 0.12);
+}
+
+
+.rreip-wrapper .rreip-responsavel__nome {
+    color: var(--text-primary);
+
+    font-size: 8px;
+    font-weight: 550;
+}
+
+
+/* ==========================================================================
+   15. SEM RESPONSÁVEL
+   ========================================================================== */
+
+.rreip-wrapper .rreip-responsavel .text-muted {
+    color: var(--text-muted);
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================================
+   16. DATA
+   ========================================================================== */
+
+.rreip-wrapper .rreip-data,
+.rreip-wrapper .rreip-prazo {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    color: var(--text-secondary);
+
+    font-size: 7px;
+
+    line-height: 1.35;
+}
+
+
+.rreip-wrapper .rreip-data time {
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ==========================================================================
+   17. STATUS
+   ========================================================================== */
+
+.rreip-wrapper .rreip-status {
+    width: fit-content;
+    max-width: 145px;
+
+    min-height: 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 3px 7px;
+
+    border: 1px solid;
+    border-radius: 7px;
+
+    font-size: 7px;
+    font-weight: 650;
+
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+
+.rreip-status__dot {
+    width: 5px;
+    height: 5px;
+    min-width: 5px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+/* ==========================================================================
+   18. CLASSIFICAÇÃO
+   ========================================================================== */
+
+.rreip-wrapper .rreip-classificacao {
+    width: fit-content;
+    max-width: 135px;
+
+    min-height: 24px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 3px 8px;
+
+    border: 1px solid;
+    border-radius: 999px;
+
+    font-size: 7px;
+    font-weight: 650;
+
+    line-height: 1.1;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   19. CORES
+   ========================================================================== */
+
+.rreip-status--novo {
+    color: #7C3AED;
+    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.18);
+}
+
+
+.rreip-status--em-analise {
+    color: #A16207;
+    background: rgba(234, 179, 8, 0.08);
+    border-color: rgba(234, 179, 8, 0.18);
+}
+
+
+.rreip-status--em-tratativa {
+    color: #2563EB;
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.18);
+}
+
+
+.rreip-status--aguardando-isp {
+    color: #C2410C;
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.18);
+}
+
+
+.rreip-status--aguardando-cliente {
+    color: #7E22CE;
+    background: rgba(168, 85, 247, 0.08);
+    border-color: rgba(168, 85, 247, 0.18);
+}
+
+
+.rreip-status--aguardando-ticket {
+    color: #B45309;
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.18);
+}
+
+
+.rreip-status--reincidiu {
+    color: #B91C1C;
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.18);
+}
+
+
+.rreip-classificacao--pendente {
+    color: #475569;
+    background: rgba(148, 163, 184, 0.08);
+    border-color: rgba(148, 163, 184, 0.18);
+}
+
+
+.rreip-classificacao--confirmada {
+    color: #15803D;
+    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.18);
+}
+
+
+.rreip-classificacao--massiva {
+    color: #C2410C;
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.18);
+}
+
+
+.rreip-classificacao--falso-positivo {
+    color: #7E22CE;
+    background: rgba(168, 85, 247, 0.08);
+    border-color: rgba(168, 85, 247, 0.18);
+}
+
+
+.rreip-classificacao--falha-isolada {
+    color: #A16207;
+    background: rgba(234, 179, 8, 0.08);
+    border-color: rgba(234, 179, 8, 0.18);
+}
+
+
+.rreip-classificacao--duplicado {
+    color: #1D4ED8;
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.18);
+}
+
+
+.rreip-classificacao--nao-se-aplica {
+    color: #475569;
+    background: rgba(100, 116, 139, 0.08);
+    border-color: rgba(100, 116, 139, 0.18);
+}
+
+
+/* ==========================================================================
+   20. DARK MODE
+   ========================================================================== */
+
+html[data-theme="dark"] .rreip-status--novo {
+    color: #C4B5FD;
+}
+
+
+html[data-theme="dark"] .rreip-status--em-analise {
+    color: #FDE047;
+}
+
+
+html[data-theme="dark"] .rreip-status--em-tratativa {
+    color: #93C5FD;
+}
+
+
+html[data-theme="dark"] .rreip-status--aguardando-isp {
+    color: #FDBA74;
+}
+
+
+html[data-theme="dark"] .rreip-status--aguardando-cliente {
+    color: #D8B4FE;
+}
+
+
+html[data-theme="dark"] .rreip-status--aguardando-ticket {
+    color: #FCD34D;
+}
+
+
+html[data-theme="dark"] .rreip-status--reincidiu {
+    color: #FCA5A5;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--pendente,
+html[data-theme="dark"] .rreip-classificacao--nao-se-aplica {
+    color: #CBD5E1;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--confirmada {
+    color: #86EFAC;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--massiva {
+    color: #FDBA74;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--falso-positivo {
+    color: #D8B4FE;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--falha-isolada {
+    color: #FDE047;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--duplicado {
+    color: #93C5FD;
+}
+
+
+/* ==========================================================================
+   21. BOTÕES DE AÇÃO
+   ========================================================================== */
+
+.rreip-wrapper .rreip-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    white-space: nowrap;
+}
+
+
+.rreip-wrapper .rreip-action-btn {
+    width: 29px;
+    height: 29px;
+    min-width: 29px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+
+    transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.rreip-wrapper .rreip-action-btn:hover {
+    color: var(--verde-arion-light);
+
+    background: rgba(22, 163, 74, 0.08);
+
+    border-color: rgba(22, 163, 74, 0.20);
+
+    transform: translateY(-1px);
+}
+
+
+.rreip-wrapper .rreip-action-btn:active {
+    transform: scale(0.96);
+}
+
+
+/* ==========================================================================
+   22. MENU DE AÇÕES
+   ========================================================================== */
+
+.rreip-actions-menu {
+    position: relative;
+
+    display: inline-flex;
+}
+
+
+.rreip-actions-menu > summary {
+    list-style: none;
+
+    cursor: pointer;
+}
+
+
+.rreip-actions-menu > summary::-webkit-details-marker,
+.rreip-actions-menu > summary::marker {
+    display: none;
+}
+
+
+.rreip-actions-menu__content {
+    position: fixed;
+
+    z-index: 3000;
+
+    display: none;
+    flex-direction: column;
+
+    width: 195px;
+    max-width: calc(100vw - 18px);
+
+    gap: 2px;
+
+    padding: 5px;
+
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border-strong);
+    border-radius: 9px;
+
+    box-shadow:
+        0 14px 40px
+        rgba(0, 0, 0, 0.24);
+}
+
+
+.rreip-actions-menu[open]
+.rreip-actions-menu__content {
+    display: flex;
+}
+
+
+.rreip-actions-menu__content .rreip-btn {
+    width: 100%;
+
+    justify-content: flex-start;
+}
+
+
+/* ==========================================================================
+   23. DESKTOP GRANDE
+   ========================================================================== */
+
+@media (min-width: 1600px) {
+
+    .rreip-wrapper[data-fila-atual="TRATAMENTO"]
+    .rreip-table {
+        min-width: 100%;
+    }
+
+
+    .rreip-wrapper .rreip-table thead th {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+
+    .rreip-wrapper .rreip-table tbody td {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+}
+
+
+/* ==========================================================================
+   24. NOTEBOOK / DESKTOP MÉDIO
+   ========================================================================== */
+
+@media (max-width: 1440px) {
+
+    .rreip-wrapper[data-fila-atual="TRATAMENTO"]
+    .rreip-table {
+        min-width: 1500px;
+    }
+
+
+    .rreip-wrapper .rreip-table thead th {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+
+    .rreip-wrapper .rreip-table tbody td {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+}
+
+
+/* ==========================================================================
+   25. NOTEBOOK
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+
+    .rreip-stats {
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+    }
+
+
+    .rreip-filters__grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+
+    /*
+     * Não diminuímos a tabela.
+     * O usuário passa a usar scroll horizontal.
+     */
+
+    .rreip-wrapper[data-fila-atual="TRATAMENTO"]
+    .rreip-table {
+        min-width: 1460px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"]
+    .rreip-table {
+        min-width: 1360px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="FINALIZADO"]
+    .rreip-table {
+        min-width: 1200px;
+    }
+
+}
+
+
+/* ==========================================================================
+   26. TABLET
+   ========================================================================== */
+
+@media (max-width: 992px) {
+
+    .rreip-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .rreip-filters__grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .rreip-wrapper .rreip-table thead th {
+        height: 40px;
+
+        font-size: 6px;
+    }
+
+
+    .rreip-wrapper .rreip-table tbody td {
+        height: 50px;
+
+        font-size: 7px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="TRATAMENTO"]
+    .rreip-table {
+        min-width: 1400px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"]
+    .rreip-table {
+        min-width: 1320px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="FINALIZADO"]
+    .rreip-table {
+        min-width: 1150px;
+    }
+
+}
+
+
+/* ==========================================================================
+   27. CELULAR / TABLET PEQUENO
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+    .rreip-wrapper {
+        gap: 13px;
+    }
+
+
+    .rreip-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .rreip-header__actions {
+        width: 100%;
+    }
+
+
+    .rreip-header__actions .rreip-btn {
+        width: 100%;
+    }
+
+
+    .rreip-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .rreip-filter-toggle {
+        display: inline-flex;
+    }
+
+
+    /*
+     * Compatível tanto com o JS que usa is-collapsed
+     * quanto com eventual is-open.
+     */
+
+    .rreip-filters__body {
+        display: flex !important;
+    }
+
+
+    .rreip-filters__body.is-collapsed {
+        display: none !important;
+    }
+
+
+    .rreip-filters__body.is-open {
+        display: flex !important;
+    }
+
+
+    .rreip-filters__grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .rreip-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .rreip-form-group--full {
+        grid-column: auto;
+    }
+
+
+    .rreip-list-toolbar {
+        align-items: flex-start;
+    }
+
+
+    .rreip-pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+
+    .rreip-wrapper .rreip-table {
+        table-layout: auto !important;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="TRATAMENTO"]
+    .rreip-table {
+        min-width: 1360px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"]
+    .rreip-table {
+        min-width: 1280px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="FINALIZADO"]
+    .rreip-table {
+        min-width: 1100px;
+    }
+
+
+    .rreip-col-checkbox {
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+    }
+
+
+    .rreip-col-acoes {
+        width: 70px;
+        min-width: 70px;
+        max-width: 70px;
+    }
+
+}
+
+
+/* ==========================================================================
+   28. CELULAR
+   ========================================================================== */
+
+@media (max-width: 576px) {
+
+    .rreip-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 7px;
+    }
+
+
+    .rreip-filters__actions {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .rreip-filters__actions .rreip-btn {
+        width: 100%;
+    }
+
+
+    .rreip-list-toolbar {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .rreip-list-toolbar__left,
+    .rreip-list-toolbar__right {
+        width: 100%;
+    }
+
+
+    .rreip-list-toolbar__right .rreip-btn {
+        width: 100%;
+    }
+
+
+    .rreip-pagination__controls {
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+
+    .rreip-pagination__link {
+        flex: 1;
+    }
+
+
+    /*
+     * IMPORTANTE:
+     * NUNCA voltar para table-layout:fixed.
+     */
+
+    .rreip-wrapper .rreip-table {
+        table-layout: auto !important;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="TRATAMENTO"]
+    .rreip-table {
+        min-width: 1320px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"]
+    .rreip-table {
+        min-width: 1240px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="FINALIZADO"]
+    .rreip-table {
+        min-width: 1060px;
+    }
+
+
+    .rreip-wrapper .rreip-table thead th {
+        height: 38px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+
+        font-size: 6px;
+    }
+
+
+    .rreip-wrapper .rreip-table tbody td {
+        height: 48px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+
+        font-size: 7px;
+    }
+
+
+    .rreip-wrapper .rreip-action-btn {
+        width: 27px;
+        height: 27px;
+        min-width: 27px;
+    }
+
+}
+
+
+/* ==========================================================================
+   29. CELULAR EXTRA PEQUENO
+   ========================================================================== */
+
+@media (max-width: 380px) {
+
+    .rreip-stats {
+        grid-template-columns: 1fr;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="TRATAMENTO"]
+    .rreip-table {
+        min-width: 1280px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"]
+    .rreip-table {
+        min-width: 1200px;
+    }
+
+
+    .rreip-wrapper[data-fila-atual="FINALIZADO"]
+    .rreip-table {
+        min-width: 1020px;
+    }
+
+}
+
+
+/* ==========================================================================
+   30. LIGHT MODE
+   ========================================================================== */
+
+html[data-theme="light"]
+.rreip-table-wrapper {
+    box-shadow:
+        0 4px 18px
+        rgba(15, 23, 42, 0.045);
+}
+
+
+html[data-theme="light"]
+.rreip-wrapper .rreip-table tbody tr:nth-child(even) td {
+    background: #FCFCFD;
+}
+
+
+html[data-theme="light"]
+.rreip-wrapper .rreip-table tbody tr:hover td {
+    background: #F7F9FA;
+}
+
+
+/* ==========================================================================
+   31. ACESSIBILIDADE
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .rreip-wrapper *,
+    .rreip-wrapper *::before,
+    .rreip-wrapper *::after {
+        scroll-behavior: auto !important;
+
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+
+        transition-duration: 0.01ms !important;
+    }
+
+}

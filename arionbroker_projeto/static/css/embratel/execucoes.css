@@ -1,0 +1,424 @@
+/* ============================================================
+   AUTOMAÇÃO EMBRATEL — ESTILOS DE EXECUÇÕES
+   ============================================================ */
+
+.embratel-exec-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ── CABEÇALHO ─────────────────────────────────────────────── */
+.embratel-exec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.embratel-exec-header__sub {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.embratel-exec-inline-form {
+    margin: 0;
+    padding: 0;
+}
+
+/* ── CARDS DE RESUMO ───────────────────────────────────────── */
+.embratel-exec-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.embratel-exec-summary-card {
+    background: var(--bg-surface);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.embratel-exec-summary-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.embratel-exec-summary-card__label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.embratel-exec-summary-card__icon {
+    font-size: 1.2rem;
+}
+
+.embratel-exec-summary-card__value {
+    font-size: var(--text-2xl);
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+/* Cores Utilitárias do Resumo */
+.text-success { color: var(--verde-arion); }
+.text-danger { color: #EF4444; }
+.text-primary { color: #3B82F6; }
+
+/* ── BARRA DE FERRAMENTAS ──────────────────────────────────── */
+.embratel-exec-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    background: var(--bg-surface);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.embratel-exec-toolbar__left {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto; /* Permite scroll se não couber no mobile */
+    scrollbar-width: none;
+}
+.embratel-exec-toolbar__left::-webkit-scrollbar { display: none; }
+
+.embratel-exec-toolbar__right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.embratel-exec-search {
+    position: relative;
+    max-width: 320px;
+    width: 100%;
+}
+
+.embratel-exec-search__icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.embratel-exec-search__input {
+    padding-left: 2.2rem;
+    width: 100%;
+}
+
+/* ── TABELA ────────────────────────────────────────────────── */
+.embratel-exec-table {
+    width: 100%;
+}
+
+.embratel-exec-row {
+    cursor: pointer;
+    transition: background-color var(--transition);
+}
+
+.embratel-exec-row[aria-expanded="true"] {
+    background: var(--bg-elevated);
+}
+
+.embratel-exec-toggle-cell {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.embratel-exec-chevron {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.embratel-exec-row[aria-expanded="true"] .embratel-exec-chevron {
+    transform: rotate(90deg);
+}
+
+.embratel-exec-font-mono {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
+
+/* ── STATUS BADGES ─────────────────────────────────────────── */
+.embratel-exec-status--sucesso {
+    background: rgba(22, 163, 74, 0.1);
+    color: #16A34A;
+}
+
+.embratel-exec-status--sucesso-com-erros {
+    background: rgba(245, 158, 11, 0.1);
+    color: #D97706;
+}
+
+.embratel-exec-status--falha,
+.embratel-exec-status--erro {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+}
+
+.embratel-exec-status--em-andamento,
+.embratel-exec-status--em_andamento {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+}
+
+.embratel-exec-status--default {
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+}
+
+/* ── DETALHES EXPANSÍVEIS E LOGS ───────────────────────────── */
+.embratel-exec-details-row {
+    background: var(--bg-base);
+}
+
+.embratel-exec-details-cell {
+    padding: 0 !important;
+    border-bottom: 1px solid var(--border);
+}
+
+.embratel-exec-details-content {
+    padding: 1.5rem;
+    border-left: 3px solid var(--verde-arion);
+}
+
+.embratel-exec-details-grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1.5rem;
+}
+
+.embratel-exec-details-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.embratel-exec-metrics-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.embratel-exec-logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.embratel-exec-console {
+    background: #111827; /* Sempre escuro para contraste de log */
+    color: #e5e7eb;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #374151;
+}
+
+[data-theme="dark"] .embratel-exec-console {
+    background: #000000;
+    border-color: #1f2937;
+}
+
+.embratel-exec-log-entry {
+    margin-bottom: 0.25rem;
+    word-break: break-word;
+    white-space: pre-wrap;
+    line-height: 1.4;
+}
+
+.embratel-exec-log-time {
+    color: #9ca3af;
+    margin-right: 0.5rem;
+}
+
+.embratel-exec-log-level {
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+.embratel-exec-log-level.info { color: #60a5fa; }
+.embratel-exec-log-level.success { color: #34d399; }
+.embratel-exec-log-level.error { color: #f87171; }
+.embratel-exec-log-level.warning { color: #fbbf24; }
+
+/* ── ESTADOS VAZIOS E UTILITÁRIOS ──────────────────────────── */
+.d-none {
+    display: none !important;
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.spin {
+    animation: spin 1.5s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.embratel-exec-empty-state {
+    padding: 4rem 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    border: 1px dashed var(--border-strong);
+    background: var(--bg-surface);
+}
+
+.embratel-exec-empty-state__icon {
+    font-size: 3rem;
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+}
+
+/* ── PAGINAÇÃO ─────────────────────────────────────────────── */
+.embratel-exec-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-surface);
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.embratel-exec-text-sm {
+    font-size: var(--text-sm);
+}
+
+.embratel-exec-pagination__controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ── MODAL ─────────────────────────────────────────────────── */
+.embratel-exec-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1050;
+    display: flex;
+    align-items: center; justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.embratel-exec-modal.is-open {
+    visibility: visible; opacity: 1;
+}
+
+.embratel-exec-modal__overlay {
+    position: absolute; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+}
+
+.embratel-exec-modal__content {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    width: 100%; max-width: 450px;
+    position: relative; z-index: 1051;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.95);
+    transition: transform 0.2s;
+}
+
+.embratel-exec-modal.is-open .embratel-exec-modal__content { transform: scale(1); }
+
+.embratel-exec-modal__header {
+    display: flex; justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.embratel-exec-modal__close {
+    font-size: 1.25rem; color: var(--text-muted);
+}
+
+.embratel-exec-modal__body {
+    padding: 1.5rem; font-size: var(--text-base); color: var(--text-primary);
+}
+
+.embratel-exec-modal__footer {
+    display: flex; justify-content: flex-end; gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-elevated);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* ── TOAST E LOADING ───────────────────────────────────────── */
+.embratel-exec-toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--text-primary);
+    color: var(--bg-base);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 1100; pointer-events: none;
+}
+
+.embratel-exec-toast.is-visible {
+    transform: translateX(-50%) translateY(0); opacity: 1;
+}
+
+.is-loading {
+    opacity: 0.7; cursor: wait !important; pointer-events: none;
+}
+
+/* ── RESPONSIVIDADE ────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .embratel-exec-summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .embratel-exec-toolbar__right { width: 100%; justify-content: flex-start; }
+    .embratel-exec-search { max-width: 100%; }
+}
+
+@media (max-width: 700px) {
+    .embratel-exec-details-grid { grid-template-columns: 1fr; }
+    .table-wrapper { overflow-x: auto; }
+}
+
+@media (max-width: 600px) {
+    .embratel-exec-summary-grid { grid-template-columns: 1fr; }
+    .embratel-exec-toolbar__left .btn { flex-shrink: 0; }
+}

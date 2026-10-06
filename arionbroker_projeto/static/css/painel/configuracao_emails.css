@@ -1,0 +1,582 @@
+/* ==========================================================================
+   ARION BROKER — CONFIGURAÇÃO DE E-MAILS
+   configuracao_emails.css v6.0
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. PÁGINA
+   ========================================================================== */
+
+.email-config-page {
+    width: 100%;
+    max-width: 1080px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+/* ==========================================================================
+   2. CABEÇALHO
+   ========================================================================== */
+
+.email-config-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 18px;
+}
+
+
+.email-config-header__content {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.email-config-header__icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 11px;
+
+    color: var(--verde-arion-light);
+    background: rgba(22, 163, 74, 0.09);
+
+    border: 1px solid rgba(22, 163, 74, 0.14);
+
+    font-size: 17px;
+}
+
+
+.email-config-header__title {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 20px;
+    font-weight: 650;
+
+    letter-spacing: -0.035em;
+    line-height: 1.25;
+}
+
+
+.email-config-header__description {
+    margin-top: 3px;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================================
+   3. AVISO
+   ========================================================================== */
+
+.email-config-info {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 9px;
+
+    padding: 11px 13px;
+
+    color: #93C5FD;
+    background: rgba(59, 130, 246, 0.055);
+
+    border: 1px solid rgba(59, 130, 246, 0.13);
+    border-radius: 10px;
+
+    font-size: 9px;
+
+    line-height: 1.55;
+}
+
+
+.email-config-info i {
+    margin-top: 1px;
+
+    flex-shrink: 0;
+
+    font-size: 12px;
+}
+
+
+/* ==========================================================================
+   4. CARD
+   ========================================================================== */
+
+.email-config-card {
+    width: 100%;
+
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04);
+}
+
+
+.email-config-card__header {
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 10px 14px;
+
+    background: var(--bg-surface);
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.email-config-card__title {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: var(--text-primary);
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.email-config-card__title i {
+    color: var(--verde-arion-light);
+
+    font-size: 13px;
+}
+
+
+.email-config-card__hint {
+    color: var(--text-muted);
+
+    font-size: 8px;
+}
+
+
+/* ==========================================================================
+   5. TABELA WRAPPER
+   ========================================================================== */
+
+.email-config-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+/* ==========================================================================
+   6. TABELA
+   ========================================================================== */
+
+.email-config-table {
+    width: 100%;
+    min-width: 760px;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    font-family: var(--font-secondary);
+}
+
+
+.email-config-table thead th {
+    height: 42px;
+
+    padding: 0 14px;
+
+    color: var(--text-muted);
+    background: var(--bg-surface-2);
+
+    border-bottom: 1px solid var(--border-strong);
+
+    font-family: var(--font-family);
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.07em;
+    text-align: left;
+    text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+
+.email-config-table thead th:first-child {
+    width: 180px;
+}
+
+
+.email-config-table tbody td {
+    padding: 11px 14px;
+
+    color: var(--text-secondary);
+
+    border-bottom: 1px solid var(--border);
+
+    font-size: 10px;
+
+    vertical-align: middle;
+}
+
+
+.email-config-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+
+.email-config-table tbody tr {
+    transition:
+        background var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+
+.email-config-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+
+    box-shadow:
+        inset 2px 0 0
+        rgba(74, 222, 128, 0.65);
+}
+
+
+[data-theme="light"] .email-config-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.018);
+}
+
+
+/* ==========================================================================
+   7. PROJETO
+   ========================================================================== */
+
+.email-project {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.email-project__icon {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 8px;
+
+    color: var(--verde-arion-light);
+    background: rgba(22, 163, 74, 0.08);
+
+    border: 1px solid rgba(22, 163, 74, 0.12);
+
+    font-size: 12px;
+}
+
+
+.email-project__info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+}
+
+
+.email-project__name {
+    color: var(--text-primary);
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.email-project__sub {
+    color: var(--text-muted);
+
+    font-size: 8px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+}
+
+
+/* ==========================================================================
+   8. INPUT
+   ========================================================================== */
+
+.email-config-input {
+    width: 100%;
+    height: 36px;
+
+    padding: 0 10px;
+
+    color: var(--text-primary);
+    background: var(--bg-base);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    outline: none;
+
+    font-family: var(--font-secondary);
+    font-size: 10px;
+
+    transition:
+        border-color var(--transition),
+        background var(--transition),
+        box-shadow var(--transition);
+}
+
+
+.email-config-input::placeholder {
+    color: var(--text-muted);
+}
+
+
+.email-config-input:hover {
+    border-color: var(--border-strong);
+}
+
+
+.email-config-input:focus {
+    border-color: rgba(22, 163, 74, 0.55);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(22, 163, 74, 0.07);
+}
+
+
+.email-config-input:not(:placeholder-shown) {
+    color: var(--text-primary);
+}
+
+
+/* ==========================================================================
+   9. RODAPÉ
+   ========================================================================== */
+
+.email-config-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    padding: 12px 14px;
+
+    background: var(--bg-surface-2);
+
+    border-top: 1px solid var(--border);
+}
+
+
+.email-config-footer__text {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    color: var(--text-muted);
+
+    font-size: 8px;
+}
+
+
+.email-config-footer__text i {
+    font-size: 10px;
+}
+
+
+/* ==========================================================================
+   10. BOTÃO SALVAR
+   ========================================================================== */
+
+.email-config-save {
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 8px 14px;
+
+    color: #FFFFFF;
+    background: var(--verde-arion);
+
+    border: 1px solid var(--verde-arion);
+    border-radius: 9px;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 4px 13px
+        rgba(22, 163, 74, 0.12);
+
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+
+
+.email-config-save:hover {
+    background: var(--verde-arion-hover);
+    border-color: var(--verde-arion-hover);
+
+    box-shadow:
+        0 6px 16px
+        rgba(22, 163, 74, 0.16);
+}
+
+
+.email-config-save:active {
+    transform: scale(0.98);
+}
+
+
+.email-config-save i {
+    font-size: 12px;
+}
+
+
+/* ==========================================================================
+   11. CONTADOR / TAG OPCIONAL
+   ========================================================================== */
+
+.email-config-count {
+    min-width: 21px;
+    height: 21px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    color: var(--verde-arion-light);
+    background: rgba(22, 163, 74, 0.10);
+
+    border-radius: 999px;
+
+    font-family: var(--font-secondary);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================================
+   12. TEMA CLARO
+   ========================================================================== */
+
+[data-theme="light"] .email-config-card {
+    box-shadow:
+        0 3px 14px
+        rgba(15, 23, 42, 0.035);
+}
+
+
+[data-theme="light"] .email-config-input {
+    background: #FAFBFC;
+}
+
+
+[data-theme="light"] .email-config-info {
+    color: #2563EB;
+}
+
+
+/* ==========================================================================
+   13. RESPONSIVO
+   ========================================================================== */
+
+@media (max-width: 900px) {
+    .email-config-page {
+        max-width: none;
+    }
+
+    .email-config-header {
+        align-items: flex-start;
+    }
+
+    .email-config-table {
+        min-width: 700px;
+    }
+}
+
+
+@media (max-width: 650px) {
+    .email-config-header__icon {
+        display: none;
+    }
+
+    .email-config-header__title {
+        font-size: 17px;
+    }
+
+    .email-config-card__header {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 4px;
+    }
+
+    .email-config-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .email-config-save {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================================================
+   14. REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .email-config-table tbody tr,
+    .email-config-input,
+    .email-config-save {
+        transition: none !important;
+    }
+}

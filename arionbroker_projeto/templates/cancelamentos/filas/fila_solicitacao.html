@@ -1,0 +1,263 @@
+{% extends "cancelamentos/cancelamentos.html" %}
+
+{% block descricao_fila %}
+Chamados em tratativa com ISP, aguardando protocolo e interação.
+{% endblock %}
+
+{% block botao_novo %}{% endblock %}
+
+
+{% block thead %}
+<th class="col-ticket">Ticket</th>
+<th class="col-designacao">Designação</th>
+<th class="col-cliente">Cliente Final</th>
+<th class="col-cidade">Cidade/UF</th>
+<th class="col-sigla">ISP</th>
+<th class="col-protocolo">Protocolo</th>
+<th class="col-data">Data de Abertura</th>
+<th class="col-status">Status</th>
+<th class="col-responsavel">Responsável</th>
+<th class="col-obs">Observações</th>
+<th class="col-acoes">Ações</th>
+{% endblock %}
+
+
+{% block tbody_row %}
+
+<td class="col-ticket">
+    {% if c.ticket_url %}
+        <a
+            href="{{ c.ticket_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ticket-chip ticket-link"
+        >
+            {{ c.ticket_arion }}
+        </a>
+    {% else %}
+        <span class="ticket-chip">
+            {{ c.ticket_arion }}
+        </span>
+    {% endif %}
+</td>
+
+
+<td class="col-designacao font-mono">
+    {{ c.designacao_circuito|default:"—" }}
+</td>
+
+
+<td class="col-cliente">
+    {{ c.cliente_final|default:"—" }}
+</td>
+
+
+<td class="col-cidade">
+    {% if c.cidade or c.uf %}
+        {{ c.cidade|default:"—" }}/{{ c.uf|default:"—" }}
+    {% else %}
+        —
+    {% endif %}
+</td>
+
+
+<td class="col-sigla">
+    {{ c.isp|default:"—" }}
+</td>
+
+
+<td class="col-protocolo">
+    {{ c.protocolo|default:"—" }}
+</td>
+
+
+{# ============================================================= #}
+{# DATA DE ABERTURA                                              #}
+{# ============================================================= #}
+
+<td class="col-data">
+    {% if c.data_criacao_chamado %}
+        {{ c.data_criacao_chamado|date:"d/m/Y" }}
+    {% else %}
+        —
+    {% endif %}
+</td>
+
+
+<td class="col-status">
+    <div class="status-cell">
+
+        <span class="status-badge status-badge--{{ c.status|lower }}">
+            {{ c.get_status_display }}
+        </span>
+
+        <button
+            type="button"
+            class="status-edit-btn"
+            data-action="editar-status"
+            title="Alterar status"
+        >
+            <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+        </button>
+
+    </div>
+</td>
+
+
+<td class="col-responsavel">
+
+    {% if not c.responsavel_id %}
+
+        <span class="text-muted text-sm mr-2">
+            Sem responsável
+        </span>
+
+        <button
+            type="button"
+            class="btn-micro"
+            data-action="apropriar"
+        >
+            Apropriar
+        </button>
+
+    {% elif c.responsavel_id == user.id %}
+
+        <span class="mr-2">
+            {{ c.responsavel.get_full_name|default:c.responsavel.username }}
+        </span>
+
+        <button
+            type="button"
+            class="btn-micro btn-micro--danger"
+            data-action="liberar"
+        >
+            Liberar
+        </button>
+
+    {% else %}
+
+        <span>
+            {{ c.responsavel.get_full_name|default:c.responsavel.username }}
+        </span>
+
+    {% endif %}
+
+</td>
+
+
+<td class="col-obs">
+
+    <button
+        type="button"
+        class="obs-btn"
+        data-action="ver-obs"
+    >
+        <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+        >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+
+        Ver
+    </button>
+
+</td>
+
+
+<td class="col-acoes">
+
+    <div class="row-actions">
+
+        {# ========================================================= #}
+        {# 1. VER DETALHES                                          #}
+        {# ========================================================= #}
+
+        <a
+            href="{% url 'cancelamentos:detalhe' c.id %}"
+            class="row-action-btn"
+            title="Ver detalhes"
+        >
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </a>
+
+
+        {# ========================================================= #}
+        {# 2. ADICIONAR PENDÊNCIA                                   #}
+        {# ========================================================= #}
+
+        <button
+            type="button"
+            class="row-action-btn"
+            data-action="adicionar-pendencia"
+            title="Adicionar Pendência"
+        >
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+        </button>
+
+
+        {# ========================================================= #}
+        {# 3. MOVER PARA PENDÊNCIAS                                 #}
+        {# ÍCONE ALTERADO PARA SETA LATERAL                         #}
+        {# ========================================================= #}
+
+        <button
+            type="button"
+            class="row-action-btn row-action-btn--warning"
+            data-action="mover-fila"
+            data-fila-destino="PENDENCIA"
+            title="Mover para fila de Pendências"
+        >
+            <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="13 6 19 12 13 18"/>
+            </svg>
+        </button>
+
+    </div>
+
+</td>
+
+{% endblock %}

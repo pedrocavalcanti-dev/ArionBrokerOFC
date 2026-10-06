@@ -1,0 +1,669 @@
+/* ==========================================================================
+   RREIP — Finalizados
+   Arquivo: static/css/chamados/reincidencias_finalizados.css
+
+   Este arquivo contém somente os estilos específicos da fila FINALIZADO.
+   Requer o carregamento prévio de:
+   static/css/chamados/reincidencias_base.css
+   ========================================================================== */
+
+/* ==========================================================================
+   1. LARGURAS DAS COLUNAS (Para caber 100% na tela)
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-table {
+    width: 100%;
+    min-width: 1350px;
+    /* Reduzido para eliminar buracos em branco */
+    table-layout: fixed;
+}
+
+/* ---------------------------------------------------
+   Colunas Fixas (Não diminuem)
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-ticket-origem {
+    width: 140px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-ticket-monitoramento {
+    width: 155px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-classificacao {
+    width: 175px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-status {
+    width: 135px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-projeto {
+    width: 110px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-identificador {
+    width: 125px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-cliente {
+    width: 140px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-responsavel {
+    width: 155px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-acoes {
+    width: 90px;
+    text-align: right;
+}
+
+/* FIX: Data não pode vazar/sumir */
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-data {
+    width: 135px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------
+   Única Coluna Flexível (Puxa todo o espaço livre da tela)
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-designacao {
+    width: auto;
+    min-width: 150px;
+    color: var(--text-primary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------------------------------------------------
+   Estilos base de Linha
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-row[data-status="CONCLUIDO"] {
+    background: rgba(16, 185, 129, 0.035);
+    box-shadow: inset 3px 0 0 rgba(16, 185, 129, 0.7);
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-row[data-status="DESCARTADO"] {
+    background: rgba(100, 116, 139, 0.04);
+    box-shadow: inset 3px 0 0 rgba(100, 116, 139, 0.7);
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-row[data-status="REINCIDIU"] {
+    background: rgba(239, 68, 68, 0.04);
+    box-shadow: inset 3px 0 0 rgba(239, 68, 68, 0.72);
+}
+
+/* ==========================================================================
+   2. Tickets
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.48rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 6px);
+    background: var(--bg-elevated);
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card--origem {
+    border-left: 3px solid #3b82f6;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card--monitoramento {
+    border-left: 3px solid #10b981;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card__label {
+    color: var(--text-muted);
+    font-size: 0.61rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card__number {
+    max-width: 100%;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card__number--empty {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0.25rem 0.48rem;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket--link {
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card--origem .rreip-ticket--link {
+    color: #60a5fa;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card--origem .rreip-ticket--link:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.08);
+    color: #93c5fd;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card--monitoramento .rreip-ticket--link {
+    color: #34d399;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-ticket-card--monitoramento .rreip-ticket--link:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.08);
+    color: #6ee7b7;
+}
+
+/* ==========================================================================
+   3. Classificações
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-classificacao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0.28rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.69rem;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.rreip-classificacao--pendente {
+    border-color: rgba(148, 163, 184, 0.28) !important;
+    background: rgba(148, 163, 184, 0.11) !important;
+    color: #cbd5e1 !important;
+}
+
+.rreip-classificacao--confirmada {
+    border-color: rgba(34, 197, 94, 0.3) !important;
+    background: rgba(34, 197, 94, 0.12) !important;
+    color: #86efac !important;
+}
+
+.rreip-classificacao--massiva {
+    border-color: rgba(249, 115, 22, 0.3) !important;
+    background: rgba(249, 115, 22, 0.12) !important;
+    color: #fdba74 !important;
+}
+
+.rreip-classificacao--falso-positivo {
+    border-color: rgba(168, 85, 247, 0.3) !important;
+    background: rgba(168, 85, 247, 0.12) !important;
+    color: #d8b4fe !important;
+}
+
+.rreip-classificacao--falha-isolada {
+    border-color: rgba(234, 179, 8, 0.3) !important;
+    background: rgba(234, 179, 8, 0.12) !important;
+    color: #fde047 !important;
+}
+
+.rreip-classificacao--duplicado {
+    border-color: rgba(59, 130, 246, 0.3) !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+    color: #93c5fd !important;
+}
+
+.rreip-classificacao--nao-se-aplica {
+    border-color: rgba(100, 116, 139, 0.32) !important;
+    background: rgba(100, 116, 139, 0.13) !important;
+    color: #cbd5e1 !important;
+}
+
+/* ==========================================================================
+   4. Resultado final
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    min-height: 28px;
+    padding: 0.28rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-status__dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.rreip-status--concluido {
+    border-color: rgba(16, 185, 129, 0.28) !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #6ee7b7 !important;
+}
+
+.rreip-status--descartado {
+    border-color: rgba(100, 116, 139, 0.3) !important;
+    background: rgba(100, 116, 139, 0.13) !important;
+    color: #cbd5e1 !important;
+}
+
+.rreip-status--reincidiu {
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    background: rgba(239, 68, 68, 0.13) !important;
+    color: #fca5a5 !important;
+}
+
+/* ==========================================================================
+   5. Projeto, identificador e cliente
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-projeto {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-identificador {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    gap: 0.35rem;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-identificador__label {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 0.61rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-identificador__value {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-cliente {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   6. Responsável
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-responsavel {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.48rem;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-responsavel__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(16, 185, 129, 0.28);
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-responsavel__nome {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-responsavel--vazio {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+/* ==========================================================================
+   7. Data de finalização
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-data time {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    color: var(--text-secondary);
+    font-size: 0.74rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-col-data time::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-right: 0.38rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #10b981;
+}
+
+/* ==========================================================================
+   8. Ações
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.15rem;
+    /* Ajustado igual às outras filas */
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 6px);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-action-btn:hover {
+    border-color: rgba(16, 185, 129, 0.45);
+    background: rgba(16, 185, 129, 0.1);
+    color: #6ee7b7;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-action-btn:focus-visible {
+    outline: 3px solid rgba(16, 185, 129, 0.18);
+    outline-offset: 2px;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-action-btn svg {
+    pointer-events: none;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions-menu {
+    position: relative;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions-menu>summary {
+    list-style: none;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions-menu>summary::-webkit-details-marker {
+    display: none;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions-menu[open]>summary {
+    border-color: rgba(16, 185, 129, 0.45);
+    background: rgba(16, 185, 129, 0.1);
+    color: #6ee7b7;
+}
+
+/* FIX BUG DO MENU: removido positions para herdar o base global (position: fixed) */
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions-menu__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 235px;
+    gap: 0.3rem;
+    padding: 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-elevated);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions-menu__content .rreip-btn {
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 35px;
+    padding: 0.45rem 0.65rem;
+    text-align: left;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-actions-menu__content hr {
+    margin: 0.25rem 0;
+}
+
+/* ==========================================================================
+   9. Estado vazio
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-empty-state {
+    background:
+        linear-gradient(180deg,
+            rgba(16, 185, 129, 0.035),
+            transparent 55%),
+        var(--bg-surface);
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-empty-state__icon {
+    color: #34d399;
+    opacity: 0.82;
+}
+
+/* ==========================================================================
+   10. Modal de reabertura
+   ========================================================================== */
+
+#rreipModalReabrirFinalizado .rreip-modal__body {
+    padding-top: 1rem;
+}
+
+#rreipModalReabrirFinalizado .rreip-finalizados-modal-message {
+    margin: 0 0 1rem;
+    padding: 0.8rem 0.85rem;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--text-secondary);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: 1.5;
+}
+
+#rreipModalReabrirFinalizado .rreip-form-textarea {
+    min-height: 140px;
+}
+
+#rreipModalReabrirFinalizado .rreip-btn--primary {
+    min-width: 155px;
+}
+
+/* ==========================================================================
+   11. Loading
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-row.is-loading {
+    opacity: 0.62;
+    pointer-events: none;
+}
+
+.rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-row.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: rgba(15, 23, 42, 0.05);
+}
+
+#rreipModalReabrirFinalizado.is-loading .rreip-modal {
+    opacity: 0.72;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   12. Tema claro
+   ========================================================================== */
+
+html:not([data-theme="dark"]) .rreip-classificacao--pendente {
+    color: #475569 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--confirmada {
+    color: #15803d !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--massiva {
+    color: #c2410c !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--falso-positivo {
+    color: #7e22ce !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--falha-isolada {
+    color: #a16207 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--duplicado {
+    color: #1d4ed8 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--nao-se-aplica {
+    color: #475569 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--concluido {
+    color: #047857 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--descartado {
+    color: #475569 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--reincidiu {
+    color: #b91c1c !important;
+}
+
+html:not([data-theme="dark"]) .rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-responsavel__avatar {
+    color: #047857;
+}
+
+/* ==========================================================================
+   13. Responsividade Adaptada
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-table {
+        min-width: 1250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-table {
+        min-width: 1180px;
+    }
+
+    .rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-classificacao,
+    .rreip-wrapper[data-fila-atual="FINALIZADO"] .rreip-status {
+        font-size: 0.67rem;
+    }
+
+    #rreipModalReabrirFinalizado .rreip-finalizados-modal-message {
+        padding: 0.7rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* ==========================================================================
+   14. Movimento reduzido
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .rreip-wrapper[data-fila-atual="FINALIZADO"] *,
+    .rreip-wrapper[data-fila-atual="FINALIZADO"] *::before,
+    .rreip-wrapper[data-fila-atual="FINALIZADO"] *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

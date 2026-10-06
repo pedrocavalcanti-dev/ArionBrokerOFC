@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="{{ user.preferencias.tema|default:'dark' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ARION PROJETOS — BROKER{% endblock %}</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}">
+    <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="{% if not user.preferencias.sidebar_aberta %}sidebar-closed{% endif %}">
+    <input type="hidden" id="global-csrf" value="{{ csrf_token }}">
+
+    <div class="sidebar__overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar {% if user.preferencias.sidebar_aberta %}open{% endif %}" id="sidebar">
+
+        <!-- BRAND -->
+        <div class="sidebar__brand">
+            <a href="{% url 'chamados:dashboard_projetos' %}" class="sidebar__brand-link">
+                <div class="sidebar__logo">
+                    <img
+                        src="{% static 'favicon/apple-touch-icon.png' %}"
+                        alt="ARION Broker"
+                        class="sidebar__logo-img"
+                    >
+                </div>
+
+                <div class="sidebar__brand-text">
+                    <strong>ARION</strong>
+                    <small>BROKER</small>
+                </div>
+            </a>
+
+            <button
+                class="sidebar__close-btn"
+                id="sidebarCloseMobile"
+                type="button"
+                title="Fechar menu"
+                aria-label="Fechar menu"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- NAV PRINCIPAL -->
+        <nav class="sidebar__nav">
+
+            <!-- PROJETOS -->
+            <div class="sidebar__section">
+                <label class="sidebar__section-label">PROJETOS</label>
+
+                <ul class="sidebar__nav-list">
+                    <li class="sidebar__nav-item {% block nav_projetos_dashboard %}{% endblock %}">
+                        <a
+                            href="{% url 'chamados:dashboard_projetos' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="projetos"
+                        >
+                            <i class="bi bi-graph-up"></i>
+                            <span>Visão Geral</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar__nav-item sidebar__nav-item--group {% if operadora.slug == 'claro' %}active{% endif %}" id="group-claro">
+                        <button
+                            type="button"
+                            class="sidebar__nav-link sidebar__nav-link--group"
+                            onclick="toggleNavGroup('claro')"
+                            aria-expanded="{% if operadora.slug == 'claro' %}true{% else %}false{% endif %}"
+                        >
+                            <i class="bi bi-broadcast"></i>
+                            <span>Claro</span>
+                            <i class="bi bi-chevron-down sidebar__chevron"></i>
+                        </button>
+
+                        <ul class="sidebar__submenu {% if operadora.slug == 'claro' %}open{% endif %}" id="submenu-claro">
+                            <li><a href="{% url 'chamados:index_projetos' 'claro' 'banco-do-brasil' %}" class="sidebar__submenu-link {% if projeto.slug == 'banco-do-brasil' and operadora.slug == 'claro' %}active{% endif %}">Banco do Brasil</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'claro' 'bradesco' %}" class="sidebar__submenu-link {% if projeto.slug == 'bradesco' and operadora.slug == 'claro' %}active{% endif %}">Bradesco</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'claro' 'caixa-economica' %}" class="sidebar__submenu-link {% if projeto.slug == 'caixa-economica' %}active{% endif %}">Caixa Econômica</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'claro' 'correios' %}" class="sidebar__submenu-link {% if projeto.slug == 'correios' %}active{% endif %}">Correios</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'claro' 'carrefour' %}" class="sidebar__submenu-link {% if projeto.slug == 'carrefour' %}active{% endif %}">Carrefour</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'claro' 'diversos' %}" class="sidebar__submenu-link {% if projeto.slug == 'diversos' and operadora.slug == 'claro' %}active{% endif %}">Diversos</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="sidebar__nav-item sidebar__nav-item--group {% if operadora.slug == 'vivo' %}active{% endif %}" id="group-vivo">
+                        <button
+                            type="button"
+                            class="sidebar__nav-link sidebar__nav-link--group"
+                            onclick="toggleNavGroup('vivo')"
+                            aria-expanded="{% if operadora.slug == 'vivo' %}true{% else %}false{% endif %}"
+                        >
+                            <i class="bi bi-telephone-inbound"></i>
+                            <span>Vivo</span>
+                            <i class="bi bi-chevron-down sidebar__chevron"></i>
+                        </button>
+
+                        <ul class="sidebar__submenu {% if operadora.slug == 'vivo' %}open{% endif %}" id="submenu-vivo">
+                            <li><a href="{% url 'chamados:index_projetos' 'vivo' 'bradesco' %}" class="sidebar__submenu-link {% if projeto.slug == 'bradesco' and operadora.slug == 'vivo' %}active{% endif %}">Bradesco</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'vivo' 'mcdonalds' %}" class="sidebar__submenu-link {% if projeto.slug == 'mcdonalds' %}active{% endif %}">McDonald's</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'vivo' 'l2l' %}" class="sidebar__submenu-link {% if projeto.slug == 'l2l' %}active{% endif %}">L2L</a></li>
+                            <li><a href="{% url 'chamados:index_projetos' 'vivo' 'diversos' %}" class="sidebar__submenu-link {% if projeto.slug == 'diversos' and operadora.slug == 'vivo' %}active{% endif %}">Diversos</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="sidebar__nav-item sidebar__nav-item--group {% if operadora.slug == 'algar' %}active{% endif %}" id="group-algar">
+                        <button
+                            type="button"
+                            class="sidebar__nav-link sidebar__nav-link--group"
+                            onclick="toggleNavGroup('algar')"
+                            aria-expanded="{% if operadora.slug == 'algar' %}true{% else %}false{% endif %}"
+                        >
+                            <i class="bi bi-globe"></i>
+                            <span>Algar</span>
+                            <i class="bi bi-chevron-down sidebar__chevron"></i>
+                        </button>
+
+                        <ul class="sidebar__submenu {% if operadora.slug == 'algar' %}open{% endif %}" id="submenu-algar">
+                            <li><a href="{% url 'chamados:index_projetos' 'algar' 'escolas-conectadas' %}" class="sidebar__submenu-link {% if projeto.slug == 'escolas-conectadas' %}active{% endif %}">Escolas Conectadas</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- CANCELAMENTOS -->
+            <div class="sidebar__section">
+                <label class="sidebar__section-label">CANCELAMENTOS</label>
+
+                <ul class="sidebar__nav-list">
+                    <li class="sidebar__nav-item {% block nav_cancelamentos %}{% endblock %}">
+                        <a
+                            href="{% url 'cancelamentos:pedido' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="cancelamentos"
+                        >
+                            <i class="bi bi-calendar-x"></i>
+                            <span>Gestão de Filas</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- REINCIDÊNCIAS -->
+            <div class="sidebar__section">
+                <label class="sidebar__section-label">REINCIDÊNCIAS</label>
+
+                <ul class="sidebar__nav-list">
+                    <li class="sidebar__nav-item {% block nav_reincidencias_tratamento %}{% endblock %}">
+                        <a
+                            href="{% url 'chamados:reincidencias:tratamento' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="reincidencias"
+                        >
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            <span>Tratamento</span>
+                            {% if rreip_tratamento_count %}
+                                <span class="sidebar__badge">{{ rreip_tratamento_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            {% if user.preferencias.is_admin %}
+            <!-- AUTOMAÇÃO BROKER -->
+            <div class="sidebar__section">
+                <label class="sidebar__section-label">AUTOMAÇÃO BROKER</label>
+
+                <ul class="sidebar__nav-list">
+                    <li class="sidebar__nav-item">
+                        <a
+                            href="{% url 'painel:dashboard' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="broker"
+                        >
+                            <i class="bi bi-lightning-charge"></i>
+                            <span>Novas RECs</span>
+                            <span class="sidebar__badge" id="badge-broker-abertas">0</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar__nav-item">
+                        <a
+                            href="{% url 'painel:recs_enviadas' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="broker"
+                        >
+                            <i class="bi bi-check-circle"></i>
+                            <span>RECs Enviadas</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- EMBRATEL -->
+            <div class="sidebar__section">
+                <label class="sidebar__section-label">EMBRATEL · MODOS WEB</label>
+
+                <ul class="sidebar__nav-list">
+                    <li class="sidebar__nav-item">
+                        <a
+                            href="{% url 'automacao_embratel:lista' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="embratel"
+                        >
+                            <i class="bi bi-lightning-charge"></i>
+                            <span>Novas RECs</span>
+                            {% if embratel_abertas_count %}
+                                <span class="sidebar__badge" id="badge-embratel-abertas">{{ embratel_abertas_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+
+                    <li class="sidebar__nav-item">
+                        <a
+                            href="{% url 'automacao_embratel:enviadas' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="embratel"
+                        >
+                            <i class="bi bi-check-circle"></i>
+                            <span>RECs Enviadas</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- SISTEMA -->
+            <div class="sidebar__section">
+                <label class="sidebar__section-label">SISTEMA</label>
+
+                <ul class="sidebar__nav-list">
+                    <li class="sidebar__nav-item {% block nav_destinos %}{% endblock %}">
+                        <a
+                            href="{% url 'painel:destinos' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="sistema"
+                        >
+                            <i class="bi bi-envelope"></i>
+                            <span>Destinos de E-mail</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar__nav-item {% block nav_usuarios %}{% endblock %}">
+                        <a
+                            href="{% url 'autenticacao:usuarios' %}"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="sistema"
+                        >
+                            <i class="bi bi-people"></i>
+                            <span>Usuários</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar__nav-item">
+                        <a
+                            href="/arion-sys/painel/"
+                            target="_blank"
+                            class="sidebar__nav-link"
+                            data-nav-link
+                            data-nav-module="sistema"
+                        >
+                            <i class="bi bi-gear"></i>
+                            <span>Painel Admin</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
+
+        </nav>
+
+        <!-- FOOTER -->
+        <div class="sidebar__footer">
+            <button
+                class="sidebar__action-btn sidebar__theme-toggle"
+                id="themeToggle"
+                type="button"
+                title="Alternar tema"
+            >
+                <i class="bi bi-moon-stars"></i>
+                <span>Tema</span>
+            </button>
+
+            <a href="{% url 'autenticacao:logout' %}" class="sidebar__action-btn sidebar__logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sair</span>
+            </a>
+        </div>
+
+        <div class="sidebar__credit">
+            <small>Dev by: Pedro Cavalcanti</small>
+        </div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar__left">
+                <button
+                    class="topbar__menu-toggle"
+                    id="sidebarToggle"
+                    type="button"
+                    title="Abrir menu"
+                    aria-label="Abrir menu"
+                >
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <button
+                    class="topbar__collapse-btn"
+                    id="sidebarCollapseBtn"
+                    type="button"
+                    title="Recolher ou expandir menu lateral"
+                    aria-label="Recolher ou expandir menu lateral"
+                >
+                    <i class="bi bi-layout-sidebar-inset"></i>
+                </button>
+
+                <div class="topbar__title-wrap">
+                    <h1 class="topbar__title">{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+            </div>
+
+            <div class="topbar__right">
+                {% if revisao_count %}
+                <div class="topbar__alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span>{{ revisao_count }} pendência{{ revisao_count|pluralize }}</span>
+                </div>
+                {% endif %}
+
+                <div class="topbar__user">
+                    <div class="topbar__user-avatar">
+                        {{ user.username|first|upper }}
+                    </div>
+
+                    <div class="topbar__user-info">
+                        <strong>{{ user.username }}</strong>
+                        <small>
+                            {% if user.preferencias.is_admin %}
+                                <i class="bi bi-shield-fill-check"></i> Admin
+                            {% else %}
+                                <i class="bi bi-person-fill"></i> Operador
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT -->
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+
+    </main>
+
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

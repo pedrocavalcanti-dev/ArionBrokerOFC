@@ -1,0 +1,2563 @@
+/* ==========================================================================
+   ARION BROKER — RREIP
+   BASE GLOBAL v6
+   ========================================================================== */
+
+:root {
+    --rreip-green: #16A34A;
+    --rreip-green-light: #22C55E;
+    --rreip-green-soft: rgba(22, 163, 74, 0.09);
+
+    --rreip-blue: #3B82F6;
+    --rreip-cyan: #06B6D4;
+    --rreip-purple: #8B5CF6;
+    --rreip-yellow: #EAB308;
+    --rreip-orange: #F97316;
+    --rreip-red: #EF4444;
+    --rreip-slate: #64748B;
+
+    --rreip-radius: 11px;
+}
+
+
+/* ==========================================================================
+   WRAPPER
+   ========================================================================== */
+
+.rreip-wrapper {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+
+    color: var(--text-primary);
+}
+
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+
+.rreip-header {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 2px 0 4px;
+}
+
+
+.rreip-header__info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.rreip-header__mark {
+    flex-shrink: 0;
+}
+
+
+.rreip-header__badge {
+    min-height: 25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 4px 8px;
+
+    color: #818CF8;
+    background: rgba(99, 102, 241, 0.09);
+
+    border: 1px solid rgba(99, 102, 241, 0.16);
+    border-radius: 7px;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.07em;
+}
+
+
+.rreip-header__titles {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.rreip-header__eyebrow {
+    margin-bottom: 1px;
+
+    color: var(--text-muted);
+
+    font-size: 7px;
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+.rreip-header__title {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 20px;
+    font-weight: 650;
+
+    letter-spacing: -0.035em;
+    line-height: 1.25;
+}
+
+
+.rreip-header__description {
+    margin-top: 2px;
+
+    color: var(--text-muted);
+
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+
+.rreip-header__actions {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+/* ==========================================================================
+   BOTÕES
+   ========================================================================== */
+
+.rreip-btn {
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 8px 13px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    color: var(--text-primary);
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    transition:
+        background var(--transition),
+        color var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition),
+        transform var(--transition);
+}
+
+
+.rreip-btn svg,
+.rreip-btn i {
+    flex-shrink: 0;
+}
+
+
+.rreip-btn:hover {
+    text-decoration: none;
+}
+
+
+.rreip-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+
+.rreip-btn:disabled,
+.rreip-btn.is-loading {
+    opacity: 0.5;
+
+    pointer-events: none;
+}
+
+
+.rreip-btn--primary {
+    color: #FFFFFF;
+
+    background: var(--rreip-green);
+
+    border-color: var(--rreip-green);
+
+    box-shadow:
+        0 4px 13px rgba(22, 163, 74, 0.14);
+}
+
+
+.rreip-btn--primary:hover {
+    background: var(--verde-arion-hover);
+    border-color: var(--verde-arion-hover);
+
+    box-shadow:
+        0 6px 18px rgba(22, 163, 74, 0.19);
+}
+
+
+.rreip-btn--secondary {
+    color: var(--text-secondary);
+
+    background: var(--bg-elevated);
+
+    border-color: var(--border);
+}
+
+
+.rreip-btn--secondary:hover {
+    color: var(--text-primary);
+
+    background: var(--bg-hover);
+
+    border-color: var(--border-strong);
+}
+
+
+.rreip-btn--text {
+    color: var(--text-secondary);
+}
+
+
+.rreip-btn--text:hover {
+    color: var(--text-primary);
+
+    background: var(--bg-hover);
+}
+
+
+.rreip-btn--danger {
+    color: #FFFFFF;
+
+    background: #DC2626;
+}
+
+
+.rreip-btn--small {
+    min-height: 33px;
+
+    padding: 6px 10px;
+
+    font-size: 8px;
+}
+
+
+.rreip-btn-spinner {
+    width: 13px;
+    height: 13px;
+
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+
+    animation: rreip-spin 0.75s linear infinite;
+}
+
+
+@keyframes rreip-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ==========================================================================
+   TABS
+   ========================================================================== */
+
+.rreip-tabs {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 2px;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+}
+
+
+.rreip-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+
+.rreip-tab {
+    flex-shrink: 0;
+
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 6px 11px;
+
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    transition:
+        color var(--transition),
+        border-color var(--transition),
+        background var(--transition),
+        transform var(--transition);
+}
+
+
+.rreip-tab:hover {
+    color: var(--text-primary);
+
+    border-color: var(--border-strong);
+
+    transform: translateY(-1px);
+}
+
+
+.rreip-tab__icon {
+    width: 20px;
+    height: 20px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 6px;
+
+    background: var(--bg-elevated);
+
+    color: var(--text-muted);
+
+    font-size: 9px;
+}
+
+
+.rreip-tab__count {
+    min-width: 19px;
+    height: 19px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 5px;
+
+    border-radius: 999px;
+
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+
+    font-size: 7px;
+    font-weight: 700;
+}
+
+
+.rreip-tab--active {
+    color: var(--verde-arion-light);
+
+    background: var(--rreip-green-soft);
+
+    border-color: rgba(22, 163, 74, 0.20);
+}
+
+
+.rreip-tab--active .rreip-tab__icon {
+    color: var(--verde-arion-light);
+
+    background: rgba(22, 163, 74, 0.10);
+}
+
+
+.rreip-tab--active .rreip-tab__count {
+    color: #FFFFFF;
+    background: var(--rreip-green);
+}
+
+
+/* ==========================================================================
+   STATS
+   ========================================================================== */
+
+.rreip-stats {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 10px;
+}
+
+
+.rreip-stat-card {
+    position: relative;
+
+    min-width: 0;
+    min-height: 91px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 13px 14px;
+
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border);
+    border-radius: 11px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 13px rgba(0, 0, 0, 0.035);
+
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+
+.rreip-stat-card::before {
+    content: '';
+
+    position: absolute;
+
+    inset: 0 auto 0 0;
+
+    width: 2px;
+
+    background: var(--text-muted);
+}
+
+
+.rreip-stat-card:hover {
+    transform: translateY(-1px);
+
+    border-color: var(--border-strong);
+
+    box-shadow:
+        0 7px 20px rgba(0, 0, 0, 0.065);
+}
+
+
+.rreip-stat-card__top {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+}
+
+
+.rreip-stat-card__label {
+    min-width: 0;
+
+    color: var(--text-muted);
+
+    font-size: 7px;
+    font-weight: 700;
+
+    letter-spacing: 0.065em;
+    text-transform: uppercase;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.rreip-stat-card__icon {
+    flex-shrink: 0;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+
+    opacity: 0.8;
+}
+
+
+.rreip-stat-card__value {
+    color: var(--text-primary);
+
+    font-family: var(--font-secondary);
+    font-size: 21px;
+    font-weight: 700;
+
+    letter-spacing: -0.045em;
+
+    line-height: 1;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+.rreip-stat-card--total::before {
+    background: var(--text-muted);
+}
+
+
+.rreip-stat-card--tratamento::before {
+    background: var(--rreip-blue);
+}
+
+
+.rreip-stat-card--tratamento .rreip-stat-card__value,
+.rreip-stat-card--tratamento .rreip-stat-card__icon {
+    color: #60A5FA;
+}
+
+
+.rreip-stat-card--monitoramento::before {
+    background: var(--rreip-cyan);
+}
+
+
+.rreip-stat-card--monitoramento .rreip-stat-card__value,
+.rreip-stat-card--monitoramento .rreip-stat-card__icon {
+    color: #22D3EE;
+}
+
+
+.rreip-stat-card--finalizados::before {
+    background: #10B981;
+}
+
+
+.rreip-stat-card--finalizados .rreip-stat-card__value,
+.rreip-stat-card--finalizados .rreip-stat-card__icon {
+    color: #34D399;
+}
+
+
+.rreip-stat-card--novo::before {
+    background: var(--rreip-purple);
+}
+
+
+.rreip-stat-card--novo .rreip-stat-card__value,
+.rreip-stat-card--novo .rreip-stat-card__icon {
+    color: #A78BFA;
+}
+
+
+.rreip-stat-card--analise::before {
+    background: var(--rreip-yellow);
+}
+
+
+.rreip-stat-card--analise .rreip-stat-card__value,
+.rreip-stat-card--analise .rreip-stat-card__icon {
+    color: #FACC15;
+}
+
+
+.rreip-stat-card--aguardando::before {
+    background: var(--rreip-orange);
+}
+
+
+.rreip-stat-card--aguardando .rreip-stat-card__value,
+.rreip-stat-card--aguardando .rreip-stat-card__icon {
+    color: #FB923C;
+}
+
+
+.rreip-stat-card--reincidiu::before {
+    background: var(--rreip-red);
+}
+
+
+.rreip-stat-card--reincidiu .rreip-stat-card__value,
+.rreip-stat-card--reincidiu .rreip-stat-card__icon {
+    color: #F87171;
+}
+
+
+/* ==========================================================================
+   FILTROS
+   ========================================================================== */
+
+.rreip-filters {
+    width: 100%;
+
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 14px rgba(0, 0, 0, 0.035);
+}
+
+
+.rreip-filters__header {
+    min-height: 51px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 9px 12px;
+
+    background: var(--bg-surface-2);
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.rreip-filters__header-info {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.rreip-filters__icon {
+    width: 29px;
+    height: 29px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--verde-arion-light);
+    background: var(--rreip-green-soft);
+
+    border-radius: 8px;
+
+    font-size: 11px;
+}
+
+
+.rreip-filters__header-info>div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.rreip-filters__title {
+    color: var(--text-primary);
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.rreip-filters__subtitle {
+    color: var(--text-muted);
+
+    font-size: 7px;
+}
+
+
+.rreip-filter-toggle {
+    display: none;
+}
+
+
+.rreip-filters__body {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    padding: 12px;
+}
+
+
+.rreip-filter-search {
+    width: 100%;
+}
+
+
+.rreip-search-input {
+    position: relative;
+
+    margin-top: 5px;
+}
+
+
+.rreip-search-input>i {
+    position: absolute;
+
+    top: 50%;
+    left: 11px;
+
+    z-index: 2;
+
+    transform: translateY(-50%);
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+
+    pointer-events: none;
+}
+
+
+.rreip-search-input .rreip-form-input {
+    padding-left: 30px;
+}
+
+
+.rreip-filters__grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 10px;
+}
+
+
+.rreip-filters__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 6px;
+
+    padding-top: 2px;
+}
+
+
+/* ==========================================================================
+   FORM
+   ========================================================================== */
+
+.rreip-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 11px;
+}
+
+
+.rreip-form-group {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.rreip-form-group--full {
+    grid-column: 1 / -1;
+}
+
+
+.rreip-form-label {
+    color: var(--text-secondary);
+
+    font-size: 8px;
+    font-weight: 600;
+
+    line-height: 1.3;
+}
+
+
+.rreip-form-required {
+    color: #F87171;
+}
+
+
+.rreip-form-input,
+.rreip-form-select,
+.rreip-form-textarea {
+    width: 100%;
+
+    color: var(--text-primary);
+    background: var(--bg-base);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    outline: none;
+
+    font-family: var(--font-secondary);
+    font-size: 9px;
+
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+
+.rreip-form-input,
+.rreip-form-select {
+    height: 35px;
+
+    padding: 0 10px;
+}
+
+
+.rreip-form-select {
+    cursor: pointer;
+}
+
+
+.rreip-form-textarea {
+    min-height: 105px;
+
+    padding: 9px 10px;
+
+    line-height: 1.5;
+
+    resize: vertical;
+}
+
+
+.rreip-form-input::placeholder,
+.rreip-form-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+
+.rreip-form-input:hover,
+.rreip-form-select:hover,
+.rreip-form-textarea:hover {
+    border-color: var(--border-strong);
+}
+
+
+.rreip-form-input:focus,
+.rreip-form-select:focus,
+.rreip-form-textarea:focus {
+    border-color: rgba(22, 163, 74, 0.55);
+
+    box-shadow:
+        0 0 0 3px rgba(22, 163, 74, 0.07);
+}
+
+
+.rreip-form-input[aria-invalid="true"],
+.rreip-form-select[aria-invalid="true"],
+.rreip-form-textarea[aria-invalid="true"] {
+    border-color: var(--rreip-red);
+
+    box-shadow:
+        0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+
+.rreip-form-input:disabled,
+.rreip-form-select:disabled,
+.rreip-form-textarea:disabled,
+.rreip-form-input[readonly],
+.rreip-form-textarea[readonly] {
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+
+    cursor: not-allowed;
+}
+
+
+.rreip-form-error {
+    color: #F87171;
+
+    font-size: 8px;
+}
+
+
+.rreip-form-error-summary {
+    padding: 9px 10px;
+
+    color: #FCA5A5;
+    background: rgba(239, 68, 68, 0.07);
+
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-left: 3px solid var(--rreip-red);
+    border-radius: 8px;
+
+    font-size: 9px;
+
+    line-height: 1.45;
+}
+
+
+.rreip-form-error-summary[hidden] {
+    display: none;
+}
+
+
+/* ==========================================================================
+   LIST TOOLBAR
+   ========================================================================== */
+
+.rreip-list-toolbar {
+    min-height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 0 2px;
+}
+
+
+.rreip-list-toolbar__left,
+.rreip-list-toolbar__right {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.rreip-list-title {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.rreip-list-title__icon {
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    font-size: 10px;
+}
+
+
+.rreip-list-title>div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.rreip-list-title strong {
+    color: var(--text-primary);
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+
+.rreip-record-count {
+    color: var(--text-muted);
+
+    font-size: 7px;
+}
+
+
+.rreip-selection-count {
+    min-height: 24px;
+
+    display: inline-flex;
+    align-items: center;
+
+    padding: 3px 7px;
+
+    color: #60A5FA;
+    background: rgba(59, 130, 246, 0.08);
+
+    border: 1px solid rgba(59, 130, 246, 0.13);
+    border-radius: 999px;
+
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+.rreip-selection-count[hidden] {
+    display: none;
+}
+
+
+/* ==========================================================================
+   TABELA — CORREÇÃO ESTRUTURAL
+   ========================================================================== */
+
+.rreip-table-wrapper {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border);
+    border-radius: 11px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.045);
+}
+
+
+/*
+ * IMPORTANTE:
+ *
+ * É esta camada que passa a controlar o overflow.
+ * Quando houver muitas colunas a tabela NÃO é espremida.
+ * Ela cresce para a direita e surge scroll horizontal.
+ */
+.rreip-table-scroll {
+    width: 100%;
+    max-width: 100%;
+
+    overflow-x: auto;
+    overflow-y: visible;
+
+    overscroll-behavior-inline: contain;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+
+.rreip-table-scroll::-webkit-scrollbar {
+    height: 7px;
+}
+
+
+.rreip-table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.rreip-table-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+
+    border-radius: 999px;
+}
+
+
+/*
+ * NÃO utilizar width:100% sozinho.
+ *
+ * max-content força o navegador a respeitar o conteúdo
+ * mínimo das colunas.
+ */
+.rreip-wrapper .rreip-table {
+    width: max-content;
+    min-width: 100%;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    table-layout: auto;
+
+    font-family: var(--font-secondary);
+}
+
+
+/*
+ * Todas as colunas normais recebem espaço mínimo.
+ * Depois podemos estilizar individualmente a tabela
+ * de Tratamento, Monitoramento e Finalizados.
+ */
+.rreip-wrapper .rreip-table th:not(.rreip-col-checkbox):not(.rreip-col-acoes),
+.rreip-wrapper .rreip-table td:not(.rreip-col-checkbox):not(.rreip-col-acoes) {
+    min-width: 105px;
+}
+
+
+/*
+ * Colunas textuais maiores não devem ficar esmagadas.
+ */
+.rreip-wrapper .rreip-table th:nth-child(2),
+.rreip-wrapper .rreip-table td:nth-child(2) {
+    min-width: 125px;
+}
+
+
+.rreip-wrapper .rreip-table th {
+    height: 40px;
+
+    padding: 0 10px;
+
+    color: var(--text-muted);
+    background: var(--bg-surface-2);
+
+    border-bottom: 1px solid var(--border-strong);
+
+    font-family: var(--font-family);
+    font-size: 7px;
+    font-weight: 700;
+
+    letter-spacing: 0.055em;
+    text-align: left;
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+}
+
+
+.rreip-wrapper .rreip-table tbody td {
+    height: 52px;
+
+    padding: 8px 10px;
+
+    color: var(--text-secondary);
+
+    background: var(--bg-surface);
+
+    border-bottom: 1px solid var(--border);
+
+    font-size: 9px;
+
+    line-height: 1.4;
+
+    vertical-align: middle;
+
+    white-space: nowrap;
+}
+
+
+.rreip-wrapper .rreip-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+
+.rreip-wrapper .rreip-table tbody tr {
+    transition:
+        background var(--transition-fast);
+}
+
+
+.rreip-wrapper .rreip-table tbody tr:hover td {
+    background: var(--bg-hover);
+}
+
+
+.rreip-row.is-selected td {
+    background: rgba(59, 130, 246, 0.06) !important;
+}
+
+
+/* ==========================================================================
+   CHECKBOX
+   ========================================================================== */
+
+.rreip-col-checkbox {
+    position: sticky;
+
+    left: 0;
+    z-index: 8;
+
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+
+    padding: 0 !important;
+
+    text-align: center !important;
+
+    background: var(--bg-surface) !important;
+
+    box-shadow:
+        1px 0 0 var(--border);
+}
+
+
+.rreip-table thead .rreip-col-checkbox {
+    z-index: 12;
+
+    background: var(--bg-surface-2) !important;
+}
+
+
+.rreip-checkbox {
+    width: 14px;
+    height: 14px;
+
+    margin: 0;
+
+    accent-color: var(--rreip-green);
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================================
+   AÇÕES FIXAS
+   ========================================================================== */
+
+.rreip-col-acoes {
+    position: sticky;
+
+    right: 0;
+    z-index: 8;
+
+    width: 80px;
+    min-width: 80px;
+
+    padding: 0 7px !important;
+
+    text-align: center !important;
+
+    background: var(--bg-surface) !important;
+
+    box-shadow:
+        -1px 0 0 var(--border);
+}
+
+
+.rreip-table thead .rreip-col-acoes {
+    z-index: 12;
+
+    background: var(--bg-surface-2) !important;
+}
+
+
+.rreip-table tbody td.rreip-col-acoes:hover,
+.rreip-table tbody td.rreip-col-acoes:focus-within,
+.rreip-table tbody td.rreip-col-acoes:has(details[open]) {
+    z-index: 999;
+}
+
+
+/* ==========================================================================
+   TICKET
+   ========================================================================== */
+
+.rreip-wrapper .rreip-ticket-card {
+    min-width: 0;
+    max-width: 150px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.rreip-wrapper .rreip-ticket-card__label,
+.rreip-wrapper .rreip-identificador__label {
+    color: var(--text-muted);
+
+    font-size: 6px;
+    font-weight: 700;
+
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+
+.rreip-wrapper .rreip-ticket,
+.rreip-wrapper .rreip-ticket-card__number {
+    display: block;
+
+    max-width: 145px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.rreip-wrapper .rreip-ticket {
+    color: #60A5FA;
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+.rreip-wrapper .rreip-ticket-card__number {
+    color: var(--text-secondary);
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+}
+
+
+/* ==========================================================================
+   TEXTO DAS COLUNAS
+   ========================================================================== */
+
+.rreip-wrapper .rreip-projeto,
+.rreip-wrapper .rreip-designacao,
+.rreip-wrapper .rreip-cliente,
+.rreip-wrapper .rreip-operadora,
+.rreip-wrapper .rreip-responsavel__nome,
+.rreip-wrapper .rreip-identificador__value,
+.rreip-wrapper .rreip-data time {
+    display: block;
+
+    max-width: 170px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   IDENTIFICADOR
+   ========================================================================== */
+
+.rreip-wrapper .rreip-identificador {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.rreip-wrapper .rreip-identificador__value {
+    width: fit-content;
+    max-width: 145px;
+
+    padding: 3px 6px;
+
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+
+    border-radius: 6px;
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+/* ==========================================================================
+   RESPONSÁVEL
+   ========================================================================== */
+
+.rreip-wrapper .rreip-responsavel {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+.rreip-wrapper .rreip-responsavel__avatar {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+
+    display: grid;
+    place-items: center;
+
+    color: #FFFFFF;
+
+    background:
+        linear-gradient(135deg,
+            var(--rreip-green),
+            var(--rreip-green-light));
+
+    border-radius: 50%;
+
+    font-size: 7px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.rreip-wrapper .rreip-responsavel__nome {
+    max-width: 120px;
+
+    color: var(--text-primary);
+
+    font-size: 8px;
+    font-weight: 500;
+}
+
+
+/* ==========================================================================
+   DATA
+   ========================================================================== */
+
+.rreip-wrapper .rreip-data,
+.rreip-wrapper .rreip-prazo {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    color: var(--text-secondary);
+
+    font-size: 8px;
+}
+
+
+/* ==========================================================================
+   STATUS / CLASSIFICAÇÃO
+   ========================================================================== */
+
+.rreip-wrapper .rreip-status,
+.rreip-wrapper .rreip-classificacao {
+    max-width: 150px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+.rreip-wrapper .rreip-status {
+    min-height: 24px;
+
+    gap: 5px;
+
+    padding: 3px 7px;
+
+    border-radius: 7px;
+
+    font-size: 7px;
+    font-weight: 600;
+}
+
+
+.rreip-wrapper .rreip-classificacao {
+    min-height: 24px;
+
+    padding: 3px 7px;
+
+    border-radius: 999px;
+
+    font-size: 7px;
+    font-weight: 600;
+}
+
+
+.rreip-status__dot {
+    width: 5px;
+    height: 5px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+/* NOVO */
+
+.rreip-status--novo {
+    color: #7C3AED;
+
+    background: rgba(139, 92, 246, 0.09);
+
+    border-color: rgba(139, 92, 246, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-status--novo {
+    color: #C4B5FD;
+}
+
+
+/* ANÁLISE */
+
+.rreip-status--em-analise {
+    color: #A16207;
+
+    background: rgba(234, 179, 8, 0.09);
+
+    border-color: rgba(234, 179, 8, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-status--em-analise {
+    color: #FDE047;
+}
+
+
+/* TRATATIVA */
+
+.rreip-status--em-tratativa {
+    color: #2563EB;
+
+    background: rgba(59, 130, 246, 0.09);
+
+    border-color: rgba(59, 130, 246, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-status--em-tratativa {
+    color: #93C5FD;
+}
+
+
+/* ISP */
+
+.rreip-status--aguardando-isp {
+    color: #C2410C;
+
+    background: rgba(249, 115, 22, 0.09);
+
+    border-color: rgba(249, 115, 22, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-status--aguardando-isp {
+    color: #FDBA74;
+}
+
+
+/* CLIENTE */
+
+.rreip-status--aguardando-cliente {
+    color: #7E22CE;
+
+    background: rgba(168, 85, 247, 0.09);
+
+    border-color: rgba(168, 85, 247, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-status--aguardando-cliente {
+    color: #D8B4FE;
+}
+
+
+/* TICKET */
+
+.rreip-status--aguardando-ticket {
+    color: #B45309;
+
+    background: rgba(245, 158, 11, 0.09);
+
+    border-color: rgba(245, 158, 11, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-status--aguardando-ticket {
+    color: #FCD34D;
+}
+
+
+/* REINCIDIU */
+
+.rreip-status--reincidiu {
+    color: #B91C1C;
+
+    background: rgba(239, 68, 68, 0.09);
+
+    border-color: rgba(239, 68, 68, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-status--reincidiu {
+    color: #FCA5A5;
+}
+
+
+/* CLASSIFICAÇÕES */
+
+.rreip-classificacao--pendente {
+    color: #475569;
+
+    background: rgba(148, 163, 184, 0.09);
+
+    border-color: rgba(148, 163, 184, 0.20);
+}
+
+
+.rreip-classificacao--confirmada {
+    color: #15803D;
+
+    background: rgba(34, 197, 94, 0.09);
+
+    border-color: rgba(34, 197, 94, 0.20);
+}
+
+
+.rreip-classificacao--massiva {
+    color: #C2410C;
+
+    background: rgba(249, 115, 22, 0.09);
+
+    border-color: rgba(249, 115, 22, 0.20);
+}
+
+
+.rreip-classificacao--falso-positivo {
+    color: #7E22CE;
+
+    background: rgba(168, 85, 247, 0.09);
+
+    border-color: rgba(168, 85, 247, 0.20);
+}
+
+
+.rreip-classificacao--falha-isolada {
+    color: #A16207;
+
+    background: rgba(234, 179, 8, 0.09);
+
+    border-color: rgba(234, 179, 8, 0.20);
+}
+
+
+.rreip-classificacao--duplicado {
+    color: #1D4ED8;
+
+    background: rgba(59, 130, 246, 0.09);
+
+    border-color: rgba(59, 130, 246, 0.20);
+}
+
+
+.rreip-classificacao--nao-se-aplica {
+    color: #475569;
+
+    background: rgba(100, 116, 139, 0.09);
+
+    border-color: rgba(100, 116, 139, 0.20);
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--pendente,
+html[data-theme="dark"] .rreip-classificacao--nao-se-aplica {
+    color: #CBD5E1;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--confirmada {
+    color: #86EFAC;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--massiva {
+    color: #FDBA74;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--falso-positivo {
+    color: #D8B4FE;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--falha-isolada {
+    color: #FDE047;
+}
+
+
+html[data-theme="dark"] .rreip-classificacao--duplicado {
+    color: #93C5FD;
+}
+
+
+/* ==========================================================================
+   ACTION BUTTONS
+   ========================================================================== */
+
+.rreip-wrapper .rreip-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    white-space: nowrap;
+}
+
+
+.rreip-wrapper .rreip-action-btn {
+    width: 29px;
+    height: 29px;
+    min-width: 29px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+
+    transition:
+        color var(--transition),
+        background var(--transition),
+        border-color var(--transition);
+}
+
+
+.rreip-wrapper .rreip-action-btn:hover {
+    color: var(--verde-arion-light);
+
+    background: var(--rreip-green-soft);
+
+    border-color: rgba(22, 163, 74, 0.17);
+}
+
+
+/* ==========================================================================
+   EMPTY
+   ========================================================================== */
+
+.rreip-empty {
+    width: 100%;
+}
+
+
+.rreip-empty-state {
+    min-height: 230px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 30px;
+
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+
+    border: 1px dashed var(--border-strong);
+    border-radius: 11px;
+
+    text-align: center;
+}
+
+
+.rreip-empty-state__icon-wrap {
+    width: 47px;
+    height: 47px;
+
+    display: grid;
+    place-items: center;
+
+    margin-bottom: 3px;
+
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+
+    border-radius: 12px;
+}
+
+
+.rreip-empty-state__icon {
+    color: inherit;
+}
+
+
+.rreip-empty-state__title {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.rreip-empty-state__description {
+    max-width: 500px;
+
+    color: var(--text-muted);
+
+    font-size: 8px;
+
+    line-height: 1.5;
+}
+
+
+.rreip-empty-state__actions {
+    margin-top: 5px;
+}
+
+
+/* ==========================================================================
+   PAGINAÇÃO
+   ========================================================================== */
+
+.rreip-pagination {
+    min-height: 51px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 8px 10px;
+
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+
+.rreip-pagination__info {
+    color: var(--text-muted);
+
+    font-size: 8px;
+    font-weight: 500;
+}
+
+
+.rreip-pagination__controls {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+
+.rreip-pagination__link {
+    min-width: 32px;
+    min-height: 30px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 8px;
+
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+.rreip-pagination__link:hover:not(.rreip-pagination__link--disabled) {
+    color: var(--text-primary);
+
+    background: var(--bg-hover);
+
+    border-color: var(--border-strong);
+}
+
+
+.rreip-pagination__link--active {
+    color: var(--verde-arion-light);
+
+    background: var(--rreip-green-soft);
+
+    border-color: rgba(22, 163, 74, 0.17);
+}
+
+
+.rreip-pagination__link--disabled {
+    opacity: 0.4;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================================
+   MODAIS
+   ========================================================================== */
+
+.rreip-modal-overlay {
+    position: fixed;
+
+    inset: 0;
+    z-index: 2000;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 18px;
+
+    background: rgba(0, 0, 0, 0.64);
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+
+.rreip-modal-overlay.is-open,
+.rreip-modal-overlay[aria-hidden="false"] {
+    display: flex;
+}
+
+
+.rreip-modal {
+    width: min(460px, 100%);
+    max-height: calc(100dvh - 36px);
+
+    display: flex;
+    flex-direction: column;
+
+    color: var(--text-primary);
+    background: var(--bg-surface);
+
+    border: 1px solid var(--border-strong);
+    border-radius: 13px;
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-lg);
+
+    animation:
+        rreip-modal-in 0.18s ease-out;
+}
+
+
+.rreip-modal--large {
+    width: min(680px, 100%);
+}
+
+
+.rreip-modal.is-loading {
+    opacity: 0.7;
+
+    pointer-events: none;
+}
+
+
+.rreip-modal__header {
+    flex-shrink: 0;
+
+    min-height: 57px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    background: var(--bg-surface-2);
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.rreip-modal__eyebrow {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: var(--verde-arion-light);
+
+    font-size: 7px;
+    font-weight: 700;
+
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+
+.rreip-modal__title {
+    margin: 0;
+
+    color: var(--text-primary);
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.rreip-modal__close {
+    width: 31px;
+    height: 31px;
+    min-width: 31px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--text-muted);
+    background: transparent;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    font-size: 19px;
+
+    cursor: pointer;
+}
+
+
+.rreip-modal__close:hover {
+    color: var(--text-primary);
+
+    background: var(--bg-hover);
+
+    border-color: var(--border);
+}
+
+
+.rreip-modal__body {
+    padding: 14px;
+
+    overflow-y: auto;
+}
+
+
+.rreip-modal__footer {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 6px;
+
+    padding: 10px 14px;
+
+    background: var(--bg-surface-2);
+
+    border-top: 1px solid var(--border);
+}
+
+
+body.rreip-modal-open {
+    overflow: hidden;
+}
+
+
+@keyframes rreip-modal-in {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(7px) scale(0.985);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+    }
+}
+
+
+#rreipConfirmMessage {
+    color: var(--text-secondary);
+
+    font-size: 9px;
+
+    line-height: 1.55;
+}
+
+
+/* ==========================================================================
+   TOAST
+   ========================================================================== */
+
+.rreip-toast-container {
+    position: fixed;
+
+    right: 16px;
+    bottom: 16px;
+
+    z-index: 2500;
+
+    width:
+        min(350px,
+            calc(100vw - 32px));
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+
+    pointer-events: none;
+}
+
+
+.rreip-toast {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 8px;
+
+    padding: 10px 11px;
+
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--rreip-blue);
+    border-radius: 9px;
+
+    box-shadow: var(--shadow-md);
+
+    font-size: 9px;
+
+    line-height: 1.4;
+
+    pointer-events: auto;
+
+    opacity: 0;
+
+    transform: translateY(6px);
+
+    animation:
+        rreip-toast-in 0.2s ease forwards;
+}
+
+
+.rreip-toast--success {
+    border-left-color: var(--rreip-green-light);
+}
+
+
+.rreip-toast--error {
+    border-left-color: var(--rreip-red);
+}
+
+
+.rreip-toast--warning {
+    border-left-color: #F59E0B;
+}
+
+
+.rreip-toast__message {
+    flex: 1;
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+}
+
+
+.rreip-toast__close {
+    width: 24px;
+    height: 24px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--text-muted);
+    background: transparent;
+
+    border: 0;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+
+.rreip-toast__close:hover {
+    color: var(--text-primary);
+
+    background: var(--bg-hover);
+}
+
+
+@keyframes rreip-toast-in {
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+
+/* ==========================================================================
+   MENU DE AÇÕES
+   ========================================================================== */
+
+.rreip-actions-menu {
+    position: relative;
+
+    display: inline-flex;
+}
+
+
+.rreip-actions-menu>summary {
+    list-style: none;
+
+    cursor: pointer;
+}
+
+
+.rreip-actions-menu>summary::-webkit-details-marker,
+.rreip-actions-menu>summary::marker {
+    display: none;
+
+    content: '';
+}
+
+
+.rreip-actions-menu__content {
+    position: fixed;
+
+    z-index: 2200;
+
+    display: none;
+    flex-direction: column;
+
+    width: 190px;
+    max-width: calc(100vw - 16px);
+
+    gap: 2px;
+
+    padding: 5px;
+
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+
+    border: 1px solid var(--border-strong);
+    border-radius: 9px;
+
+    box-shadow: var(--shadow-lg);
+}
+
+
+.rreip-actions-menu[open] .rreip-actions-menu__content {
+    display: flex;
+}
+
+
+.rreip-actions-menu__content .rreip-btn {
+    width: 100%;
+
+    justify-content: flex-start;
+}
+
+
+.rreip-actions-menu__content hr {
+    margin: 3px 0;
+}
+
+
+/* ==========================================================================
+   UTILITÁRIOS
+   ========================================================================== */
+
+.rreip-wrapper [hidden] {
+    display: none !important;
+}
+
+
+.rreip-wrapper .font-mono {
+    font-family: var(--font-mono);
+}
+
+
+.rreip-wrapper hr {
+    width: 100%;
+
+    margin: 5px 0;
+
+    border: 0;
+    border-top: 1px solid var(--border);
+}
+
+
+.rreip-wrapper .rreip-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.rreip-wrapper .rreip-nowrap {
+    white-space: nowrap;
+}
+
+
+.rreip-wrapper .rreip-flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+}
+
+
+/* ==========================================================================
+   LIGHT
+   ========================================================================== */
+
+[data-theme="light"] .rreip-stat-card,
+[data-theme="light"] .rreip-filters,
+[data-theme="light"] .rreip-table-wrapper {
+    box-shadow:
+        0 3px 14px rgba(15, 23, 42, 0.035);
+}
+
+
+[data-theme="light"] .rreip-form-input,
+[data-theme="light"] .rreip-form-select,
+[data-theme="light"] .rreip-form-textarea {
+    background: #FAFBFC;
+}
+
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+
+@media (max-width: 1250px) {
+
+    .rreip-stats {
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+    }
+
+
+    .rreip-filters__grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 1000px) {
+
+    .rreip-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .rreip-filters__grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .rreip-wrapper {
+        gap: 13px;
+    }
+
+
+    .rreip-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .rreip-header__actions {
+        width: 100%;
+    }
+
+
+    .rreip-header__actions .rreip-btn {
+        width: 100%;
+    }
+
+
+    .rreip-header__title {
+        font-size: 17px;
+    }
+
+
+    .rreip-tabs {
+        width: 100%;
+    }
+
+
+    .rreip-filter-toggle {
+        display: inline-flex;
+    }
+
+
+    .rreip-filters__body {
+        display: none;
+    }
+
+
+    .rreip-filters__body.is-open {
+        display: flex;
+    }
+
+
+    .rreip-filters__grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .rreip-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .rreip-form-group--full {
+        grid-column: auto;
+    }
+
+
+    .rreip-list-toolbar {
+        align-items: flex-start;
+    }
+
+
+    .rreip-pagination {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .rreip-pagination__controls {
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+
+    .rreip-modal__footer .rreip-btn {
+        flex: 1;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .rreip-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 7px;
+    }
+
+
+    .rreip-stat-card {
+        min-height: 82px;
+
+        padding: 11px;
+    }
+
+
+    .rreip-stat-card__value {
+        font-size: 18px;
+    }
+
+
+    .rreip-header__badge {
+        display: none;
+    }
+
+
+    .rreip-modal-overlay {
+        padding: 9px;
+    }
+
+
+    .rreip-modal {
+        max-height:
+            calc(100dvh - 18px);
+    }
+
+}
+
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .rreip-btn,
+    .rreip-tab,
+    .rreip-stat-card,
+    .rreip-action-btn,
+    .rreip-modal,
+    .rreip-toast {
+        transition: none !important;
+        animation: none !important;
+    }
+
+}

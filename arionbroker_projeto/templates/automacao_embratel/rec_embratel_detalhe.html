@@ -1,0 +1,1274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}REC {{ tarefa.dados_tecnicos.numero_rec|default:tarefa.id_portal }} | Arion Broker{% endblock %}
+{% block page_title %}Detalhes da REC{% endblock %}
+
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/embratel/rec_detalhe.css' %}"
+>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="embratel-detail-wrapper">
+
+
+    {# ================================================================= #}
+    {# TOPBAR                                                           #}
+    {# ================================================================= #}
+
+    <nav class="embratel-detail-topbar">
+
+        <div class="embratel-detail-topbar__left">
+
+            <a
+                href="{% if tarefa.status_processamento == 'ENVIADO' or tarefa.status_processamento == 'FINALIZADO' %}{% url 'automacao_embratel:enviadas' %}{% else %}{% url 'automacao_embratel:lista' %}{% endif %}"
+                class="btn btn--outline btn--sm"
+            >
+                <i class="bi bi-arrow-left"></i>
+                Voltar
+            </a>
+
+
+            <div class="embratel-detail-breadcrumb">
+
+                <span>
+                    Embratel
+                </span>
+
+                <i class="bi bi-chevron-right"></i>
+
+                <span>
+                    Modos Web
+                </span>
+
+                <i class="bi bi-chevron-right"></i>
+
+                <strong>
+                    #{{ tarefa.id_portal }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="embratel-detail-topbar__right">
+
+
+            {% if pode_marcar_pendente %}
+
+                <button
+                    type="button"
+                    class="btn btn--outline btn--sm"
+                    data-modal-target="#embratel-action-modal"
+                    data-action-url="{% url 'automacao_embratel:marcar_pendente' tarefa.pk %}"
+                    data-action-title="Marcar como pendente"
+                    data-action-msg="Deseja mover a tarefa <strong>{{ tarefa.id_portal }}</strong> para pendente de envio?"
+                >
+                    <i class="bi bi-clock-history"></i>
+                    Marcar pendente
+                </button>
+
+            {% endif %}
+
+
+
+            {% if pode_reprocessar %}
+
+                <button
+                    type="button"
+                    class="btn btn--outline btn--sm"
+                    data-modal-target="#embratel-action-modal"
+                    data-action-url="{% url 'automacao_embratel:reprocessar' tarefa.pk %}"
+                    data-action-title="Reprocessar tarefa"
+                    data-action-msg="Deseja executar novamente o processamento da tarefa <strong>{{ tarefa.id_portal }}</strong>?"
+                >
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Reprocessar
+                </button>
+
+            {% endif %}
+
+
+
+            {% if pode_ignorar %}
+
+                <button
+                    type="button"
+                    class="btn btn--danger-soft btn--sm"
+                    data-modal-target="#embratel-action-modal"
+                    data-action-url="{% url 'automacao_embratel:ignorar' tarefa.pk %}"
+                    data-action-title="Ignorar tarefa"
+                    data-action-msg="Deseja ignorar a tarefa <strong>{{ tarefa.id_portal }}</strong>?<br><br><input type='text' name='motivo' class='input' placeholder='Informe o motivo' required minlength='3' maxlength='1000'>"
+                >
+                    <i class="bi bi-slash-circle"></i>
+                    Ignorar
+                </button>
+
+            {% endif %}
+
+
+
+            {% if pode_enviar %}
+
+                <button
+                    type="button"
+                    class="btn btn--primary btn--sm"
+                    data-modal-target="#embratel-action-modal"
+                    data-action-url="{% url 'automacao_embratel:enviar' tarefa.pk %}"
+                    data-action-title="Enviar e-mail"
+                    data-action-msg="Confirma o envio do e-mail da tarefa <strong>{{ tarefa.id_portal }}</strong>?"
+                >
+                    <i class="bi bi-send"></i>
+                    Enviar e-mail
+                </button>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+
+
+    {# ================================================================= #}
+    {# HERO / IDENTIFICAÇÃO PRINCIPAL                                    #}
+    {# ================================================================= #}
+
+    <header class="embratel-detail-hero">
+
+
+        <div class="embratel-detail-hero__main">
+
+            <div class="embratel-detail-hero__icon">
+                <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+
+
+            <div class="embratel-detail-hero__content">
+
+                <span class="embratel-detail-eyebrow">
+                    TAREFA MODOS WEB
+                </span>
+
+
+                <div class="embratel-detail-title-row">
+
+                    {% if tarefa.dados_tecnicos.numero_rec %}
+
+                        <h1>
+                            {{ tarefa.dados_tecnicos.numero_rec }}
+                        </h1>
+
+                        <button
+                            type="button"
+                            class="embratel-copy-btn"
+                            data-copy="{{ tarefa.dados_tecnicos.numero_rec }}"
+                            title="Copiar REC"
+                            aria-label="Copiar REC"
+                        >
+                            <i class="bi bi-copy"></i>
+                        </button>
+
+                    {% else %}
+
+                        <h1>
+                            Tarefa #{{ tarefa.id_portal }}
+                        </h1>
+
+                        <button
+                            type="button"
+                            class="embratel-copy-btn"
+                            data-copy="{{ tarefa.id_portal }}"
+                            title="Copiar ID"
+                            aria-label="Copiar ID"
+                        >
+                            <i class="bi bi-copy"></i>
+                        </button>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="embratel-detail-hero__meta">
+
+                    <span>
+                        ID
+                        <strong>#{{ tarefa.id_portal }}</strong>
+                    </span>
+
+
+                    {% if tarefa.id_processo %}
+
+                        <span>
+                            Processo
+                            <strong>{{ tarefa.id_processo }}</strong>
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if tarefa.id_workflow %}
+
+                        <span>
+                            Workflow
+                            <strong>{{ tarefa.id_workflow }}</strong>
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="embratel-detail-hero__right">
+
+
+            {# PROJETO #}
+
+            {% if tarefa.projeto %}
+
+                <span
+                    class="
+                        embratel-project-badge
+                        embratel-project-badge--{{ tarefa.projeto|slugify }}
+                    "
+                >
+                    <span class="embratel-project-badge__dot"></span>
+
+                    {{ tarefa.projeto }}
+                </span>
+
+            {% else %}
+
+                <span
+                    class="
+                        embratel-project-badge
+                        embratel-project-badge--bradesco
+                    "
+                >
+                    <span class="embratel-project-badge__dot"></span>
+
+                    Bradesco
+                </span>
+
+            {% endif %}
+
+
+
+            {# STATUS INTERNO #}
+
+            <span
+                class="
+                    embratel-status-badge
+                    embratel-status-badge--{{ tarefa.status_processamento|lower }}
+                "
+            >
+                <span class="embratel-status-badge__dot"></span>
+
+                {{ tarefa.get_status_processamento_display }}
+            </span>
+
+
+
+            {# SOMENTE MOSTRA PORTAL SE EXISTIR #}
+
+            {% if tarefa.status_portal %}
+
+                <span class="embratel-neutral-badge">
+                    Portal:
+                    {{ tarefa.status_portal }}
+                </span>
+
+            {% endif %}
+
+
+
+            {# SOMENTE MOSTRA TIPO SE EXISTIR #}
+
+            {% if tarefa.tipo_tarefa %}
+
+                <span class="embratel-neutral-badge">
+                    {{ tarefa.tipo_tarefa }}
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+
+
+    {# ================================================================= #}
+    {# GRID PRINCIPAL                                                    #}
+    {# ================================================================= #}
+
+    <div class="embratel-detail-layout">
+
+
+        {# ============================================================= #}
+        {# COLUNA PRINCIPAL                                              #}
+        {# ============================================================= #}
+
+        <main class="embratel-detail-main">
+
+
+            {# ========================================================= #}
+            {# INFORMAÇÕES PRINCIPAIS                                    #}
+            {# ========================================================= #}
+
+            <section class="embratel-panel">
+
+                <div class="embratel-panel__header">
+
+                    <div>
+
+                        <span class="embratel-panel__icon">
+                            <i class="bi bi-info-circle"></i>
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Informações da tarefa
+                            </h2>
+
+                            <p>
+                                Dados gerais registrados no Modos Web
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="embratel-data-grid">
+
+
+                    <div class="embratel-data-item">
+
+                        <span class="embratel-data-label">
+                            Cliente
+                        </span>
+
+                        <strong class="embratel-data-value">
+                            {{ tarefa.cliente|default:"Não informado" }}
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="embratel-data-item">
+
+                        <span class="embratel-data-label">
+                            Projeto
+                        </span>
+
+                        <strong class="embratel-data-value">
+
+                            {% if tarefa.projeto %}
+                                {{ tarefa.projeto }}
+                            {% else %}
+                                Bradesco
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="embratel-data-item">
+
+                        <span class="embratel-data-label">
+                            Criação no portal
+                        </span>
+
+                        <strong class="embratel-data-value">
+
+                            {% if tarefa.data_criacao_portal %}
+                                {{ tarefa.data_criacao_portal|date:"d/m/Y H:i" }}
+                            {% else %}
+                                Não informado
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+
+                    {% if tarefa.data_atualizacao_portal %}
+
+                        <div class="embratel-data-item">
+
+                            <span class="embratel-data-label">
+                                Atualização no portal
+                            </span>
+
+                            <strong class="embratel-data-value">
+                                {{ tarefa.data_atualizacao_portal|date:"d/m/Y H:i" }}
+                            </strong>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+
+
+            {# ========================================================= #}
+            {# DADOS DE REDE                                             #}
+            {# ========================================================= #}
+
+            <section class="embratel-panel">
+
+                <div class="embratel-panel__header">
+
+                    <div>
+
+                        <span class="embratel-panel__icon">
+                            <i class="bi bi-diagram-3"></i>
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Dados técnicos
+                            </h2>
+
+                            <p>
+                                Informações de circuito e infraestrutura
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    {% if tarefa.url_tarefa %}
+
+                        <a
+                            href="{{ tarefa.url_tarefa }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="embratel-panel-link"
+                        >
+                            Abrir no portal
+
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <div class="embratel-technical-grid">
+
+
+                    <div class="embratel-technical-item">
+
+                        <span class="embratel-data-label">
+                            Provedor
+                        </span>
+
+                        <div class="embratel-technical-value">
+
+                            <span class="embratel-technical-icon">
+                                <i class="bi bi-building"></i>
+                            </span>
+
+                            <strong>
+                                {{ tarefa.provedor|default:"Não informado" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="embratel-technical-item">
+
+                        <span class="embratel-data-label">
+                            Designação
+                        </span>
+
+                        <div class="embratel-technical-value">
+
+                            <span class="embratel-technical-icon">
+                                <i class="bi bi-hash"></i>
+                            </span>
+
+                            <strong class="embratel-code">
+                                {{ tarefa.designacao|default:"Não informada" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="embratel-technical-item">
+
+                        <span class="embratel-data-label">
+                            Circuito
+                        </span>
+
+                        <div class="embratel-technical-value">
+
+                            <span class="embratel-technical-icon">
+                                <i class="bi bi-bezier2"></i>
+                            </span>
+
+                            <strong class="embratel-code">
+                                {{ tarefa.circuito|default:"Não informado" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            {# ========================================================= #}
+            {# SINTOMA / DESCRIÇÃO                                       #}
+            {# ========================================================= #}
+
+            <section class="embratel-panel">
+
+                <div class="embratel-panel__header">
+
+                    <div>
+
+                        <span class="embratel-panel__icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Ocorrência
+                            </h2>
+
+                            <p>
+                                Sintoma e descrição registrados
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                {% if tarefa.sintoma or tarefa.descricao %}
+
+                    <div class="embratel-occurrence">
+
+
+                        {% if tarefa.sintoma %}
+
+                            <div class="embratel-occurrence__block">
+
+                                <span class="embratel-occurrence__label">
+                                    Sintoma
+                                </span>
+
+
+                                <p class="embratel-occurrence__value">
+                                    {{ tarefa.sintoma|linebreaksbr }}
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        {% if tarefa.descricao %}
+
+                            <div class="embratel-occurrence__block">
+
+                                <span class="embratel-occurrence__label">
+                                    Descrição
+                                </span>
+
+
+                                <div class="embratel-occurrence__description">
+                                    {{ tarefa.descricao|linebreaksbr }}
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                {% else %}
+
+                    <div class="embratel-empty-content">
+
+                        <i class="bi bi-file-earmark-minus"></i>
+
+                        <div>
+
+                            <strong>
+                                Sem descrição
+                            </strong>
+
+                            <span>
+                                Nenhum sintoma ou descrição foi registrado para esta tarefa.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+
+            {# ========================================================= #}
+            {# RESUMO OPERACIONAL                                        #}
+            {# ========================================================= #}
+
+            <section class="embratel-panel">
+
+                <div class="embratel-panel__header">
+
+                    <div>
+
+                        <span class="embratel-panel__icon">
+                            <i class="bi bi-envelope-check"></i>
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Resumo operacional
+                            </h2>
+
+                            <p>
+                                Informações utilizadas no processamento
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="embratel-summary-box">
+
+
+                    <div class="embratel-summary-box__item">
+
+                        <span>
+                            REC
+                        </span>
+
+                        <strong>
+                            {{ tarefa.dados_tecnicos.numero_rec|default:"Não informada" }}
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="embratel-summary-box__item">
+
+                        <span>
+                            Cliente
+                        </span>
+
+                        <strong>
+                            {{ tarefa.cliente|default:"Não informado" }}
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="embratel-summary-box__item">
+
+                        <span>
+                            Designação
+                        </span>
+
+                        <strong>
+                            {{ tarefa.designacao|default:"Não informada" }}
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="embratel-summary-box__item">
+
+                        <span>
+                            Circuito
+                        </span>
+
+                        <strong>
+                            {{ tarefa.circuito|default:"Não informado" }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+
+        {# ============================================================= #}
+        {# SIDEBAR                                                       #}
+        {# ============================================================= #}
+
+        <aside class="embratel-detail-sidebar">
+
+
+            {# ========================================================= #}
+            {# STATUS                                                    #}
+            {# ========================================================= #}
+
+            <section
+                class="
+                    embratel-side-card
+                    embratel-side-card--status
+                "
+            >
+
+                <div class="embratel-side-card__header">
+
+                    <span class="embratel-side-card__icon">
+                        <i class="bi bi-activity"></i>
+                    </span>
+
+                    <div>
+
+                        <h2>
+                            Status
+                        </h2>
+
+                        <p>
+                            Situação atual
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="embratel-status-highlight">
+
+                    <span
+                        class="
+                            embratel-status-badge
+                            embratel-status-badge--{{ tarefa.status_processamento|lower }}
+                            embratel-status-badge--large
+                        "
+                    >
+                        <span class="embratel-status-badge__dot"></span>
+
+                        {{ tarefa.get_status_processamento_display }}
+                    </span>
+
+                </div>
+
+
+
+                <div class="embratel-side-list">
+
+
+                    <div class="embratel-side-list__item">
+
+                        <span>
+                            SLA
+                        </span>
+
+
+                        {% if tarefa.dentro_sla == True %}
+
+                            <strong class="embratel-sla-ok">
+
+                                <i class="bi bi-shield-check"></i>
+
+                                Dentro do SLA
+
+                            </strong>
+
+
+                        {% elif tarefa.dentro_sla == False %}
+
+                            <strong class="embratel-sla-alert">
+
+                                <i class="bi bi-shield-exclamation"></i>
+
+                                SLA excedido
+
+                            </strong>
+
+
+                        {% else %}
+
+                            <strong class="embratel-side-neutral">
+                                Não informado
+                            </strong>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <div class="embratel-side-list__item">
+
+                        <span>
+                            Aging
+                        </span>
+
+                        <strong>
+                            {% if tarefa.aging_minutos != None %}
+                                {{ tarefa.aging_minutos }} min
+                            {% else %}
+                                —
+                            {% endif %}
+                        </strong>
+
+                    </div>
+
+
+
+                    {% if tarefa.status_portal %}
+
+                        <div class="embratel-side-list__item">
+
+                            <span>
+                                Status no portal
+                            </span>
+
+                            <strong>
+                                {{ tarefa.status_portal }}
+                            </strong>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                {% if tarefa.erro_processamento %}
+
+                    <div class="embratel-error-box">
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                        <div>
+
+                            <strong>
+                                Erro registrado
+                            </strong>
+
+                            <p>
+                                {{ tarefa.erro_processamento }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+
+            {# ========================================================= #}
+            {# RASTREABILIDADE                                           #}
+            {# ========================================================= #}
+
+            <section class="embratel-side-card">
+
+                <div class="embratel-side-card__header">
+
+                    <span class="embratel-side-card__icon">
+                        <i class="bi bi-signpost-split"></i>
+                    </span>
+
+                    <div>
+
+                        <h2>
+                            Rastreabilidade
+                        </h2>
+
+                        <p>
+                            Histórico operacional
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="embratel-trace-list">
+
+
+                    <div class="embratel-trace-item">
+
+                        <span class="embratel-trace-item__icon">
+                            <i class="bi bi-cloud-download"></i>
+                        </span>
+
+
+                        <div>
+
+                            <span>
+                                Coleta
+                            </span>
+
+                            <strong>
+                                {% if tarefa.data_coleta %}
+                                    {{ tarefa.data_coleta|date:"d/m/Y H:i:s" }}
+                                {% else %}
+                                    Não registrada
+                                {% endif %}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="embratel-trace-item">
+
+                        <span class="embratel-trace-item__icon">
+                            <i class="bi bi-robot"></i>
+                        </span>
+
+
+                        <div>
+
+                            <span>
+                                Origem
+                            </span>
+
+                            <strong>
+                                {{ tarefa.get_origem_coleta_display|default:tarefa.origem_coleta|default:"Não informada" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="embratel-trace-item">
+
+                        <span class="embratel-trace-item__icon">
+                            <i class="bi bi-send-check"></i>
+                        </span>
+
+
+                        <div>
+
+                            <span>
+                                Envio
+                            </span>
+
+                            <strong>
+                                {% if tarefa.data_envio %}
+                                    {{ tarefa.data_envio|date:"d/m/Y H:i:s" }}
+                                {% else %}
+                                    Ainda não enviado
+                                {% endif %}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="embratel-trace-item">
+
+                        <span class="embratel-trace-item__icon">
+                            <i class="bi bi-person"></i>
+                        </span>
+
+
+                        <div>
+
+                            <span>
+                                Responsável
+                            </span>
+
+                            <strong>
+                                {{ tarefa.enviado_por|default:"Sistema" }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            {# ========================================================= #}
+            {# HISTÓRICO                                                 #}
+            {# ========================================================= #}
+
+            <section class="embratel-side-card">
+
+                <div class="embratel-side-card__header">
+
+                    <span class="embratel-side-card__icon">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+
+                    <div>
+
+                        <h2>
+                            Histórico recente
+                        </h2>
+
+                        <p>
+                            Últimas alterações
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="embratel-timeline">
+
+                    {% for evento in historico %}
+
+                        <div class="embratel-timeline__item">
+
+                            <span class="embratel-timeline__marker"></span>
+
+
+                            <div class="embratel-timeline__content">
+
+                                <span class="embratel-timeline__date">
+                                    {{ evento.registrado_em|date:"d/m/Y H:i" }}
+                                </span>
+
+
+                                <strong class="embratel-timeline__title">
+                                    {{ evento.status_novo|default:"Atualização" }}
+                                </strong>
+
+
+                                {% if evento.dados_novos %}
+
+                                    <span class="embratel-timeline__description">
+                                        Alteração registrada no histórico.
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                    {% empty %}
+
+                        <div class="embratel-timeline__empty">
+
+                            <i class="bi bi-clock"></i>
+
+                            Nenhum evento registrado.
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </div>
+
+
+
+    {# ================================================================= #}
+    {# MODAL                                                             #}
+    {# ================================================================= #}
+
+    <div
+        id="embratel-action-modal"
+        class="embratel-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="embratel-modal-title"
+        aria-hidden="true"
+    >
+
+        <div
+            class="embratel-modal__overlay"
+            data-modal-close
+        ></div>
+
+
+        <div class="embratel-modal__content">
+
+
+            <div class="embratel-modal__header">
+
+                <div class="embratel-modal__title">
+
+                    <span>
+                        <i class="bi bi-lightning-charge"></i>
+                    </span>
+
+
+                    <div>
+
+                        <small>
+                            Ação da tarefa
+                        </small>
+
+                        <h3 id="embratel-modal-title">
+                            Confirmar ação
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="embratel-modal__close"
+                    data-modal-close
+                    aria-label="Fechar"
+                >
+                    <i class="bi bi-x-lg"></i>
+                </button>
+
+            </div>
+
+
+
+            <form
+                id="embratel-modal-form"
+                method="POST"
+                action=""
+            >
+
+                {% csrf_token %}
+
+
+                <div
+                    class="embratel-modal__body"
+                    id="embratel-modal-body"
+                ></div>
+
+
+                <div class="embratel-modal__footer">
+
+                    <button
+                        type="button"
+                        class="btn btn--outline"
+                        data-modal-close
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn--primary embratel-btn-submit"
+                    >
+                        Confirmar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    {# ================================================================= #}
+    {# TOAST                                                             #}
+    {# ================================================================= #}
+
+    <div
+        id="embratel-toast"
+        class="embratel-toast"
+        aria-live="polite"
+    >
+
+        <i class="bi bi-check-circle"></i>
+
+        <span id="embratel-toast-msg"></span>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+<script
+    defer
+    src="{% static 'js/embratel/rec_detalhe.js' %}"
+></script>
+{% endblock %}

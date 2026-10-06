@@ -1,0 +1,2697 @@
+/* ==========================================================================
+   ARION BROKER
+   EMBRATEL — RECs ENVIADAS
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. VARIÁVEIS
+   ========================================================================== */
+
+:root {
+
+    --sent-green: #22C55E;
+    --sent-green-dark: #16A34A;
+    --sent-green-soft: rgba(34, 197, 94, 0.10);
+
+    --sent-blue: #3B82F6;
+    --sent-blue-soft: rgba(59, 130, 246, 0.10);
+
+    --sent-red: #EF4444;
+    --sent-red-soft: rgba(239, 68, 68, 0.10);
+
+    --sent-yellow: #F59E0B;
+    --sent-yellow-soft: rgba(245, 158, 11, 0.10);
+
+    --sent-purple: #8B5CF6;
+    --sent-purple-soft: rgba(139, 92, 246, 0.10);
+
+    --sent-gray: #94A3B8;
+    --sent-gray-soft: rgba(148, 163, 184, 0.09);
+
+    --sent-bradesco: #CC092F;
+    --sent-bradesco-soft: rgba(204, 9, 47, 0.11);
+
+    --sent-row-hover: rgba(255, 255, 255, 0.025);
+}
+
+
+[data-theme="dark"] {
+
+    --sent-bradesco: #FF4F70;
+
+    --sent-bradesco-soft:
+        rgba(255, 79, 112, 0.10);
+
+    --sent-row-hover:
+        rgba(255, 255, 255, 0.025);
+}
+
+
+[data-theme="light"] {
+
+    --sent-row-hover:
+        rgba(15, 23, 42, 0.025);
+}
+
+
+/* ==========================================================================
+   2. WRAPPER / TIPOGRAFIA
+   ========================================================================== */
+
+.embratel-sent-wrapper {
+
+    width: 100%;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        Arial,
+        sans-serif;
+
+
+    font-weight: 400;
+}
+
+
+.embratel-sent-wrapper *,
+.embratel-sent-wrapper *::before,
+.embratel-sent-wrapper *::after {
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   3. HEADER
+   ========================================================================== */
+
+.embratel-sent-header {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+
+    gap: 20px;
+
+
+    padding:
+        2px
+        0
+        4px;
+}
+
+
+.embratel-sent-header__left {
+
+    min-width: 0;
+}
+
+
+.embratel-sent-eyebrow {
+
+    display: flex;
+
+    align-items: center;
+
+
+    gap: 7px;
+
+
+    margin-bottom: 7px;
+
+
+    color: var(--text-muted);
+
+
+    font-size: 8px;
+
+    font-weight: 500;
+
+
+    letter-spacing: 0.13em;
+}
+
+
+.embratel-sent-eyebrow__dot {
+
+    width: 6px;
+
+    height: 6px;
+
+
+    flex: 0 0 auto;
+
+
+    border-radius: 50%;
+
+
+    background:
+        var(--sent-green);
+
+
+    box-shadow:
+        0 0 0 4px
+        rgba(34, 197, 94, 0.08);
+}
+
+
+.embratel-sent-title {
+
+    margin: 0;
+
+
+    color:
+        var(--text-primary);
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 23px;
+
+    font-weight: 600;
+
+
+    letter-spacing: -0.035em;
+
+    line-height: 1.2;
+}
+
+
+.embratel-sent-header__sub {
+
+    margin:
+        5px
+        0
+        0;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 10px;
+
+    font-weight: 400;
+
+
+    line-height: 1.55;
+}
+
+
+.embratel-sent-header__right {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+
+    gap: 7px;
+
+
+    flex-wrap: wrap;
+}
+
+
+/* ==========================================================================
+   4. BOTÕES
+   ========================================================================== */
+
+.embratel-sent-wrapper .btn {
+
+    min-height: 34px;
+
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+
+    gap: 6px;
+
+
+    padding:
+        7px
+        12px;
+
+
+    border:
+        1px
+        solid
+        transparent;
+
+
+    border-radius: 8px;
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+
+    line-height: 1;
+
+
+    text-decoration: none;
+
+
+    white-space: nowrap;
+
+
+    cursor: pointer;
+
+
+    transition:
+        background var(--transition),
+        color var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition),
+        transform var(--transition);
+}
+
+
+.embratel-sent-wrapper .btn i {
+
+    font-size: 11px;
+}
+
+
+.embratel-sent-wrapper .btn:active {
+
+    transform:
+        scale(0.98);
+}
+
+
+.embratel-sent-wrapper .btn--sm {
+
+    min-height: 32px;
+
+
+    padding:
+        6px
+        10px;
+
+
+    font-size: 9px;
+}
+
+
+.embratel-sent-wrapper .btn--primary {
+
+    color: #FFFFFF;
+
+
+    background:
+        var(--verde-arion);
+
+
+    border-color:
+        var(--verde-arion);
+
+
+    box-shadow:
+        0 3px 10px
+        rgba(22, 163, 74, 0.10);
+}
+
+
+.embratel-sent-wrapper .btn--primary:hover {
+
+    background:
+        var(--verde-arion-hover);
+
+
+    border-color:
+        var(--verde-arion-hover);
+
+
+    box-shadow:
+        0 5px 15px
+        rgba(22, 163, 74, 0.15);
+}
+
+
+.embratel-sent-wrapper .btn--outline {
+
+    color:
+        var(--text-secondary);
+
+
+    background:
+        transparent;
+
+
+    border-color:
+        var(--border-strong);
+}
+
+
+.embratel-sent-wrapper .btn--outline:hover {
+
+    color:
+        var(--text-primary);
+
+
+    background:
+        var(--bg-hover);
+
+
+    border-color:
+        var(--border-hover);
+}
+
+
+.embratel-sent-wrapper .btn:disabled {
+
+    opacity: 0.4;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================================
+   5. CARDS
+   ========================================================================== */
+
+.embratel-sent-summary-grid {
+
+    display: grid;
+
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+
+    gap: 10px;
+}
+
+
+.embratel-sent-summary-card {
+
+    position: relative;
+
+
+    min-width: 0;
+
+    min-height: 110px;
+
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+
+    gap: 13px;
+
+
+    padding:
+        14px
+        15px;
+
+
+    overflow: hidden;
+
+
+    background:
+        var(--bg-surface);
+
+
+    border:
+        1px
+        solid
+        var(--border);
+
+
+    border-radius: 12px;
+
+
+    box-shadow:
+        0 3px 14px
+        rgba(0, 0, 0, 0.04);
+
+
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+
+.embratel-sent-summary-card::before {
+
+    content: '';
+
+
+    position: absolute;
+
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+
+    height: 2px;
+}
+
+
+.embratel-sent-summary-card--total::before {
+
+    background:
+        var(--sent-green);
+}
+
+
+.embratel-sent-summary-card--automatic::before {
+
+    background:
+        var(--sent-blue);
+}
+
+
+.embratel-sent-summary-card--manual::before {
+
+    background:
+        var(--sent-gray);
+}
+
+
+.embratel-sent-summary-card--error::before {
+
+    background:
+        var(--sent-red);
+}
+
+
+.embratel-sent-summary-card:hover {
+
+    transform:
+        translateY(-1px);
+
+
+    border-color:
+        var(--border-strong);
+
+
+    box-shadow:
+        0 8px 22px
+        rgba(0, 0, 0, 0.07);
+}
+
+
+.embratel-sent-summary-card__header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+
+    gap: 12px;
+}
+
+
+.embratel-sent-summary-card__header > div {
+
+    min-width: 0;
+}
+
+
+.embratel-sent-summary-card__label {
+
+    display: block;
+
+
+    color:
+        var(--text-secondary);
+
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+
+    line-height: 1.4;
+}
+
+
+.embratel-sent-summary-card__description {
+
+    display: block;
+
+
+    margin-top: 2px;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 8px;
+
+    font-weight: 400;
+}
+
+
+.embratel-sent-summary-card__icon {
+
+    width: 30px;
+
+    height: 30px;
+
+
+    display: grid;
+
+    place-items: center;
+
+
+    flex: 0 0 auto;
+
+
+    border-radius: 8px;
+
+
+    background:
+        var(--bg-elevated);
+
+
+    color:
+        var(--text-secondary);
+
+
+    font-size: 12px;
+}
+
+
+.embratel-sent-summary-card--total
+.embratel-sent-summary-card__icon {
+
+    color:
+        var(--sent-green);
+
+
+    background:
+        var(--sent-green-soft);
+}
+
+
+.embratel-sent-summary-card--automatic
+.embratel-sent-summary-card__icon {
+
+    color:
+        var(--sent-blue);
+
+
+    background:
+        var(--sent-blue-soft);
+}
+
+
+.embratel-sent-summary-card--error
+.embratel-sent-summary-card__icon {
+
+    color:
+        var(--sent-red);
+
+
+    background:
+        var(--sent-red-soft);
+}
+
+
+.embratel-sent-summary-card__value {
+
+    color:
+        var(--text-primary);
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 25px;
+
+    font-weight: 600;
+
+
+    letter-spacing: -0.045em;
+
+
+    line-height: 1;
+
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+/* ==========================================================================
+   6. TOOLBAR
+   ========================================================================== */
+
+.embratel-sent-toolbar {
+
+    width: 100%;
+
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+
+    gap: 14px;
+
+
+    padding: 9px;
+
+
+    background:
+        var(--bg-surface);
+
+
+    border:
+        1px
+        solid
+        var(--border);
+
+
+    border-radius: 11px;
+}
+
+
+.embratel-sent-toolbar__left {
+
+    display: flex;
+
+    align-items: center;
+
+
+    gap: 6px;
+
+
+    flex-wrap: nowrap;
+
+
+    overflow-x: auto;
+
+
+    scrollbar-width: none;
+}
+
+
+.embratel-sent-toolbar__left::-webkit-scrollbar {
+
+    display: none;
+}
+
+
+.embratel-sent-toolbar__left .btn {
+
+    flex-shrink: 0;
+}
+
+
+.embratel-sent-toolbar__separator {
+
+    width: 1px;
+
+    height: 20px;
+
+
+    margin:
+        0
+        2px;
+
+
+    flex: 0 0 auto;
+
+
+    background:
+        var(--border-strong);
+}
+
+
+.embratel-sent-toolbar__right {
+
+    flex: 1;
+
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+}
+
+
+/* ==========================================================================
+   7. BUSCA
+   ========================================================================== */
+
+.embratel-sent-search {
+
+    position: relative;
+
+
+    width:
+        min(
+            350px,
+            100%
+        );
+}
+
+
+.embratel-sent-search__icon {
+
+    position: absolute;
+
+
+    top: 50%;
+
+    left: 11px;
+
+
+    z-index: 2;
+
+
+    transform:
+        translateY(-50%);
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 11px;
+
+
+    pointer-events: none;
+}
+
+
+.embratel-sent-search__input {
+
+    width: 100%;
+
+    height: 34px;
+
+
+    padding:
+        0
+        11px
+        0
+        31px;
+
+
+    color:
+        var(--text-primary);
+
+
+    background:
+        var(--bg-base);
+
+
+    border:
+        1px
+        solid
+        var(--border);
+
+
+    border-radius: 8px;
+
+
+    outline: none;
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 9px;
+
+    font-weight: 400;
+
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        background var(--transition);
+}
+
+
+.embratel-sent-search__input::placeholder {
+
+    color:
+        var(--text-muted);
+}
+
+
+.embratel-sent-search__input:hover {
+
+    border-color:
+        var(--border-strong);
+}
+
+
+.embratel-sent-search__input:focus {
+
+    border-color:
+        rgba(34, 197, 94, 0.48);
+
+
+    box-shadow:
+        0 0 0 3px
+        rgba(34, 197, 94, 0.07);
+}
+
+
+/* ==========================================================================
+   8. LISTA / CONTAINER
+   ========================================================================== */
+
+.embratel-sent-list {
+
+    width: 100%;
+
+
+    min-width: 0;
+
+
+    overflow: hidden;
+
+
+    background:
+        var(--bg-surface);
+
+
+    border:
+        1px
+        solid
+        var(--border);
+
+
+    border-radius: 12px;
+
+
+    box-shadow:
+        0 3px 14px
+        rgba(0, 0, 0, 0.04);
+}
+
+
+.embratel-sent-list__header {
+
+    min-height: 56px;
+
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+
+    gap: 16px;
+
+
+    padding:
+        10px
+        14px;
+
+
+    border-bottom:
+        1px
+        solid
+        var(--border);
+}
+
+
+.embratel-sent-list__header h2 {
+
+    margin:
+        0
+        0
+        2px;
+
+
+    color:
+        var(--text-primary);
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+.embratel-sent-list__header p {
+
+    margin: 0;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 8px;
+
+    font-weight: 400;
+}
+
+
+.embratel-sent-list__legend {
+
+    display: flex;
+
+    align-items: center;
+
+
+    gap: 13px;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 8px;
+}
+
+
+.embratel-sent-list__legend span {
+
+    display: inline-flex;
+
+    align-items: center;
+
+
+    gap: 5px;
+}
+
+
+.embratel-sent-list__legend i {
+
+    font-size: 6px;
+}
+
+
+.legend--automatic {
+
+    color:
+        var(--sent-blue);
+}
+
+
+.legend--manual {
+
+    color:
+        var(--sent-gray);
+}
+
+
+/* ==========================================================================
+   9. TABLE WRAPPER
+   ========================================================================== */
+
+.embratel-sent-wrapper .table-wrapper {
+
+    width: 100%;
+
+
+    min-width: 0;
+
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+}
+
+
+/* ==========================================================================
+   10. TABELA
+   ========================================================================== */
+
+.embratel-sent-table {
+
+    width: 100%;
+
+
+    min-width: 1040px;
+
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+
+    table-layout: fixed;
+
+
+    background:
+        transparent;
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+}
+
+
+.embratel-sent-table thead {
+
+    background:
+        var(--bg-surface-2);
+}
+
+
+.embratel-sent-table thead th {
+
+    height: 39px;
+
+
+    padding:
+        0
+        12px;
+
+
+    color:
+        var(--text-muted);
+
+
+    background:
+        var(--bg-surface-2);
+
+
+    border-bottom:
+        1px
+        solid
+        var(--border-strong);
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 7.5px;
+
+    font-weight: 500;
+
+
+    letter-spacing: 0.075em;
+
+
+    text-align: left;
+
+    text-transform: uppercase;
+
+
+    white-space: nowrap;
+
+
+    vertical-align: middle;
+}
+
+
+.embratel-sent-table tbody td {
+
+    height: 65px;
+
+
+    padding:
+        9px
+        12px;
+
+
+    color:
+        var(--text-secondary);
+
+
+    border-bottom:
+        1px
+        solid
+        var(--border);
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 9px;
+
+    font-weight: 400;
+
+
+    line-height: 1.45;
+
+
+    vertical-align: middle;
+}
+
+
+.embratel-sent-table tbody tr:last-child td {
+
+    border-bottom: 0;
+}
+
+
+/* ==========================================================================
+   11. LARGURAS
+   ========================================================================== */
+
+.embratel-sent-table th:nth-child(1),
+.embratel-sent-table td:nth-child(1) {
+
+    width: 145px;
+}
+
+
+.embratel-sent-table th:nth-child(2),
+.embratel-sent-table td:nth-child(2) {
+
+    width: 225px;
+}
+
+
+.embratel-sent-table th:nth-child(3),
+.embratel-sent-table td:nth-child(3) {
+
+    width: 200px;
+}
+
+
+.embratel-sent-table th:nth-child(4),
+.embratel-sent-table td:nth-child(4) {
+
+    width: 165px;
+}
+
+
+.embratel-sent-table th:nth-child(5),
+.embratel-sent-table td:nth-child(5) {
+
+    width: 135px;
+}
+
+
+.embratel-sent-table th:nth-child(6),
+.embratel-sent-table td:nth-child(6) {
+
+    width: 105px;
+}
+
+
+.embratel-sent-table th:nth-child(7),
+.embratel-sent-table td:nth-child(7) {
+
+    width: 72px;
+}
+
+
+/* ==========================================================================
+   12. LINHAS
+   ========================================================================== */
+
+.embratel-sent-row {
+
+    position: relative;
+
+
+    cursor: pointer;
+
+
+    transition:
+        background var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+
+.embratel-sent-row:hover {
+
+    background:
+        var(--sent-row-hover);
+
+
+    box-shadow:
+        inset 2px 0 0
+        var(--verde-arion);
+}
+
+
+.embratel-sent-row:focus-visible {
+
+    outline:
+        2px
+        solid
+        rgba(34, 197, 94, 0.45);
+
+
+    outline-offset:
+        -2px;
+}
+
+
+/* ==========================================================================
+   13. REC / ID
+   ========================================================================== */
+
+.embratel-sent-record {
+
+    min-width: 0;
+
+
+    display: flex;
+
+    flex-direction: column;
+
+
+    gap: 4px;
+}
+
+
+.embratel-sent-record__rec {
+
+    width: fit-content;
+
+    max-width: 100%;
+
+
+    padding: 0;
+
+
+    overflow: hidden;
+
+
+    color:
+        var(--text-primary);
+
+
+    background:
+        transparent;
+
+
+    border: 0;
+
+    border-bottom:
+        1px
+        dashed
+        transparent;
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+
+    text-align: left;
+
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+
+    cursor: copy;
+
+
+    transition:
+        color var(--transition),
+        border-color var(--transition);
+}
+
+
+.embratel-sent-record__rec:hover {
+
+    color:
+        var(--verde-arion-light);
+
+
+    border-color:
+        var(--verde-arion-light);
+}
+
+
+.embratel-sent-record__rec.is-empty {
+
+    color:
+        var(--text-muted);
+
+
+    font-weight: 400;
+}
+
+
+.embratel-sent-record__id {
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 7.5px;
+
+    font-weight: 400;
+}
+
+
+.embratel-sent-record__id strong {
+
+    color:
+        var(--text-secondary);
+
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================================
+   14. PROJETO / CLIENTE
+   ========================================================================== */
+
+.embratel-sent-client {
+
+    min-width: 0;
+
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+
+    gap: 4px;
+}
+
+
+.embratel-project-badge {
+
+    min-height: 20px;
+
+
+    display: inline-flex;
+
+    align-items: center;
+
+
+    gap: 5px;
+
+
+    max-width: 100%;
+
+
+    padding:
+        3px
+        7px;
+
+
+    color:
+        var(--text-secondary);
+
+
+    background:
+        var(--bg-elevated);
+
+
+    border:
+        1px
+        solid
+        var(--border);
+
+
+    border-radius: 6px;
+
+
+    font-size: 7.5px;
+
+    font-weight: 500;
+
+
+    line-height: 1;
+
+
+    white-space: nowrap;
+}
+
+
+.embratel-project-badge__dot {
+
+    width: 5px;
+
+    height: 5px;
+
+
+    flex: 0 0 auto;
+
+
+    border-radius: 50%;
+
+
+    background:
+        currentColor;
+}
+
+
+/* BRADESCO */
+
+.embratel-project-badge--bradesco {
+
+    color:
+        var(--sent-bradesco);
+
+
+    background:
+        var(--sent-bradesco-soft);
+
+
+    border-color:
+        rgba(204, 9, 47, 0.20);
+}
+
+
+[data-theme="dark"]
+.embratel-project-badge--bradesco {
+
+    border-color:
+        rgba(255, 79, 112, 0.18);
+}
+
+
+/* VIVO */
+
+.embratel-project-badge--vivo {
+
+    color:
+        #A855F7;
+
+
+    background:
+        rgba(168, 85, 247, 0.10);
+
+
+    border-color:
+        rgba(168, 85, 247, 0.18);
+}
+
+
+/* CLARO */
+
+.embratel-project-badge--claro {
+
+    color:
+        #EF4444;
+
+
+    background:
+        rgba(239, 68, 68, 0.09);
+
+
+    border-color:
+        rgba(239, 68, 68, 0.17);
+}
+
+
+/* EMBRATEL */
+
+.embratel-project-badge--embratel {
+
+    color:
+        #3B82F6;
+
+
+    background:
+        rgba(59, 130, 246, 0.09);
+
+
+    border-color:
+        rgba(59, 130, 246, 0.17);
+}
+
+
+.embratel-sent-client__name {
+
+    display: block;
+
+
+    width: 100%;
+
+
+    overflow: hidden;
+
+
+    color:
+        var(--text-primary);
+
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.embratel-sent-client__provider {
+
+    max-width: 100%;
+
+
+    display: flex;
+
+    align-items: center;
+
+
+    gap: 4px;
+
+
+    overflow: hidden;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 7.5px;
+
+    font-weight: 400;
+
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.embratel-sent-client__provider i {
+
+    flex: 0 0 auto;
+
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================================
+   15. REDE
+   ========================================================================== */
+
+.embratel-sent-network {
+
+    min-width: 0;
+
+
+    display: flex;
+
+    flex-direction: column;
+
+
+    gap: 4px;
+}
+
+
+.embratel-sent-network__designation {
+
+    width: 100%;
+
+
+    overflow: hidden;
+
+
+    color:
+        var(--text-primary);
+
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.embratel-sent-network__designation.is-empty {
+
+    color:
+        var(--text-muted);
+
+
+    font-weight: 400;
+}
+
+
+.embratel-sent-network__circuit {
+
+    width: 100%;
+
+
+    display: flex;
+
+    align-items: center;
+
+
+    gap: 4px;
+
+
+    overflow: hidden;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 7.5px;
+
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.embratel-sent-network__circuit i {
+
+    flex: 0 0 auto;
+
+
+    font-size: 7px;
+}
+
+
+/* ==========================================================================
+   16. ORIGEM
+   ========================================================================== */
+
+.embratel-sent-origin {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+
+    gap: 4px;
+}
+
+
+.embratel-origin-badge {
+
+    min-height: 21px;
+
+
+    display: inline-flex;
+
+    align-items: center;
+
+
+    gap: 5px;
+
+
+    padding:
+        3px
+        7px;
+
+
+    border:
+        1px
+        solid
+        transparent;
+
+
+    border-radius: 6px;
+
+
+    font-size: 7.5px;
+
+    font-weight: 500;
+
+
+    line-height: 1;
+
+
+    white-space: nowrap;
+}
+
+
+.embratel-origin-badge i {
+
+    font-size: 8px;
+}
+
+
+.embratel-origin-badge--automatic {
+
+    color:
+        var(--sent-blue);
+
+
+    background:
+        var(--sent-blue-soft);
+
+
+    border-color:
+        rgba(59, 130, 246, 0.16);
+}
+
+
+.embratel-origin-badge--manual {
+
+    color:
+        var(--text-secondary);
+
+
+    background:
+        var(--bg-elevated);
+
+
+    border-color:
+        var(--border);
+}
+
+
+.embratel-origin-badge--legacy {
+
+    color:
+        var(--text-muted);
+
+
+    background:
+        var(--bg-elevated);
+
+
+    border-color:
+        var(--border);
+}
+
+
+.embratel-sent-origin__user {
+
+    max-width: 145px;
+
+
+    overflow: hidden;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 7.5px;
+
+    font-weight: 400;
+
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   17. DATA
+   ========================================================================== */
+
+.embratel-sent-date {
+
+    display: flex;
+
+    flex-direction: column;
+
+
+    gap: 2px;
+}
+
+
+.embratel-sent-date__value {
+
+    color:
+        var(--text-primary);
+
+
+    font-size: 8.5px;
+
+    font-weight: 500;
+
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+.embratel-sent-date__time {
+
+    display: flex;
+
+    align-items: center;
+
+
+    gap: 4px;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 7.5px;
+
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+.embratel-sent-date__time i {
+
+    font-size: 7px;
+}
+
+
+.embratel-sent-date__attempts {
+
+    margin-top: 1px;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 7px;
+}
+
+
+.embratel-sent-date__fallback-label {
+
+    color:
+        var(--sent-yellow);
+
+
+    font-size: 6.5px;
+
+    font-weight: 500;
+
+
+    text-transform: uppercase;
+
+
+    letter-spacing: 0.04em;
+}
+
+
+/* ==========================================================================
+   18. STATUS
+   ========================================================================== */
+
+.embratel-sent-status {
+
+    display: flex;
+
+    align-items: center;
+}
+
+
+.embratel-status-badge {
+
+    min-height: 22px;
+
+
+    display: inline-flex;
+
+    align-items: center;
+
+
+    gap: 5px;
+
+
+    padding:
+        3px
+        7px;
+
+
+    border:
+        1px
+        solid
+        transparent;
+
+
+    border-radius: 6px;
+
+
+    font-size: 7.5px;
+
+    font-weight: 500;
+
+
+    line-height: 1;
+
+
+    white-space: nowrap;
+}
+
+
+.embratel-status-badge__dot {
+
+    width: 5px;
+
+    height: 5px;
+
+
+    flex: 0 0 auto;
+
+
+    border-radius: 50%;
+
+
+    background:
+        currentColor;
+}
+
+
+.embratel-status-badge--success {
+
+    color:
+        var(--sent-green);
+
+
+    background:
+        var(--sent-green-soft);
+
+
+    border-color:
+        rgba(34, 197, 94, 0.16);
+}
+
+
+.embratel-status-badge--finished {
+
+    color:
+        var(--sent-blue);
+
+
+    background:
+        var(--sent-blue-soft);
+
+
+    border-color:
+        rgba(59, 130, 246, 0.16);
+}
+
+
+.embratel-status-badge--ignored {
+
+    color:
+        var(--sent-gray);
+
+
+    background:
+        var(--sent-gray-soft);
+
+
+    border-color:
+        rgba(148, 163, 184, 0.15);
+}
+
+
+.embratel-status-badge--error {
+
+    color:
+        var(--sent-red);
+
+
+    background:
+        var(--sent-red-soft);
+
+
+    border-color:
+        rgba(239, 68, 68, 0.16);
+}
+
+
+/* ==========================================================================
+   19. AÇÕES
+   ========================================================================== */
+
+.embratel-sent-col-actions,
+.embratel-sent-actions {
+
+    text-align: right !important;
+}
+
+
+.embratel-sent-actions {
+
+    white-space: nowrap;
+}
+
+
+.embratel-sent-view-btn {
+
+    width: 31px;
+
+    min-width: 31px !important;
+
+
+    height: 31px;
+
+    min-height: 31px !important;
+
+
+    padding: 0 !important;
+}
+
+
+/* ==========================================================================
+   20. COPY
+   ========================================================================== */
+
+.embratel-sent-copy-trigger {
+
+    transition:
+        color var(--transition),
+        border-color var(--transition);
+}
+
+
+.embratel-sent-copy-trigger.is-copied {
+
+    color:
+        var(--sent-green) !important;
+}
+
+
+/* ==========================================================================
+   21. ESTADO VAZIO
+   ========================================================================== */
+
+.d-none {
+
+    display: none !important;
+}
+
+
+.embratel-sent-empty-state {
+
+    min-height: 260px;
+
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+
+    gap: 6px;
+
+
+    padding: 34px;
+
+
+    color:
+        var(--text-secondary);
+
+
+    background:
+        var(--bg-surface);
+
+
+    border:
+        1px
+        solid
+        var(--border);
+
+
+    border-radius: 12px;
+
+
+    text-align: center;
+}
+
+
+.embratel-sent-empty-state__icon {
+
+    width: 46px;
+
+    height: 46px;
+
+
+    display: grid;
+
+    place-items: center;
+
+
+    margin-bottom: 5px;
+
+
+    color:
+        var(--sent-green);
+
+
+    background:
+        var(--sent-green-soft);
+
+
+    border-radius: 12px;
+
+
+    font-size: 18px;
+}
+
+
+.embratel-sent-empty-state h3 {
+
+    margin: 0;
+
+
+    color:
+        var(--text-primary);
+
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+.embratel-sent-empty-state p {
+
+    margin: 0;
+
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 9px;
+
+    font-weight: 400;
+}
+
+
+/* ==========================================================================
+   22. PAGINAÇÃO
+   ========================================================================== */
+
+.embratel-sent-pagination {
+
+    min-height: 52px;
+
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+
+    gap: 12px;
+
+
+    padding:
+        9px
+        12px;
+
+
+    background:
+        var(--bg-surface);
+
+
+    border:
+        1px
+        solid
+        var(--border);
+
+
+    border-radius: 11px;
+}
+
+
+.embratel-sent-pagination__info {
+
+    display: flex;
+
+    flex-direction: column;
+
+
+    gap: 2px;
+
+
+    color:
+        var(--text-secondary);
+
+
+    font-size: 8px;
+}
+
+
+.embratel-sent-pagination__info strong {
+
+    color:
+        var(--text-primary);
+
+
+    font-weight: 500;
+}
+
+
+.embratel-sent-pagination__info small {
+
+    color:
+        var(--text-muted);
+
+
+    font-size: 7.5px;
+}
+
+
+.embratel-sent-pagination__controls {
+
+    display: flex;
+
+    align-items: center;
+
+
+    gap: 6px;
+}
+
+
+/* ==========================================================================
+   23. TOAST
+   ========================================================================== */
+
+.embratel-sent-toast {
+
+    position: fixed;
+
+
+    left: 50%;
+
+    bottom: 24px;
+
+
+    z-index: 2500;
+
+
+    max-width:
+        min(
+            420px,
+            calc(100vw - 30px)
+        );
+
+
+    padding:
+        10px
+        14px;
+
+
+    color:
+        var(--text-primary);
+
+
+    background:
+        var(--bg-elevated);
+
+
+    border:
+        1px
+        solid
+        var(--border-strong);
+
+
+    border-radius: 9px;
+
+
+    box-shadow:
+        var(--shadow-md);
+
+
+    font-family:
+        'Poppins',
+        var(--font-family),
+        sans-serif;
+
+
+    font-size: 9px;
+
+    font-weight: 400;
+
+
+    opacity: 0;
+
+
+    pointer-events: none;
+
+
+    transform:
+        translateX(-50%)
+        translateY(30px);
+
+
+    transition:
+        opacity 0.22s ease,
+        transform 0.25s
+        cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+.embratel-sent-toast.is-visible {
+
+    opacity: 1;
+
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+}
+
+
+/* ==========================================================================
+   24. SCROLLBAR
+   ========================================================================== */
+
+.embratel-sent-wrapper
+.table-wrapper::-webkit-scrollbar {
+
+    height: 7px;
+}
+
+
+.embratel-sent-wrapper
+.table-wrapper::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+}
+
+
+.embratel-sent-wrapper
+.table-wrapper::-webkit-scrollbar-thumb {
+
+    background:
+        var(--border-strong);
+
+
+    border-radius: 999px;
+}
+
+
+/* ==========================================================================
+   25. LIGHT THEME
+   ========================================================================== */
+
+[data-theme="light"]
+.embratel-sent-summary-card,
+
+[data-theme="light"]
+.embratel-sent-list,
+
+[data-theme="light"]
+.embratel-sent-toolbar,
+
+[data-theme="light"]
+.embratel-sent-pagination {
+
+    box-shadow:
+        0 3px 14px
+        rgba(15, 23, 42, 0.035);
+}
+
+
+[data-theme="light"]
+.embratel-sent-search__input {
+
+    background:
+        #FAFBFC;
+}
+
+
+/* ==========================================================================
+   26. RESPONSIVO — 1200PX
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+
+    .embratel-sent-summary-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+}
+
+
+/* ==========================================================================
+   27. RESPONSIVO — 900PX
+   ========================================================================== */
+
+@media (max-width: 900px) {
+
+    .embratel-sent-header {
+
+        flex-direction: column;
+    }
+
+
+    .embratel-sent-header__right {
+
+        justify-content: flex-start;
+    }
+
+
+    .embratel-sent-toolbar {
+
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .embratel-sent-toolbar__left,
+    .embratel-sent-toolbar__right {
+
+        width: 100%;
+    }
+
+
+    .embratel-sent-toolbar__right {
+
+        justify-content: flex-start;
+    }
+
+
+    .embratel-sent-search {
+
+        width: 100%;
+
+        max-width: none;
+    }
+
+
+    .embratel-sent-list__legend {
+
+        display: none;
+    }
+}
+
+
+/* ==========================================================================
+   28. RESPONSIVO — 650PX
+   ========================================================================== */
+
+@media (max-width: 650px) {
+
+    .embratel-sent-wrapper {
+
+        gap: 12px;
+    }
+
+
+    .embratel-sent-title {
+
+        font-size: 20px;
+    }
+
+
+    .embratel-sent-header__right {
+
+        width: 100%;
+    }
+
+
+    .embratel-sent-header__right .btn {
+
+        flex: 1;
+    }
+
+
+    .embratel-sent-summary-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+
+        gap: 8px;
+    }
+
+
+    .embratel-sent-summary-card {
+
+        min-height: 98px;
+
+
+        padding:
+            12px;
+    }
+
+
+    .embratel-sent-summary-card__value {
+
+        font-size: 22px;
+    }
+
+
+    .embratel-sent-summary-card__description {
+
+        display: none;
+    }
+
+
+    .embratel-sent-toolbar__separator {
+
+        display: none;
+    }
+
+
+    .embratel-sent-pagination {
+
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .embratel-sent-pagination__controls {
+
+        width: 100%;
+    }
+
+
+    .embratel-sent-pagination__controls .btn {
+
+        flex: 1;
+    }
+}
+
+
+/* ==========================================================================
+   29. RESPONSIVO — 420PX
+   ========================================================================== */
+
+@media (max-width: 420px) {
+
+    .embratel-sent-summary-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .embratel-sent-summary-card {
+
+        min-height: 88px;
+    }
+
+
+    .embratel-sent-toolbar__left {
+
+        width: 100%;
+    }
+}
+
+
+/* ==========================================================================
+   30. REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .embratel-sent-summary-card,
+
+    .embratel-sent-row,
+
+    .embratel-sent-toast,
+
+    .embratel-sent-wrapper .btn {
+
+        transition:
+            none !important;
+    }
+}

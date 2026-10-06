@@ -1,0 +1,82 @@
+{% extends "cancelamentos/cancelamentos.html" %}
+
+{% block descricao_fila %}Chamados com pendências operacionais em aberto.{% endblock %}
+{% block botao_novo %}{% endblock %}
+
+{% block thead %}
+<th class="col-ticket">Ticket</th>
+<th class="col-cliente">Cliente Final</th>
+<th class="col-sigla">ISP</th>
+<th class="col-pendencias">Pendências Abertas</th>
+<th class="col-valor">Multa (R$)</th>
+<th class="col-valor">Equipamento (R$)</th>
+<th class="col-valor">Outros (R$)</th>
+<th class="col-valor">Total (R$)</th>
+<th class="col-data">Próxima ação</th>
+<th class="col-status">Status</th>
+<th class="col-responsavel">Responsável</th>
+<th class="col-acoes">Ações</th>
+{% endblock %}
+
+{% block tbody_row %}
+<td class="col-ticket">
+    {% if c.ticket_url %}
+    <a href="{{ c.ticket_url }}" target="_blank" rel="noopener noreferrer" class="ticket-chip ticket-link">{{ c.ticket_arion }}</a>
+    {% else %}
+    <span class="ticket-chip">{{ c.ticket_arion }}</span>
+    {% endif %}
+</td>
+<td class="col-cliente">{{ c.cliente_final|default:"—" }}</td>
+<td class="col-sigla">{{ c.isp|default:"—" }}</td>
+<td class="col-pendencias">
+    <a href="{% url 'cancelamentos:detalhe' c.id %}#tab-pendencias" class="badge badge-warning" title="Ir para aba de pendências">
+        {{ c.pendencias_ativas_count }} pendência(s)
+    </a>
+</td>
+<td class="col-valor">{% if c.valor_pendencias_multa %}R$ {{ c.valor_pendencias_multa }}{% else %}—{% endif %}</td>
+<td class="col-valor">{% if c.valor_pendencias_equipamento %}R$ {{ c.valor_pendencias_equipamento }}{% else %}—{% endif %}</td>
+<td class="col-valor">{% if c.valor_pendencias_outros %}R$ {{ c.valor_pendencias_outros }}{% else %}—{% endif %}</td>
+<td class="col-valor"><strong>R$ {{ c.valor_pendencias_total|default:"0,00" }}</strong></td>
+<td class="col-data">{% if c.data_proxima_acao %}{{ c.data_proxima_acao|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+<td class="col-status">
+    <div class="status-cell">
+        <span class="status-badge status-badge--{{ c.status|lower }}">{{ c.get_status_display }}</span>
+        <button class="status-edit-btn" data-action="editar-status" title="Alterar status">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+    </div>
+</td>
+<td class="col-responsavel">
+    {% if not c.responsavel_id %}
+        <span class="text-muted text-sm mr-2">Sem responsável</span>
+        <button class="btn-micro" data-action="apropriar">Apropriar</button>
+    {% elif c.responsavel_id == user.id %}
+        <span class="mr-2">{{ c.responsavel.get_full_name|default:c.responsavel.username }}</span>
+        <button class="btn-micro btn-micro--danger" data-action="liberar">Liberar</button>
+    {% else %}
+        <span>{{ c.responsavel.get_full_name|default:c.responsavel.username }}</span>
+    {% endif %}
+</td>
+<td class="col-acoes">
+    <div class="row-actions">
+        <a href="{% url 'cancelamentos:detalhe' c.id %}" class="row-action-btn" title="Ver detalhes">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </a>
+        <button class="row-action-btn" data-action="adicionar-pendencia" title="Adicionar Pendência">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="row-action-btn" data-action="mover-fila" data-fila-destino="SOLICITACAO" title="Voltar para Solicitação">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        
+        <!-- ALTERAÇÃO: Remover disabled baseado em c.pode_concluir.
+             O botão deve estar SEMPRE clicável na fila PENDENCIA.
+             Ao clicar, abre o modal onde os dados serão preenchidos. -->
+        <button class="row-action-btn row-action-btn--success" 
+                data-action="concluir" 
+                title="Concluir cancelamento">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+    </div>
+</td>
+{% endblock %}

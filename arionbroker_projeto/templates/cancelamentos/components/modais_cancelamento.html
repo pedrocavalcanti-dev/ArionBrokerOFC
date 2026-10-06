@@ -1,0 +1,551 @@
+{# ------------------------------------------------------------------------ #}
+{# MODAL: NOVO CANCELAMENTO                                                 #}
+{# ------------------------------------------------------------------------ #}
+<div class="modal-overlay" id="modalNovo" style="display:none;">
+    <div class="modal-box modal-box--form">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Novo Cancelamento</span>
+            <button class="modal-box__close" data-close-modal="modalNovo" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <div class="form-erro" id="formNovoErro" style="display:none;"></div>
+
+            <form id="formNovo">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Ticket Arion *</label>
+                        <input class="form-input" name="ticket_arion" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Data de Criação *</label>
+                        <input class="form-input" type="date" name="data_criacao_chamado" required>
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label>URL do Ticket (OTRS)</label>
+                        <input class="form-input" type="url" name="ticket_url" placeholder="https://...">
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label>Designação/Circuito</label>
+                        <input class="form-input" name="designacao_circuito">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cód. Cliente</label>
+                        <input class="form-input" name="cod_cliente">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Protocolo</label>
+                        <input class="form-input" name="protocolo">
+                    </div>
+
+                    <div class="form-field">
+                        <label>ISP</label>
+                        <input class="form-input" name="isp">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Contato da ISP</label>
+                        <input class="form-input" name="contato_isp">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cliente (Operadora)</label>
+                        <input class="form-input" name="cliente" placeholder="Claro / Vivo / Algar">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cliente Final</label>
+                        <input class="form-input" name="cliente_final">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cidade</label>
+                        <input class="form-input" name="cidade" placeholder="Ex: Campinas">
+                    </div>
+
+                    <div class="form-field">
+                        <label>UF</label>
+                        <input class="form-input" name="uf" maxlength="2" placeholder="SP" style="text-transform:uppercase;">
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label>Observação</label>
+                        <textarea class="modal-obs-textarea" name="observacao" placeholder="Alguma observação inicial..."></textarea>
+                    </div>
+                </div>
+
+                <span class="form-hint">O chamado entra automaticamente na fila de Pedido de Cancelamento.</span>
+            </form>
+        </div>
+
+        <div class="modal-box__footer">
+            <button class="btn-secondary" data-close-modal="modalNovo" type="button">Cancelar</button>
+            <button class="btn-primary" id="btnSalvarNovo" type="button">Salvar Cancelamento</button>
+        </div>
+    </div>
+</div>
+
+
+{# ------------------------------------------------------------------------ #}
+{# MODAL: EDITAR CANCELAMENTO                                               #}
+{# ------------------------------------------------------------------------ #}
+<div class="modal-overlay" id="modalEditar" style="display:none;">
+    <div class="modal-box modal-box--form">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Editar Cancelamento</span>
+            <button class="modal-box__close" data-close-modal="modalEditar" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <div class="form-erro" id="formEditarErro" style="display:none;"></div>
+
+            <form id="formEditar">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Ticket Arion *</label>
+                        <input class="form-input" name="ticket_arion" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Data de Criação *</label>
+                        <input class="form-input" type="date" name="data_criacao_chamado" required>
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label>URL do Ticket (OTRS)</label>
+                        <input class="form-input" type="url" name="ticket_url" placeholder="https://...">
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label>Designação/Circuito</label>
+                        <input class="form-input" name="designacao_circuito">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cód. Cliente</label>
+                        <input class="form-input" name="cod_cliente">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Protocolo</label>
+                        <input class="form-input" name="protocolo">
+                    </div>
+
+                    <div class="form-field">
+                        <label>ISP</label>
+                        <input class="form-input" name="isp">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Contato da ISP</label>
+                        <input class="form-input" name="contato_isp">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cliente (Operadora)</label>
+                        <input class="form-input" name="cliente" placeholder="Claro / Vivo / Algar">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cliente Final</label>
+                        <input class="form-input" name="cliente_final">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Cidade</label>
+                        <input class="form-input" name="cidade" placeholder="Ex: Campinas">
+                    </div>
+
+                    <div class="form-field">
+                        <label>UF</label>
+                        <input class="form-input" name="uf" maxlength="2" placeholder="SP" style="text-transform:uppercase;">
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label>Observação</label>
+                        <textarea class="modal-obs-textarea" name="observacao" placeholder="Alguma observação..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-box__footer">
+            <button class="btn-secondary" data-close-modal="modalEditar" type="button">Cancelar</button>
+            <button class="btn-primary" id="btnSalvarEditar" type="button">Salvar Alterações</button>
+        </div>
+    </div>
+</div>
+
+
+{# ------------------------------------------------------------------------ #}
+{# MODAL: OBSERVAÇÕES                                                       #}
+{# ------------------------------------------------------------------------ #}
+<div class="modal-overlay" id="modalObs" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Observações — <span id="obsTicket"></span></span>
+
+            <button class="modal-box__close" data-close-modal="modalObs" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <div id="obsLista" class="obs-lista"></div>
+            <textarea class="modal-obs-textarea mt-3" id="obsTextarea" placeholder="Escreva uma nova observação..."></textarea>
+        </div>
+
+        <div class="modal-box__footer">
+            <button class="btn-secondary" data-close-modal="modalObs" type="button">Fechar</button>
+            <button class="btn-primary" id="btnSalvarObs" type="button">Adicionar Observação</button>
+        </div>
+    </div>
+</div>
+
+
+{# ------------------------------------------------------------------------ #}
+{# MODAL: MOVER DE FILA                                                     #}
+{# ------------------------------------------------------------------------ #}
+<div class="modal-overlay" id="modalMovimentacao" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Mover Chamado</span>
+
+            <button class="modal-box__close" data-close-modal="modalMovimentacao" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <p>Você está movendo este cancelamento para a fila: <strong id="movDestinoLabel"></strong></p>
+
+            <div class="form-field mt-3">
+                <label>Motivo da movimentação (Opcional)</label>
+                <textarea class="form-input" id="movMotivo" rows="2"></textarea>
+            </div>
+        </div>
+
+        <div class="modal-box__footer">
+            <button class="btn-secondary" data-close-modal="modalMovimentacao" type="button">Cancelar</button>
+            <button class="btn-primary" id="btnConfirmarMovimentacao" type="button">Confirmar Movimentação</button>
+        </div>
+    </div>
+</div>
+
+
+{# ------------------------------------------------------------------------ #}
+{# MODAL: NOVA PENDÊNCIA                                                    #}
+{# ------------------------------------------------------------------------ #}
+<div class="modal-overlay" id="modalPendencia" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Adicionar Pendência</span>
+
+            <button class="modal-box__close" data-close-modal="modalPendencia" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <form id="formPendencia">
+                <div class="form-grid">
+                    <div class="form-field form-field--full">
+                        <label>Tipo de Pendência *</label>
+
+                        <select class="form-input" name="tipo" required>
+                            <option value="">Selecione...</option>
+
+                            {% for valor, label in tipo_pendencia_choices %}
+                            <option value="{{ valor }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label>Descrição *</label>
+                        <input class="form-input" name="descricao" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Valor (R$)</label>
+                        <input class="form-input" type="number" step="0.01" name="valor">
+                    </div>
+
+                    <div class="form-field">
+                        <label>Data Prevista</label>
+                        <input class="form-input" type="date" name="data_prevista">
+                    </div>
+                </div>
+
+                <span
+                    class="form-hint"
+                    id="pendenciaSequenciaFeedback"
+                    style="display:none;"
+                ></span>
+            </form>
+        </div>
+
+        <div class="modal-box__footer">
+            <button
+                class="btn-secondary"
+                data-close-modal="modalPendencia"
+                type="button"
+            >
+                Cancelar
+            </button>
+
+            <button
+                class="btn-secondary"
+                id="btnSalvarAdicionarPendencia"
+                type="button"
+                title="Salvar esta pendência e cadastrar outra"
+            >
+                <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                >
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Adicionar outra pendência
+            </button>
+
+            <button
+                class="btn-primary"
+                id="btnSalvarPendencia"
+                type="button"
+            >
+                Salvar Pendência
+            </button>
+        </div>
+    </div>
+</div>
+
+
+{# ------------------------------------------------------------------------ #}
+{# MODAL: DADOS FINANCEIROS - LEGADO                                        #}
+{# ------------------------------------------------------------------------ #}
+<div class="modal-overlay" id="modalFinanceiro" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Valores — <span id="finTicket"></span></span>
+
+            <button class="modal-box__close" data-close-modal="modalFinanceiro" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>Data Cancelamento Confirmado</label>
+                    <input class="form-input" type="date" id="finDataCancelamento">
+                </div>
+
+                <div class="form-field">
+                    <label>Última Competência Faturada</label>
+                    <input class="form-input" type="text" id="finCompetencia" placeholder="MM/AAAA">
+                </div>
+
+                <div class="form-field">
+                    <label>Valor Multa/Rescisão (R$)</label>
+                    <input class="form-input" type="number" step="0.01" id="finValorMulta">
+                </div>
+
+                <div class="form-field">
+                    <label>Valor Equipamento (R$)</label>
+                    <input class="form-input" type="number" step="0.01" id="finValorEquipamento">
+                </div>
+
+                <div class="form-field">
+                    <label>Outros Valores (R$)</label>
+                    <input class="form-input" type="number" step="0.01" id="finValorOutros">
+                </div>
+
+                <div class="form-field">
+                    <label>Data da Baixa Financeira</label>
+                    <input class="form-input" type="date" id="finDataBaixa">
+                </div>
+
+                <div class="form-field form-field--full mt-2">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="finConfirmacao">
+                        Confirmação sem nova cobrança
+                    </label>
+                </div>
+
+                <div class="form-field form-field--full">
+                    <label>Observação Financeira</label>
+                    <textarea class="form-input" id="finObservacao" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-box__footer">
+            <button class="btn-secondary" data-close-modal="modalFinanceiro" type="button">Cancelar</button>
+            <button class="btn-primary" id="btnSalvarFinanceiro" type="button">Salvar Financeiro</button>
+        </div>
+    </div>
+</div>
+
+
+{# ------------------------------------------------------------------------ #}
+{# MODAL: CONCLUIR CANCELAMENTO                                             #}
+{# ------------------------------------------------------------------------ #}
+<div class="modal-overlay" id="modalConcluir" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Concluir Cancelamento — <span id="concluirTicket"></span></span>
+
+            <button class="modal-box__close" data-close-modal="modalConcluir" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <div class="form-erro" id="concluirErro" style="display:none; margin-bottom:16px;"></div>
+
+            {# RESUMO DOS VALORES #}
+            <div class="concluir-resumo">
+                <div class="concluir-resumo__header">
+                    <strong>Resumo do Encerramento</strong>
+                    <span>Valores calculados automaticamente pelas pendências registradas.</span>
+                </div>
+
+                <div class="concluir-resumo__linha">
+                    <span>Multa / Rescisão</span>
+                    <strong id="concluirResumoMulta">R$ 0,00</strong>
+                </div>
+
+                <div class="concluir-resumo__linha">
+                    <span>Equipamento</span>
+                    <strong id="concluirResumoEquipamento">R$ 0,00</strong>
+                </div>
+
+                <div class="concluir-resumo__linha">
+                    <span>Outros</span>
+                    <strong id="concluirResumoOutros">R$ 0,00</strong>
+                </div>
+
+                <div class="concluir-resumo__total">
+                    <span>Total</span>
+                    <strong id="concluirResumoTotal">R$ 0,00</strong>
+                </div>
+            </div>
+
+            {# DATA DO CANCELAMENTO #}
+            <div class="form-field mt-3">
+                <label for="concluirDataCancelamento">Data do Cancelamento *</label>
+                <input class="form-input" type="date" id="concluirDataCancelamento" required>
+                <span class="form-hint">A data atual será preenchida automaticamente. Você pode alterá-la se necessário.</span>
+            </div>
+
+            {# OBSERVAÇÃO FINAL #}
+            <div class="form-field mt-3">
+                <label for="concluirObservacao">Observação Final <span style="font-weight:400; color:#999;">(Opcional)</span></label>
+                <textarea class="form-input" id="concluirObservacao" rows="3" placeholder="Anotações sobre o encerramento..."></textarea>
+            </div>
+
+            <div class="concluir-info mt-3">
+                Ao concluir, o chamado será movido para <strong>Concluídos</strong>. As pendências e valores registrados permanecerão preservados no histórico.
+            </div>
+        </div>
+
+        <div class="modal-box__footer">
+            <button class="btn-secondary" data-close-modal="modalConcluir" type="button">Cancelar</button>
+            <button class="btn-primary" id="btnConfirmarConclusao" type="button" style="background:#28a745; border-color:#28a745;">
+                Concluir e Encerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+
+{# ------------------------------------------------------------------------ #}
+{# MODAL: TRANSFERIR RESPONSÁVEL - APENAS ADMINS                            #}
+{# ------------------------------------------------------------------------ #}
+{% if user.is_staff %}
+<div class="modal-overlay" id="modalTransferir" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-box__header">
+            <span class="modal-box__title">Transferir Chamado</span>
+
+            <button class="modal-box__close" data-close-modal="modalTransferir" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-box__body">
+            <div class="form-field">
+                <label>Selecione o novo responsável</label>
+
+                <select class="form-input" id="transferirSelectAnalista">
+                    <option value="">Selecione...</option>
+
+                    {% for analista in analistas %}
+                    <option value="{{ analista.id }}">{{ analista.get_full_name|default:analista.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="modal-box__footer">
+            <button class="btn-secondary" data-close-modal="modalTransferir" type="button">Cancelar</button>
+            <button class="btn-primary" id="btnConfirmarTransferir" type="button">Transferir</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{# ------------------------------------------------------------------------ #}
+{# DROPDOWN STATUS                                                          #}
+{# ------------------------------------------------------------------------ #}
+<template id="templateStatusDropdown">
+    <div class="status-dropdown">
+        {% for valor, label in status_choices %}
+        <button class="status-option" data-status="{{ valor }}" type="button">
+            <span class="status-dot status-dot--{{ valor|lower }}"></span>
+            {{ label }}
+        </button>
+        {% endfor %}
+    </div>
+</template>

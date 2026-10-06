@@ -1,0 +1,405 @@
+{% extends "chamados/reincidencias/base_reincidencias.html" %}
+{% load static %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/chamados/reincidencias_finalizados.css' %}">
+{% endblock %}
+
+{% block descricao_fila %}
+Registros concluídos, descartados ou encerrados após o tratamento e monitoramento RREIP, preservando todo o histórico operacional.
+{% endblock %}
+
+{% block botao_novo %}{% endblock %}
+
+{% block thead %}
+<th class="rreip-col-ticket-origem">Ticket de origem</th>
+<th class="rreip-col-ticket-monitoramento">Ticket monitoramento</th>
+<th class="rreip-col-classificacao">Classificação</th>
+<th class="rreip-col-status">Resultado</th>
+<th class="rreip-col-projeto">Projeto</th>
+<th class="rreip-col-designacao">Designação</th>
+<th class="rreip-col-identificador">Identificador</th>
+<th class="rreip-col-cliente">Cliente</th>
+<th class="rreip-col-responsavel">Responsável</th>
+<th class="rreip-col-data">Finalizado em</th>
+<th class="rreip-col-acoes">Ações</th>
+{% endblock %}
+
+{% block tbody %}
+{% for reincidencia in reincidencias %}
+<tr
+    class="rreip-row"
+    data-id="{{ reincidencia.id }}"
+    data-fila="{{ reincidencia.fila }}"
+    data-status="{{ reincidencia.status }}"
+    data-classificacao="{{ reincidencia.classificacao }}"
+>
+    <td class="rreip-col-checkbox">
+        <input
+            type="checkbox"
+            class="rreip-checkbox rreip-row-checkbox"
+            value="{{ reincidencia.id }}"
+            aria-label="Selecionar registro finalizado {% firstof reincidencia.ticket_origem reincidencia.ticket_atual reincidencia.id %}"
+        >
+    </td>
+
+    <!-- TICKET DE ORIGEM -->
+    <td class="rreip-col-ticket-origem">
+        {% firstof reincidencia.ticket_origem reincidencia.ticket_atual "—" as ticket_origem_exibicao %}
+        {% firstof reincidencia.url_ticket_origem reincidencia.url_ticket "" as url_origem_exibicao %}
+
+        <div class="rreip-ticket-card rreip-ticket-card--origem">
+            <span class="rreip-ticket-card__label">Origem</span>
+
+            {% if url_origem_exibicao %}
+                <a
+                    href="{{ url_origem_exibicao }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="rreip-ticket rreip-ticket--link rreip-ticket-card__number"
+                >
+                    {{ ticket_origem_exibicao }}
+                </a>
+            {% else %}
+                <span class="rreip-ticket rreip-ticket-card__number">
+                    {{ ticket_origem_exibicao }}
+                </span>
+            {% endif %}
+        </div>
+    </td>
+
+    <!-- TICKET DE MONITORAMENTO -->
+    <td class="rreip-col-ticket-monitoramento">
+        <div class="rreip-ticket-card rreip-ticket-card--monitoramento">
+            <span class="rreip-ticket-card__label">Monitoramento</span>
+
+            {% if reincidencia.ticket_monitoramento %}
+                {% if reincidencia.url_ticket_monitoramento %}
+                    <a
+                        href="{{ reincidencia.url_ticket_monitoramento }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="rreip-ticket rreip-ticket--link rreip-ticket-card__number"
+                    >
+                        {{ reincidencia.ticket_monitoramento }}
+                    </a>
+                {% else %}
+                    <span class="rreip-ticket rreip-ticket-card__number">
+                        {{ reincidencia.ticket_monitoramento }}
+                    </span>
+                {% endif %}
+            {% else %}
+                <span class="rreip-ticket rreip-ticket-card__number rreip-ticket-card__number--empty">
+                    Não gerado
+                </span>
+            {% endif %}
+        </div>
+    </td>
+
+    <!-- CLASSIFICAÇÃO -->
+    <td class="rreip-col-classificacao">
+        {% if reincidencia.classificacao == "REINCIDENCIA_CONFIRMADA" %}
+            <span class="rreip-classificacao rreip-classificacao--confirmada">
+                {{ reincidencia.get_classificacao_display|default:"Reincidência confirmada" }}
+            </span>
+        {% elif reincidencia.classificacao == "MASSIVA" %}
+            <span class="rreip-classificacao rreip-classificacao--massiva">
+                {{ reincidencia.get_classificacao_display|default:"Massiva" }}
+            </span>
+        {% elif reincidencia.classificacao == "FALSO_POSITIVO" %}
+            <span class="rreip-classificacao rreip-classificacao--falso-positivo">
+                {{ reincidencia.get_classificacao_display|default:"Falso positivo" }}
+            </span>
+        {% elif reincidencia.classificacao == "FALHA_ISOLADA" %}
+            <span class="rreip-classificacao rreip-classificacao--falha-isolada">
+                {{ reincidencia.get_classificacao_display|default:"Falha isolada" }}
+            </span>
+        {% elif reincidencia.classificacao == "DUPLICADO" %}
+            <span class="rreip-classificacao rreip-classificacao--duplicado">
+                {{ reincidencia.get_classificacao_display|default:"Duplicado" }}
+            </span>
+        {% elif reincidencia.classificacao == "NAO_SE_APLICA" %}
+            <span class="rreip-classificacao rreip-classificacao--nao-se-aplica">
+                {{ reincidencia.get_classificacao_display|default:"Não se aplica" }}
+            </span>
+        {% else %}
+            <span class="rreip-classificacao rreip-classificacao--pendente">
+                {{ reincidencia.get_classificacao_display|default:"Pendente" }}
+            </span>
+        {% endif %}
+    </td>
+
+    <!-- RESULTADO -->
+    <td class="rreip-col-status">
+        {% if reincidencia.status == "CONCLUIDO" %}
+            <span class="rreip-status rreip-status--concluido">
+                <span class="rreip-status__dot"></span>
+                {{ reincidencia.get_status_display|default:"Concluído" }}
+            </span>
+        {% elif reincidencia.status == "DESCARTADO" %}
+            <span class="rreip-status rreip-status--descartado">
+                <span class="rreip-status__dot"></span>
+                {{ reincidencia.get_status_display|default:"Descartado" }}
+            </span>
+        {% elif reincidencia.status == "REINCIDIU" %}
+            <span class="rreip-status rreip-status--reincidiu">
+                <span class="rreip-status__dot"></span>
+                {{ reincidencia.get_status_display|default:"Reincidiu" }}
+            </span>
+        {% else %}
+            <span class="rreip-status">
+                <span class="rreip-status__dot"></span>
+                {{ reincidencia.get_status_display|default:reincidencia.status }}
+            </span>
+        {% endif %}
+    </td>
+
+    <!-- PROJETO -->
+    <td class="rreip-col-projeto">
+        <span class="rreip-projeto">
+            {{ reincidencia.projeto|default:"—" }}
+        </span>
+    </td>
+
+    <!-- DESIGNAÇÃO -->
+    <td class="rreip-col-designacao">
+        <span class="rreip-designacao font-mono">
+            {{ reincidencia.designacao|default:"—" }}
+        </span>
+    </td>
+
+    <!-- IDENTIFICADOR -->
+    <td class="rreip-col-identificador">
+        {% if reincidencia.identificador_projeto %}
+            <div class="rreip-identificador">
+                <span class="rreip-identificador__label">
+                    {{ reincidencia.get_identificador_label|default:"ID" }}
+                </span>
+                <span class="rreip-identificador__value">
+                    {{ reincidencia.identificador_projeto }}
+                </span>
+            </div>
+        {% else %}
+            —
+        {% endif %}
+    </td>
+
+    <!-- CLIENTE -->
+    <td class="rreip-col-cliente">
+        <span class="rreip-cliente">
+            {{ reincidencia.cliente|default:"—" }}
+        </span>
+    </td>
+
+    <!-- RESPONSÁVEL -->
+    <td class="rreip-col-responsavel">
+        {% if reincidencia.responsavel %}
+            <div class="rreip-responsavel">
+                <span class="rreip-responsavel__avatar">
+                    {% firstof reincidencia.responsavel.first_name|first|upper reincidencia.responsavel.username|first|upper "US" %}
+                </span>
+                <span class="rreip-responsavel__nome">
+                    {% firstof reincidencia.responsavel.get_full_name reincidencia.responsavel.username "Usuário" %}
+                </span>
+            </div>
+        {% else %}
+            <span class="rreip-responsavel--vazio">Sem responsável</span>
+        {% endif %}
+    </td>
+
+    <!-- DATA DE FINALIZAÇÃO -->
+    <td class="rreip-col-data">
+        {% firstof reincidencia.data_finalizacao reincidencia.atualizado_em "" as data_finalizacao_exibicao %}
+        {% if data_finalizacao_exibicao %}
+            <time datetime="{{ data_finalizacao_exibicao|date:'c' }}">
+                {{ data_finalizacao_exibicao|date:"d/m/Y H:i" }}
+            </time>
+        {% else %}
+            —
+        {% endif %}
+    </td>
+
+    <!-- AÇÕES -->
+    <td class="rreip-col-acoes">
+        <div class="rreip-actions">
+            <a
+                href="{% url 'chamados:reincidencias:detalhes' reincidencia.id %}"
+                class="rreip-action-btn"
+                title="Ver detalhes"
+                aria-label="Ver detalhes do registro finalizado"
+            >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </a>
+
+            {% if request.user.is_staff %}
+                <details class="rreip-actions-menu">
+                    <summary
+                        class="rreip-action-btn"
+                        aria-label="Mais ações"
+                        title="Mais ações"
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </summary>
+
+                    <div class="rreip-actions-menu__content">
+                        <button
+                            type="button"
+                            class="rreip-btn rreip-btn--secondary rreip-btn--small"
+                            data-action="reabrir-finalizado"
+                            data-id="{{ reincidencia.id }}"
+                        >
+                            Reabrir para análise
+                        </button>
+
+                        <button
+                            type="button"
+                            class="rreip-btn rreip-btn--text rreip-btn--small"
+                            data-action="transferir"
+                            data-id="{{ reincidencia.id }}"
+                        >
+                            Transferir responsável
+                        </button>
+
+                        <hr>
+
+                        <button
+                            type="button"
+                            class="rreip-btn rreip-btn--danger rreip-btn--small"
+                            data-action="excluir"
+                            data-id="{{ reincidencia.id }}"
+                            title="Usar apenas em registros criados por engano ou teste"
+                        >
+                            Excluir definitivamente
+                        </button>
+                    </div>
+                </details>
+            {% endif %}
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% endblock %}
+
+{% block estado_vazio %}
+<div class="rreip-empty rreip-empty-state">
+    <svg class="rreip-empty-state__icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M9 11l3 3L22 4"></path>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+    </svg>
+
+    <p class="rreip-empty-state__title">Nenhum registro finalizado</p>
+
+    <span class="rreip-empty-state__description">
+        Não existem reincidências concluídas ou descartadas para os filtros selecionados.
+    </span>
+
+    {% if filtros.busca or filtros.status or filtros.classificacao or filtros.responsavel or filtros.operadora or filtros.projeto or filtros.data_inicio or filtros.data_fim %}
+        <div class="rreip-empty-state__actions">
+            <a href="{{ request.path }}" class="rreip-btn rreip-btn--secondary rreip-btn--small">
+                Limpar filtros
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block modais %}
+
+<!-- MODAL: REABRIR REGISTRO FINALIZADO -->
+<div
+    class="rreip-modal-overlay"
+    id="rreipModalReabrirFinalizado"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="rreipModalReabrirFinalizadoTitulo"
+>
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalReabrirFinalizadoTitulo">
+                Reabrir registro para análise
+            </h3>
+
+            <button
+                type="button"
+                class="rreip-modal__close"
+                data-close-modal="rreipModalReabrirFinalizado"
+                aria-label="Fechar"
+            >
+                &times;
+            </button>
+        </div>
+
+        <form id="rreipFormReabrirFinalizado" novalidate autocomplete="off">
+            {% csrf_token %}
+
+            <div class="rreip-modal__body">
+                <div
+                    class="rreip-form-error-summary"
+                    data-form-error-summary
+                    hidden
+                ></div>
+
+                <input
+                    type="hidden"
+                    id="rreipReabrirFinalizadoId"
+                    name="id"
+                >
+
+                <p class="rreip-finalizados-modal-message">
+                    O registro retornará para a fila de Tratamento. Os tickets, a análise,
+                    a classificação, o monitoramento e todo o histórico serão preservados.
+                </p>
+
+                <div class="rreip-form-group">
+                    <label
+                        class="rreip-form-label"
+                        for="rreipReabrirFinalizadoMotivo"
+                    >
+                        Motivo da reabertura
+                        <span class="rreip-form-required">*</span>
+                    </label>
+
+                    <textarea
+                        class="rreip-form-textarea"
+                        id="rreipReabrirFinalizadoMotivo"
+                        name="motivo"
+                        placeholder="Informe por que este registro precisa retornar para análise."
+                        required
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="rreip-modal__footer">
+                <button
+                    type="button"
+                    class="rreip-btn rreip-btn--text"
+                    data-close-modal="rreipModalReabrirFinalizado"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="rreip-btn rreip-btn--primary"
+                >
+                    Confirmar reabertura
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_reincidencias_js %}
+<script src="{% static 'js/chamados/reincidencias_finalizados.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Destinos de E-mail | Arion Broker{% endblock %}
+{% block page_title %}Destinos de E-mail{% endblock %}
+{% block nav_destinos %}active{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/painel/configuracao_emails.css' %}"
+>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="email-config-page">
+
+    <!-- =========================================================
+         CABEÇALHO
+         ========================================================= -->
+    <section class="email-config-header">
+
+        <div class="email-config-header__content">
+
+            <div class="email-config-header__icon">
+                <i class="bi bi-envelope-at"></i>
+            </div>
+
+            <div>
+
+                <h2 class="email-config-header__title">
+                    Destinos de E-mail
+                </h2>
+
+                <p class="email-config-header__description">
+                    Configure os destinatários utilizados nos envios automáticos de cada projeto.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         INFORMAÇÃO
+         ========================================================= -->
+    <div class="email-config-info">
+
+        <i class="bi bi-info-circle"></i>
+
+        <span>
+            Você pode informar mais de um endereço de e-mail conforme
+            o formato já aceito pelo sistema. As alterações passam a
+            valer após salvar esta configuração.
+        </span>
+
+    </div>
+
+
+    <!-- =========================================================
+         FORMULÁRIO
+         ========================================================= -->
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <section class="email-config-card">
+
+            <!-- HEADER DO CARD -->
+            <div class="email-config-card__header">
+
+                <div class="email-config-card__title">
+
+                    <i class="bi bi-send"></i>
+
+                    Destinatários por projeto
+
+                    <span class="email-config-count">
+                        {{ projetos|length }}
+                    </span>
+
+                </div>
+
+
+                <span class="email-config-card__hint">
+                    Para = destinatário principal · CC = cópia
+                </span>
+
+            </div>
+
+
+            <!-- TABELA -->
+            <div class="email-config-table-wrapper">
+
+                <table class="email-config-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>
+                                Projeto
+                            </th>
+
+                            <th>
+                                Enviar para
+                            </th>
+
+                            <th>
+                                Cópia (CC)
+                            </th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in projetos %}
+
+                        <tr>
+
+                            <!-- PROJETO -->
+                            <td>
+
+                                <div class="email-project">
+
+                                    <div class="email-project__icon">
+                                        <i class="bi bi-folder"></i>
+                                    </div>
+
+                                    <div class="email-project__info">
+
+                                        <strong class="email-project__name">
+                                            {{ item.name }}
+                                        </strong>
+
+                                        <span class="email-project__sub">
+                                            {{ item.code }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- DESTINATÁRIO -->
+                            <td>
+
+                                <input
+                                    type="text"
+                                    name="dest_{{ item.code }}"
+                                    class="email-config-input"
+                                    value="{{ item.config.destinatarios|default:'atendimento@grupoarion.com.br' }}"
+                                    placeholder="destinatario@empresa.com.br"
+                                    autocomplete="off"
+                                    aria-label="Destinatário do projeto {{ item.name }}"
+                                >
+
+                            </td>
+
+
+                            <!-- CC -->
+                            <td>
+
+                                <input
+                                    type="text"
+                                    name="cc_{{ item.code }}"
+                                    class="email-config-input"
+                                    value="{{ item.config.cc|default:'' }}"
+                                    placeholder="Opcional"
+                                    autocomplete="off"
+                                    aria-label="Cópia do projeto {{ item.name }}"
+                                >
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="3">
+
+                                <div class="email-config-info">
+
+                                    <i class="bi bi-inbox"></i>
+
+                                    <span>
+                                        Nenhum projeto disponível para configuração.
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- FOOTER -->
+            <div class="email-config-footer">
+
+                <div class="email-config-footer__text">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    As configurações são aplicadas aos próximos envios automáticos.
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="email-config-save"
+                >
+
+                    <i class="bi bi-floppy"></i>
+
+                    Salvar configurações
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </form>
+
+</div>
+
+{% endblock %}

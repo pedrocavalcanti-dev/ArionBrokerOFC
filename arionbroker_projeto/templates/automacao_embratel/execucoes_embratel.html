@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Execuções do Robô Embratel | Arion Broker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/embratel/execucoes.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="embratel-exec-wrapper">
+    
+    <!-- 1. CABEÇALHO CONTEXTUAL -->
+    <header class="embratel-exec-header">
+        <div class="embratel-exec-header__left">
+            <h1 class="topbar__title">Execuções do Robô</h1>
+            <p class="embratel-exec-header__sub">Acompanhe as sincronizações realizadas no Modos Web.</p>
+        </div>
+        <div class="embratel-exec-header__right">
+            <!-- Botão de execução manual (depende da URL existir no backend) -->
+            {% if urls_disponiveis.sincronizar or perms.automacao_embratel %}
+            <form method="POST" action="{% url 'automacao_embratel:sincronizar' %}" class="embratel-exec-inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn--primary btn--sm" data-modal-target="#embratel-exec-modal" data-modal-title="Sincronização Manual" data-modal-body="Deseja forçar a execução de um ciclo de sincronização agora?">
+                    <i class="bi bi-play-fill"></i> Executar Agora
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- 2. CARDS DE RESUMO -->
+    {% if resumo %}
+    <section class="embratel-exec-summary-grid">
+        <div class="card embratel-exec-summary-card">
+            <div class="embratel-exec-summary-card__header">
+                <span class="embratel-exec-summary-card__label">Total de Execuções</span>
+                <i class="bi bi-activity embratel-exec-summary-card__icon text-muted"></i>
+            </div>
+            <span class="embratel-exec-summary-card__value">{{ resumo.total|default:"0" }}</span>
+        </div>
+        <div class="card embratel-exec-summary-card">
+            <div class="embratel-exec-summary-card__header">
+                <span class="embratel-exec-summary-card__label">Sucesso</span>
+                <i class="bi bi-check-circle embratel-exec-summary-card__icon text-success"></i>
+            </div>
+            <span class="embratel-exec-summary-card__value text-success">{{ resumo.sucesso|default:"0" }}</span>
+        </div>
+        <div class="card embratel-exec-summary-card">
+            <div class="embratel-exec-summary-card__header">
+                <span class="embratel-exec-summary-card__label">Com Erro</span>
+                <i class="bi bi-x-octagon embratel-exec-summary-card__icon text-danger"></i>
+            </div>
+            <span class="embratel-exec-summary-card__value {% if resumo.erro %}text-danger{% endif %}">{{ resumo.erro|default:"0" }}</span>
+        </div>
+        <div class="card embratel-exec-summary-card">
+            <div class="embratel-exec-summary-card__header">
+                <span class="embratel-exec-summary-card__label">Tarefas Coletadas</span>
+                <i class="bi bi-inbox embratel-exec-summary-card__icon text-primary"></i>
+            </div>
+            <span class="embratel-exec-summary-card__value">{{ resumo.tarefas_coletadas|default:"0" }}</span>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- 3. BARRA DE FERRAMENTAS E FILTROS -->
+    <section class="embratel-exec-toolbar">
+        <div class="embratel-exec-toolbar__left" id="embratel-exec-filters">
+            <button type="button" class="btn btn--sm btn--primary embratel-exec-filter-btn" data-filter="todos">Todas</button>
+            <button type="button" class="btn btn--sm btn--outline embratel-exec-filter-btn" data-filter="sucesso">Sucesso</button>
+            <button type="button" class="btn btn--sm btn--outline embratel-exec-filter-btn" data-filter="erro">Erros</button>
+            <button type="button" class="btn btn--sm btn--outline embratel-exec-filter-btn" data-filter="andamento">Em Andamento</button>
+        </div>
+        
+        <div class="embratel-exec-toolbar__right">
+            <div class="embratel-exec-search">
+                <i class="bi bi-search embratel-exec-search__icon"></i>
+                <input type="text" id="embratel-exec-search-input" class="input embratel-exec-search__input" placeholder="Buscar execuções..." aria-label="Buscar execuções">
+            </div>
+        </div>
+    </section>
+
+    <!-- ESTADO: BUSCA VAZIA (Client-side) -->
+    <div id="embratel-exec-empty-search" class="card embratel-exec-empty-state d-none">
+        <i class="bi bi-search embratel-exec-empty-state__icon"></i>
+        <h3>Nenhuma execução corresponde aos filtros.</h3>
+        <p class="text-muted">Altere sua busca ou remova os filtros de status.</p>
+    </div>
+
+    <!-- 6. TABELA DE EXECUÇÕES -->
+    {% if execucoes %}
+    <div class="table-wrapper" id="embratel-exec-table-wrapper">
+        <table class="table embratel-exec-table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 40px;"></th>
+                    <th scope="col">ID / Origem</th>
+                    <th scope="col">Início</th>
+                    <th scope="col">Duração</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Novas</th>
+                    <th scope="col">Atualizadas</th>
+                    <th scope="col">Erros Tarefas</th>
+                </tr>
+            </thead>
+            <tbody id="embratel-exec-table-body">
+                {% for execucao in execucoes %}
+                <!-- Linha Principal (Clicável) -->
+                <tr class="embratel-exec-row" 
+                    aria-expanded="false" 
+                    aria-controls="detalhe-{{ execucao.pk }}"
+                    data-status="{% if 'sucesso' in execucao.status|lower %}sucesso{% elif 'erro' in execucao.status|lower or 'falha' in execucao.status|lower %}erro{% elif 'andamento' in execucao.status|lower %}andamento{% else %}{{ execucao.status|lower }}{% endif %}"
+                    data-search="{{ execucao.id }} {{ execucao.origem|lower }} {{ execucao.status|lower }} {{ execucao.iniciado_em|date:'d/m/Y H:i' }}">
+                    
+                    <td class="embratel-exec-toggle-cell">
+                        <i class="bi bi-chevron-right embratel-exec-chevron"></i>
+                    </td>
+                    <td>
+                        <span class="embratel-exec-font-mono">#{{ execucao.id }}</span>
+                        <br>
+                        <small class="text-muted">{{ execucao.get_origem_display|default:execucao.origem }}</small>
+                    </td>
+                    <td>
+                        <span>{{ execucao.iniciado_em|date:"d/m/Y" }}</span>
+                        <br>
+                        <small class="text-muted">{{ execucao.iniciado_em|time:"H:i:s" }}</small>
+                    </td>
+                    <td>
+                        {% if execucao.duracao_segundos != None %}
+                        {{ execucao.duracao_segundos }}s
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge embratel-exec-status--{{ execucao.status|slugify|default:'default' }}">
+                            {% if 'ANDAMENTO' in execucao.status %}<i class="bi bi-arrow-repeat spin"></i>{% endif %}
+                            {{ execucao.get_status_display|default:execucao.status }}
+                        </span>
+                    </td>
+                    <td><span class="badge badge--novo">{{ execucao.tarefas_novas|default:"0" }}</span></td>
+                    <td><span class="badge badge--revisao">{{ execucao.tarefas_atualizadas|default:"0" }}</span></td>
+                    <td>
+                        <span class="{% if execucao.erros > 0 %}text-danger font-weight-bold{% else %}text-muted{% endif %}">
+                            {{ execucao.erros|default:"0" }}
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- 8. PAINEL EXPANSÍVEL DE DETALHES -->
+                <tr id="detalhe-{{ execucao.pk }}" class="embratel-exec-details-row d-none" aria-hidden="true">
+                    <td colspan="8" class="embratel-exec-details-cell">
+                        <div class="embratel-exec-details-content">
+                            <div class="embratel-exec-details-grid">
+                                
+                                <!-- Bloco de Resumo de Tarefas e Metadados -->
+                                <div class="embratel-exec-details-metrics">
+                                    <h4 class="embratel-exec-details-title">Resumo da Coleta</h4>
+                                    <ul class="embratel-exec-metrics-list">
+                                        <li><strong>Encontradas:</strong> {{ execucao.tarefas_encontradas|default:"0" }}</li>
+                                        <li><strong>Novas Criadas:</strong> {{ execucao.tarefas_novas|default:"0" }}</li>
+                                        <li><strong>Atualizadas:</strong> {{ execucao.tarefas_atualizadas|default:"0" }}</li>
+                                        <li><strong>E-mails Enviados:</strong> {{ execucao.emails_enviados|default:"0" }}</li>
+                                        <li><strong>Finalizado em:</strong> {{ execucao.finalizado_em|date:"d/m/Y H:i:s"|default:"—" }}</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 9. VISUALIZAÇÃO DE LOGS / MENSAGENS -->
+                                <div class="embratel-exec-details-logs">
+                                    <div class="embratel-exec-logs-header">
+                                        <h4 class="embratel-exec-details-title mb-0">Mensagens & Logs</h4>
+                                        {% if execucao.mensagem or execucao.erros > 0 %}
+                                        <button type="button" class="btn btn--sm btn--outline embratel-exec-copy-btn" data-copy-target="log-{{ execucao.pk }}" aria-label="Copiar logs">
+                                            <i class="bi bi-copy"></i> Copiar
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="embratel-exec-console" id="log-{{ execucao.pk }}">
+                                        {% if execucao.mensagem %}
+                                            <div class="embratel-exec-log-entry">
+                                                <span class="embratel-exec-log-time">[{{ execucao.iniciado_em|date:"H:i:s" }}]</span>
+                                                <span class="embratel-exec-log-level info">[INFO]</span>
+                                                <span class="embratel-exec-log-msg">{{ execucao.mensagem }}</span>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if 'ERRO' in execucao.status or 'FALHA' in execucao.status %}
+                                            <div class="embratel-exec-log-entry">
+                                                <span class="embratel-exec-log-time">[{{ execucao.finalizado_em|date:"H:i:s"|default:"--" }}]</span>
+                                                <span class="embratel-exec-log-level error">[ERROR]</span>
+                                                <span class="embratel-exec-log-msg">Falha registrada durante a sincronização. Verifique o painel do sistema ou logs gerais para traceback.</span>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if not execucao.mensagem and 'SUCESSO' in execucao.status %}
+                                            <div class="embratel-exec-log-entry">
+                                                <span class="embratel-exec-log-time">[{{ execucao.finalizado_em|date:"H:i:s"|default:"--" }}]</span>
+                                                <span class="embratel-exec-log-level success">[SUCCESS]</span>
+                                                <span class="embratel-exec-log-msg">Ciclo finalizado sem erros mapeados.</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 13. PAGINAÇÃO -->
+    {% if pagina.has_other_pages %}
+    <div class="embratel-exec-pagination">
+        <span class="text-muted embratel-exec-text-sm">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+        <div class="embratel-exec-pagination__controls">
+            {% if pagina.has_previous %}
+                <a href="?page={{ pagina.previous_page_number }}&{{ querystring_filtros }}" class="btn btn--outline btn--sm">Anterior</a>
+            {% else %}
+                <button class="btn btn--outline btn--sm" disabled>Anterior</button>
+            {% endif %}
+            
+            {% if pagina.has_next %}
+                <a href="?page={{ pagina.next_page_number }}&{{ querystring_filtros }}" class="btn btn--outline btn--sm">Próximo</a>
+            {% else %}
+                <button class="btn btn--outline btn--sm" disabled>Próximo</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- 12. ESTADO VAZIO (Server-side) -->
+    <div class="card embratel-exec-empty-state">
+        <i class="bi bi-clock-history embratel-exec-empty-state__icon"></i>
+        <h3>Nenhuma execução registrada</h3>
+        <p class="text-muted">As execuções automáticas e manuais do robô Embratel aparecerão aqui.</p>
+    </div>
+    {% endif %}
+
+    <!-- 11. MODAL REUTILIZÁVEL -->
+    <div id="embratel-exec-modal" class="embratel-exec-modal" role="dialog" aria-modal="true" aria-labelledby="embratel-exec-modal-title" aria-hidden="true">
+        <div class="embratel-exec-modal__overlay" data-modal-close></div>
+        <div class="embratel-exec-modal__content">
+            <div class="embratel-exec-modal__header">
+                <h3 id="embratel-exec-modal-title">Confirmação</h3>
+                <button type="button" class="embratel-exec-modal__close" data-modal-close aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="embratel-exec-modal__body" id="embratel-exec-modal-body">
+                Deseja prosseguir?
+            </div>
+            <div class="embratel-exec-modal__footer">
+                <button type="button" class="btn btn--outline" data-modal-close>Cancelar</button>
+                <button type="button" class="btn btn--primary" id="btn-modal-confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="embratel-exec-toast" class="embratel-exec-toast" aria-live="polite"></div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script defer src="{% static 'js/embratel/execucoes.js' %}"></script>
+{% endblock %}

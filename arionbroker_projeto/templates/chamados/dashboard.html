@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard — Arion Broker{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chamados/dashboard.css' %}">
+{% endblock %}
+{% block page_title %}Visão Geral{% endblock %}
+{% block content %}
+<div class="dash-wrap tv-mode">
+
+    <!-- TOP: KPIs Globais Gigantes -->
+    <div id="kpi-strip" class="kpi-strip-giant"></div>
+
+    <div class="dashboard-main-layout">
+        <!-- MIDDLE LEFT: Grid de Operadoras (2x2 para caber tudo na tela) -->
+        <div id="operadoras-container" class="operadoras-container"></div>
+
+        <!-- MIDDLE RIGHT: Painéis Laterais (SLA e Gráfico) -->
+        <div class="side-column">
+            <div class="tv-panel">
+                <h3 class="tv-panel__title">Destaques de SLA</h3>
+                <div id="sla-highlight-list" class="sla-highlight-list"></div>
+            </div>
+            <div class="tv-panel panel-chart">
+                <h3 class="tv-panel__title">Volume por Operadora</h3>
+                <div class="chart-box__legend" id="legend-op"></div>
+                <div class="chart-wrap">
+                    <canvas id="chartOp"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="{% static 'js/chamados/dashboard.js' %}"></script>
+{% endblock %}

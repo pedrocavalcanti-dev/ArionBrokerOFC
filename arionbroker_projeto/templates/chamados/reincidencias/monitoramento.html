@@ -1,0 +1,261 @@
+{% extends "chamados/reincidencias/base_reincidencias.html" %}
+{% load static %}
+
+{% block descricao_fila %}
+Circuitos em acompanhamento pelo período de 30 dias para validação da ação preventiva e identificação de novas instabilidades.
+{% endblock %}
+
+{% block botao_novo %}{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/chamados/reincidencias_monitoramento.css' %}">
+{% endblock %}
+{% block thead %}
+<th class="rreip-col-ticket-monitoramento">Ticket Monitoramento</th>
+<th class="rreip-col-ticket-origem">Ticket Origem</th>
+<th class="rreip-col-projeto">Projeto</th>
+<th class="rreip-col-designacao">Designação</th>
+<th class="rreip-col-identificador">Identificador</th>
+<th class="rreip-col-cliente">Cliente</th>
+<th class="rreip-col-responsavel">Responsável</th>
+<th class="rreip-col-data">Início</th>
+<th class="rreip-col-data">Fim Previsto</th>
+<th class="rreip-col-prazo">Prazo</th>
+<th class="rreip-col-status">Status</th>
+<th class="rreip-col-acoes">Ações</th>
+{% endblock %}
+
+{% block tbody %}
+{% for reincidencia in reincidencias %}
+<tr
+    class="rreip-row"
+    data-id="{{ reincidencia.id }}"
+    data-fila="{{ reincidencia.fila }}"
+    data-status="{{ reincidencia.status }}"
+>
+    <!-- CHECKBOX GLOBAL -->
+    <td class="rreip-col-checkbox">
+        <input
+            type="checkbox"
+            class="rreip-checkbox rreip-row-checkbox"
+            value="{{ reincidencia.id }}"
+            aria-label="Selecionar reincidência {{ reincidencia.ticket_monitoramento|default:reincidencia.id }}"
+        >
+    </td>
+
+    <!-- TICKET DE MONITORAMENTO -->
+    <td class="rreip-col-ticket-monitoramento">
+        <div class="rreip-ticket-card rreip-ticket-card--monitoramento">
+            <span class="rreip-ticket-card__label">Monitoramento</span>
+            {% if reincidencia.url_ticket_monitoramento %}
+            <a href="{{ reincidencia.url_ticket_monitoramento }}" target="_blank" rel="noopener noreferrer" class="rreip-ticket rreip-ticket--link rreip-ticket-card__number">
+                {{ reincidencia.ticket_monitoramento }}
+            </a>
+            {% else %}
+            <span class="rreip-ticket rreip-ticket-card__number">{{ reincidencia.ticket_monitoramento|default:"—" }}</span>
+            {% endif %}
+        </div>
+    </td>
+
+    <!-- TICKET DE ORIGEM -->
+    <td class="rreip-col-ticket-origem">
+        <div class="rreip-ticket-card rreip-ticket-card--origem">
+            <span class="rreip-ticket-card__label">Origem</span>
+            {% firstof reincidencia.ticket_origem reincidencia.ticket_atual "—" as ticket_exibicao %}
+            {% firstof reincidencia.url_ticket_origem reincidencia.url_ticket "" as url_exibicao %}
+            
+            {% if url_exibicao %}
+            <a href="{{ url_exibicao }}" target="_blank" rel="noopener noreferrer" class="rreip-ticket rreip-ticket--link rreip-ticket-card__number">
+                {{ ticket_exibicao }}
+            </a>
+            {% else %}
+            <span class="rreip-ticket rreip-ticket-card__number">{{ ticket_exibicao }}</span>
+            {% endif %}
+        </div>
+    </td>
+
+    <!-- DADOS BASE -->
+    <td class="rreip-col-projeto"><span class="rreip-projeto">{{ reincidencia.projeto|default:"—" }}</span></td>
+    <td class="rreip-col-designacao">{{ reincidencia.designacao|default:"—" }}</td>
+    <td class="rreip-col-identificador">
+        <div class="rreip-identificador">
+            <span class="rreip-identificador__label">{{ reincidencia.get_identificador_label|default:"ID" }}</span>
+            <span class="rreip-identificador__value">{{ reincidencia.identificador_projeto|default:"—" }}</span>
+        </div>
+    </td>
+    <td class="rreip-col-cliente">{{ reincidencia.cliente|default:"—" }}</td>
+
+    <!-- RESPONSÁVEL -->
+    <td class="rreip-col-responsavel">
+        {% if not reincidencia.responsavel %}
+            <div class="rreip-responsavel">
+                <span class="rreip-responsavel--vazio">Sem responsável</span>
+                <button type="button" class="rreip-btn rreip-btn--text rreip-btn--small" data-action="apropriar" data-id="{{ reincidencia.id }}">Apropriar-se</button>
+            </div>
+        {% else %}
+            <div class="rreip-responsavel">
+                <span class="rreip-responsavel__avatar">{{ reincidencia.responsavel.first_name|first|default:reincidencia.responsavel.username|first|upper }}</span>
+                <span class="rreip-responsavel__nome">{{ reincidencia.responsavel.get_full_name|default:reincidencia.responsavel.username }}</span>
+            </div>
+        {% endif %}
+    </td>
+
+    <!-- DATAS E PRAZO -->
+    <td class="rreip-col-data">
+        {% if reincidencia.data_inicio_monitoramento %}
+            <time datetime="{{ reincidencia.data_inicio_monitoramento|date:'c' }}">{{ reincidencia.data_inicio_monitoramento|date:'d/m/Y H:i' }}</time>
+        {% else %}—{% endif %}
+    </td>
+    <td class="rreip-col-data">
+        {% if reincidencia.data_fim_monitoramento %}
+            <time datetime="{{ reincidencia.data_fim_monitoramento|date:'c' }}">{{ reincidencia.data_fim_monitoramento|date:'d/m/Y H:i' }}</time>
+        {% else %}—{% endif %}
+    </td>
+    <td class="rreip-col-prazo">
+        {% with dias=reincidencia.dias_restantes_monitoramento %}
+            {% if reincidencia.status == 'CONCLUIDO' %}
+                <span class="rreip-prazo rreip-prazo--concluido">Concluído</span>
+            {% elif dias > 10 %}
+                <span class="rreip-prazo rreip-prazo--normal">{{ dias }} dias restantes</span>
+            {% elif dias > 0 %}
+                <span class="rreip-prazo rreip-prazo--alerta">{{ dias }} dias restantes</span>
+            {% else %}
+                <span class="rreip-prazo rreip-prazo--vencido">Prazo encerrado</span>
+            {% endif %}
+        {% endwith %}
+    </td>
+
+    <!-- STATUS FIXO -->
+    <td class="rreip-col-status">
+        <span class="rreip-status 
+            {% if reincidencia.status == 'MONITORANDO' %}rreip-status--monitorando
+            {% elif reincidencia.status == 'REINCIDIU' %}rreip-status--reincidiu
+            {% elif reincidencia.status == 'CONCLUIDO' %}rreip-status--concluido
+            {% endif %}
+        ">
+            <span class="rreip-status__dot"></span> {{ reincidencia.get_status_display }}
+        </span>
+    </td>
+
+    <!-- AÇÕES -->
+    <td class="rreip-col-acoes">
+        <div class="rreip-actions">
+            <!-- Ação sempre visível -->
+            <a href="{% url 'chamados:reincidencias:detalhes' reincidencia.id %}" class="rreip-action-btn" title="Ver Detalhes">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </a>
+
+            {% if request.user == reincidencia.responsavel or request.user.is_staff %}
+            <details class="rreip-actions-menu">
+                <summary class="rreip-action-btn" aria-label="Mais ações">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                </summary>
+                <div class="rreip-actions-menu__content">
+                    <button type="button" class="rreip-btn rreip-btn--danger rreip-btn--small" data-action="registrar-reincidencia" data-id="{{ reincidencia.id }}">Registrar Ocorrência (Falhou)</button>
+                    
+                    <hr>
+                    <button type="button" class="rreip-btn rreip-btn--success rreip-btn--small" data-action="concluir-monitoramento" data-id="{{ reincidencia.id }}">Concluir (Sucesso)</button>
+                    
+                    {% if request.user.is_staff %}
+                        <hr>
+                        <button type="button" class="rreip-btn rreip-btn--text rreip-btn--small" data-action="transferir" data-id="{{ reincidencia.id }}">Transferir Responsável</button>
+                        <button type="button" class="rreip-btn rreip-btn--danger rreip-btn--small" data-action="excluir" data-id="{{ reincidencia.id }}" title="Usar apenas para registros criados por engano">Excluir Definitivamente</button>
+                    {% endif %}
+                </div>
+            </details>
+            {% endif %}
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% endblock %}
+
+{% block estado_vazio %}
+<div class="rreip-empty rreip-empty-state">
+    <svg class="rreip-empty-state__icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+    <p class="rreip-empty-state__title">Nenhum circuito em monitoramento</p>
+    <span class="rreip-empty-state__description">Não existem reincidências com acompanhamento ativo no momento.</span>
+    {% if filtros.busca or filtros.status or filtros.classificacao or filtros.responsavel or filtros.operadora or filtros.projeto or filtros.data_inicio or filtros.data_fim %}
+    <div class="rreip-empty-state__actions">
+        <a href="{{ request.path }}" class="rreip-btn rreip-btn--secondary rreip-btn--small">Limpar filtros</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block modais %}
+<!-- MODAL: REGISTRAR NOVA REINCIDÊNCIA (FALHA NO MONITORAMENTO) -->
+<div class="rreip-modal-overlay" id="rreipModalNovaOcorrencia" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalNovaOcorrenciaTitulo">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalNovaOcorrenciaTitulo">Registrar Nova Ocorrência</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalNovaOcorrencia" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormNovaOcorrencia" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipNovaOcorrenciaId" name="id">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipNovaOcorrenciaTicket">Novo Ticket <span class="rreip-form-required">*</span></label>
+                    <input type="text" class="rreip-form-input" id="rreipNovaOcorrenciaTicket" name="novo_ticket" required>
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipNovaOcorrenciaUrl">URL do Novo Ticket</label>
+                    <input type="text" class="rreip-form-input" id="rreipNovaOcorrenciaUrl" name="url_ticket">
+                </div>
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipNovaOcorrenciaData">Data do Novo Ticket</label>
+                    <input type="datetime-local" class="rreip-form-input" id="rreipNovaOcorrenciaData" name="data_ticket">
+                </div>
+                
+                <span class="rreip-form-help" style="display:block; margin-top:0.8rem; color:var(--rreip-warning);">
+                    <strong>Atenção:</strong> O ticket de origem e o ticket de monitoramento serão preservados. O novo ticket será registrado no histórico e o caso retornará para Tratamento.
+                </span>
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalNovaOcorrencia">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--danger">Registrar Falha</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: CONCLUIR MONITORAMENTO -->
+<div class="rreip-modal-overlay" id="rreipModalConcluir" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rreipModalConcluirTitulo">
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalConcluirTitulo">Concluir Monitoramento</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalConcluir" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="rreipFormConcluir" novalidate autocomplete="off">
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipConcluirId" name="id">
+
+                <p style="font-size: 0.875rem; color: var(--rreip-text); margin-bottom: 1rem;">
+                    Ao concluir, o registro será movido para Finalizados e todas as informações do monitoramento serão preservadas.
+                </p>
+
+                {% if request.user.is_staff %}
+                <div class="rreip-form-group" style="background: rgba(245,158,11,0.1); padding: 1rem; border-radius: 8px; border: 1px dashed var(--rreip-warning);">
+                    <label class="rreip-form-label" style="color: var(--rreip-warning); font-weight: 800; display:flex; align-items:center; gap:0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="rreipConcluirForcar" name="forcar" style="width: 16px; height: 16px;">
+                        Forçar Conclusão Antecipada
+                    </label>
+                    <span class="rreip-form-help" style="margin-top: 0.5rem; display: block;">Conclusão antecipada deve ser usada apenas quando houver justificativa operacional antes do vencimento dos 30 dias.</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalConcluir">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--success">Confirmar Conclusão</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_reincidencias_js %}
+<script src="{% static 'js/chamados/reincidencias_monitoramento.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,1284 @@
+/* ==========================================================================
+   RREIP — Página de Detalhes
+   Arquivo: static/css/chamados/reincidencias_detalhes.css
+
+   Este arquivo contém todo o visual específico de detalhes.html.
+   Carregue antes dele:
+   static/css/chamados/reincidencias_base.css
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. Página e estrutura geral
+   ========================================================================== */
+
+.rreip-details-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    min-width: 0;
+    color: var(--text-primary);
+}
+
+.rreip-details-page *,
+.rreip-details-page *::before,
+.rreip-details-page *::after {
+    box-sizing: border-box;
+}
+
+.rreip-details-page .font-mono {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.rreip-text-muted {
+    color: var(--text-muted);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: 1.5;
+}
+
+
+/* ==========================================================================
+   2. Navegação de retorno
+   ========================================================================== */
+
+.rreip-details-nav {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+}
+
+.rreip-details-nav__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.68rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm, 6px);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.rreip-details-nav__back:hover {
+    border-color: var(--border);
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    text-decoration: none;
+    transform: translateX(-2px);
+}
+
+.rreip-details-nav__back:focus-visible {
+    outline: 3px solid rgba(34, 197, 94, 0.18);
+    outline-offset: 2px;
+}
+
+.rreip-details-nav__back svg {
+    flex-shrink: 0;
+}
+
+
+/* ==========================================================================
+   3. Cabeçalho principal
+   ========================================================================== */
+
+.rreip-details-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.2rem 1.3rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 12px);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(22, 163, 74, 0.06),
+            transparent 42%
+        ),
+        var(--bg-surface);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.02) inset,
+        0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.rreip-details-header__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.55rem;
+}
+
+.rreip-details-header__meta-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.rreip-details-header__title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 850;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.rreip-details-header__subtitle {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: 1.5;
+}
+
+.rreip-details-header__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    max-width: 620px;
+    gap: 0.5rem;
+}
+
+
+/* ==========================================================================
+   4. Badges de fila
+   ========================================================================== */
+
+.rreip-fila-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 27px;
+    padding: 0.26rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.rreip-fila-badge--tratamento {
+    border-color: rgba(59, 130, 246, 0.28);
+    background: rgba(59, 130, 246, 0.12);
+    color: #93c5fd;
+}
+
+.rreip-fila-badge--monitoramento {
+    border-color: rgba(6, 182, 212, 0.28);
+    background: rgba(6, 182, 212, 0.12);
+    color: #67e8f9;
+}
+
+.rreip-fila-badge--finalizado {
+    border-color: rgba(16, 185, 129, 0.28);
+    background: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+}
+
+
+/* ==========================================================================
+   5. Status
+   ========================================================================== */
+
+.rreip-details-page .rreip-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    min-height: 27px;
+    padding: 0.26rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.rreip-details-page .rreip-status__dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.rreip-status--novo {
+    border-color: rgba(139, 92, 246, 0.28) !important;
+    background: rgba(139, 92, 246, 0.12) !important;
+    color: #c4b5fd !important;
+}
+
+.rreip-status--em-analise {
+    border-color: rgba(234, 179, 8, 0.28) !important;
+    background: rgba(234, 179, 8, 0.12) !important;
+    color: #fde047 !important;
+}
+
+.rreip-status--em-tratativa {
+    border-color: rgba(59, 130, 246, 0.28) !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+    color: #93c5fd !important;
+}
+
+.rreip-status--aguardando-ticket {
+    border-color: rgba(249, 115, 22, 0.28) !important;
+    background: rgba(249, 115, 22, 0.12) !important;
+    color: #fdba74 !important;
+}
+
+.rreip-status--monitorando {
+    border-color: rgba(6, 182, 212, 0.28) !important;
+    background: rgba(6, 182, 212, 0.12) !important;
+    color: #67e8f9 !important;
+}
+
+.rreip-status--reincidiu {
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    background: rgba(239, 68, 68, 0.13) !important;
+    color: #fca5a5 !important;
+}
+
+.rreip-status--concluido {
+    border-color: rgba(16, 185, 129, 0.28) !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #6ee7b7 !important;
+}
+
+.rreip-status--descartado {
+    border-color: rgba(100, 116, 139, 0.3) !important;
+    background: rgba(100, 116, 139, 0.13) !important;
+    color: #cbd5e1 !important;
+}
+
+
+/* ==========================================================================
+   6. Classificação
+   ========================================================================== */
+
+.rreip-details-page .rreip-classificacao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 27px;
+    padding: 0.26rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.rreip-classificacao--pendente {
+    border-color: rgba(148, 163, 184, 0.28) !important;
+    background: rgba(148, 163, 184, 0.11) !important;
+    color: #cbd5e1 !important;
+}
+
+.rreip-classificacao--confirmada {
+    border-color: rgba(34, 197, 94, 0.3) !important;
+    background: rgba(34, 197, 94, 0.12) !important;
+    color: #86efac !important;
+}
+
+.rreip-classificacao--massiva {
+    border-color: rgba(249, 115, 22, 0.3) !important;
+    background: rgba(249, 115, 22, 0.12) !important;
+    color: #fdba74 !important;
+}
+
+.rreip-classificacao--falso-positivo {
+    border-color: rgba(168, 85, 247, 0.3) !important;
+    background: rgba(168, 85, 247, 0.12) !important;
+    color: #d8b4fe !important;
+}
+
+.rreip-classificacao--falha-isolada {
+    border-color: rgba(234, 179, 8, 0.3) !important;
+    background: rgba(234, 179, 8, 0.12) !important;
+    color: #fde047 !important;
+}
+
+
+/* ==========================================================================
+   7. Cards de resumo
+   ========================================================================== */
+
+.rreip-details-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.8rem;
+}
+
+.rreip-details-summary__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.38rem;
+    overflow: hidden;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.rreip-details-summary__card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--border-strong);
+}
+
+.rreip-details-summary__card:nth-child(1)::before {
+    background: #8b5cf6;
+}
+
+.rreip-details-summary__card:nth-child(2)::before {
+    background: #3b82f6;
+}
+
+.rreip-details-summary__card:nth-child(3)::before {
+    background: #22c55e;
+}
+
+.rreip-details-summary__card:nth-child(4)::before {
+    background: #f59e0b;
+}
+
+.rreip-details-summary__card:nth-child(5)::before {
+    background: #06b6d4;
+}
+
+.rreip-details-summary__label {
+    overflow: hidden;
+    color: var(--text-muted);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.rreip-details-summary__value {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+}
+
+
+/* ==========================================================================
+   8. Layout principal
+   ========================================================================== */
+
+.rreip-details-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    align-items: start;
+    gap: 1rem;
+}
+
+.rreip-details-main,
+.rreip-details-sidebar {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1rem;
+}
+
+.rreip-details-sidebar {
+    position: sticky;
+    top: 1rem;
+}
+
+
+/* ==========================================================================
+   9. Cards da página
+   ========================================================================== */
+
+.rreip-details-card {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 12px);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.rreip-details-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+}
+
+.rreip-details-card__title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    font-weight: 850;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.rreip-details-card__description {
+    width: 100%;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    line-height: 1.45;
+}
+
+
+/* ==========================================================================
+   10. Grade de informações
+   ========================================================================== */
+
+.rreip-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+}
+
+.rreip-details-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.35rem;
+    padding: 0.9rem 1rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.rreip-details-item:nth-child(even) {
+    border-right: 0;
+}
+
+.rreip-details-item:nth-last-child(-n + 2) {
+    border-bottom: 0;
+}
+
+.rreip-details-item--full {
+    grid-column: 1 / -1;
+    border-right: 0;
+}
+
+.rreip-details-item--full:last-child {
+    border-bottom: 0;
+}
+
+.rreip-details-item__label {
+    color: var(--text-muted);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.045em;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+
+.rreip-details-item__value {
+    min-width: 0;
+    color: var(--text-primary);
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.rreip-details-item__value--technical {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+
+/* ==========================================================================
+   11. Tickets e links
+   ========================================================================== */
+
+.rreip-details-page .rreip-ticket {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0.3rem 0.56rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 6px);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.77rem;
+    font-weight: 750;
+    line-height: 1.25;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-details-page .rreip-ticket--link {
+    color: #60a5fa;
+}
+
+.rreip-details-page .rreip-ticket--link:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.08);
+    color: #93c5fd;
+    text-decoration: none;
+}
+
+.rreip-details-link {
+    color: var(--verde-arion-light, #22c55e);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.rreip-details-link:hover {
+    text-decoration: underline;
+}
+
+.rreip-identificador {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    gap: 0.35rem;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.rreip-identificador__label {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.rreip-identificador__value {
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   12. Análise técnica
+   ========================================================================== */
+
+.rreip-analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+}
+
+.rreip-analysis-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 140px;
+    gap: 0.45rem;
+    padding: 1rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+}
+
+.rreip-analysis-item:nth-child(even) {
+    border-right: 0;
+}
+
+.rreip-analysis-item:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    border-right: 0;
+}
+
+.rreip-analysis-item:nth-last-child(-n + 2) {
+    border-bottom: 0;
+}
+
+.rreip-analysis-item__label {
+    color: var(--text-muted);
+    font-size: 0.67rem;
+    font-weight: 850;
+    letter-spacing: 0.045em;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+
+.rreip-analysis-item__content {
+    flex: 1;
+    color: var(--text-secondary);
+    font-size: 0.84rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+.rreip-analysis-item__content br {
+    display: block;
+    content: "";
+    margin-top: 0.25rem;
+}
+
+.rreip-analysis-item--empty .rreip-analysis-item__content {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+
+/* ==========================================================================
+   13. Status do e-mail
+   ========================================================================== */
+
+.rreip-email-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 28px;
+    padding: 0.28rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.rreip-email-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.rreip-email-status--pending {
+    border-color: rgba(245, 158, 11, 0.28);
+    background: rgba(245, 158, 11, 0.12);
+    color: #fcd34d;
+}
+
+.rreip-email-status--sent {
+    border-color: rgba(34, 197, 94, 0.28);
+    background: rgba(34, 197, 94, 0.12);
+    color: #86efac;
+}
+
+
+/* ==========================================================================
+   14. Painel de texto OTRS
+   ========================================================================== */
+
+.rreip-copy-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1rem;
+}
+
+.rreip-copy-panel .rreip-form-textarea,
+#rreipTextoOtrsInline {
+    min-height: 260px;
+    max-height: 520px;
+    padding: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    resize: vertical;
+    white-space: pre-wrap;
+}
+
+.rreip-copy-panel__actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+
+/* ==========================================================================
+   15. Histórico
+   ========================================================================== */
+
+.rreip-history-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 1rem 1rem;
+}
+
+.rreip-history-list::before {
+    content: "";
+    position: absolute;
+    top: 1rem;
+    bottom: 1rem;
+    left: 1.36rem;
+    width: 2px;
+    background: var(--border);
+}
+
+.rreip-history-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: 0.8rem 0;
+}
+
+.rreip-history-item__marker {
+    position: relative;
+    z-index: 1;
+    width: 12px;
+    height: 12px;
+    margin-top: 0.3rem;
+    margin-left: 0.05rem;
+    border: 3px solid var(--bg-surface);
+    border-radius: 50%;
+    background: var(--verde-arion-light, #22c55e);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+}
+
+.rreip-history-item__content {
+    min-width: 0;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-elevated);
+}
+
+.rreip-history-item__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.7rem;
+}
+
+.rreip-history-item__title {
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.rreip-history-item__date {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.rreip-history-item__description {
+    margin: 0.45rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.79rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.rreip-history-item__user {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.69rem;
+    font-weight: 600;
+}
+
+.rreip-history-changes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.7rem;
+    padding: 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 6px);
+    background: var(--bg-surface);
+}
+
+.rreip-history-changes[hidden] {
+    display: none;
+}
+
+.rreip-history-change {
+    display: grid;
+    grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.55rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+.rreip-history-change:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.rreip-history-change__field {
+    color: var(--text-primary);
+    font-weight: 800;
+}
+
+.rreip-history-change__old {
+    color: #fca5a5;
+    overflow-wrap: anywhere;
+}
+
+.rreip-history-change__new {
+    color: #86efac;
+    overflow-wrap: anywhere;
+}
+
+
+/* ==========================================================================
+   16. Modais da página de detalhes
+   ========================================================================== */
+
+.rreip-details-page ~ .rreip-modal-overlay,
+.rreip-details-page .rreip-modal-overlay {
+    color: var(--text-primary);
+}
+
+#rreipModalEditar .rreip-modal__body,
+#rreipModalAnalise .rreip-modal__body {
+    padding-top: 1rem;
+}
+
+#rreipModalEditar .rreip-form-grid {
+    align-items: start;
+}
+
+#rreipModalClassificar .rreip-form-group + .rreip-form-group,
+#rreipModalAnalise .rreip-form-group + .rreip-form-group,
+#rreipModalTicketMonitoramento .rreip-form-group + .rreip-form-group,
+#rreipModalNovaOcorrencia .rreip-form-group + .rreip-form-group,
+#rreipModalReabrirFinalizado .rreip-form-group + .rreip-form-group {
+    margin-top: 1rem;
+}
+
+#rreipModalClassificar .rreip-form-textarea,
+#rreipModalReabrirFinalizado .rreip-form-textarea {
+    min-height: 130px;
+}
+
+#rreipModalAnalise .rreip-form-textarea {
+    min-height: 105px;
+}
+
+#rreipModalConcluir .rreip-form-group {
+    margin-top: 0.7rem;
+}
+
+.rreip-modal-dialog--small {
+    width: min(100%, 430px);
+}
+
+
+/* ==========================================================================
+   17. Prévia de e-mail
+   ========================================================================== */
+
+.rreip-email-preview {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-surface);
+}
+
+.rreip-email-preview__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.85rem 0.95rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+}
+
+.rreip-email-preview__recipients {
+    min-height: 1.1rem;
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.rreip-email-preview__recipients:empty {
+    display: none;
+}
+
+#rreipEmailDestinatarios:not(:empty)::before {
+    content: "Para:";
+    margin-right: 0.35rem;
+    color: var(--text-muted);
+    font-weight: 800;
+}
+
+#rreipEmailCc:not(:empty)::before {
+    content: "CC:";
+    margin-right: 0.35rem;
+    color: var(--text-muted);
+    font-weight: 800;
+}
+
+.rreip-email-preview__subject {
+    color: var(--text-primary);
+    font-size: 0.84rem;
+    font-weight: 800;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.rreip-email-preview__subject:not(:empty)::before {
+    content: "Assunto:";
+    margin-right: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.rreip-email-preview__body {
+    min-height: 260px;
+    max-height: 480px;
+    overflow: auto;
+    padding: 1rem;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+
+/* ==========================================================================
+   18. Checkbox e mensagens operacionais
+   ========================================================================== */
+
+.rreip-details-page input[type="checkbox"] {
+    accent-color: var(--verde-arion, #16a34a);
+}
+
+.rreip-details-page .rreip-form-help {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    line-height: 1.45;
+}
+
+.rreip-details-page .rreip-form-error {
+    color: #f87171;
+    font-size: 0.74rem;
+    line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   19. Loading
+   ========================================================================== */
+
+.rreip-details-page.is-loading,
+.rreip-modal-overlay.is-loading {
+    cursor: wait;
+}
+
+.rreip-details-page.is-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.rreip-modal-overlay.is-loading .rreip-modal {
+    opacity: 0.72;
+    pointer-events: none;
+}
+
+
+/* ==========================================================================
+   20. Tema claro
+   ========================================================================== */
+
+html:not([data-theme="dark"]) .rreip-fila-badge--tratamento {
+    color: #1d4ed8;
+}
+
+html:not([data-theme="dark"]) .rreip-fila-badge--monitoramento {
+    color: #0e7490;
+}
+
+html:not([data-theme="dark"]) .rreip-fila-badge--finalizado {
+    color: #047857;
+}
+
+html:not([data-theme="dark"]) .rreip-status--novo {
+    color: #7c3aed !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--em-analise {
+    color: #a16207 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--em-tratativa {
+    color: #1d4ed8 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--aguardando-ticket {
+    color: #c2410c !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--monitorando {
+    color: #0e7490 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--reincidiu {
+    color: #b91c1c !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--concluido {
+    color: #047857 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--descartado {
+    color: #475569 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--pendente {
+    color: #475569 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--confirmada {
+    color: #15803d !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--massiva {
+    color: #c2410c !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--falso-positivo {
+    color: #7e22ce !important;
+}
+
+html:not([data-theme="dark"]) .rreip-classificacao--falha-isolada {
+    color: #a16207 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-email-status--pending {
+    color: #b45309;
+}
+
+html:not([data-theme="dark"]) .rreip-email-status--sent {
+    color: #15803d;
+}
+
+html:not([data-theme="dark"]) .rreip-history-change__old {
+    color: #b91c1c;
+}
+
+html:not([data-theme="dark"]) .rreip-history-change__new {
+    color: #15803d;
+}
+
+
+/* ==========================================================================
+   21. Responsividade
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .rreip-details-header {
+        flex-direction: column;
+    }
+
+    .rreip-details-header__actions {
+        justify-content: flex-start;
+        max-width: none;
+        width: 100%;
+    }
+}
+
+@media (max-width: 992px) {
+    .rreip-details-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .rreip-details-sidebar {
+        position: static;
+    }
+
+    .rreip-details-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .rreip-details-page {
+        gap: 1rem;
+    }
+
+    .rreip-details-header {
+        padding: 1rem;
+    }
+
+    .rreip-details-header__actions .rreip-btn {
+        flex: 1 1 calc(50% - 0.5rem);
+    }
+
+    .rreip-details-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rreip-details-grid,
+    .rreip-analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rreip-details-item,
+    .rreip-details-item:nth-child(even),
+    .rreip-analysis-item,
+    .rreip-analysis-item:nth-child(even),
+    .rreip-analysis-item:last-child:nth-child(odd) {
+        grid-column: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .rreip-details-item:last-child,
+    .rreip-analysis-item:last-child {
+        border-bottom: 0;
+    }
+
+    .rreip-history-change {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+    }
+
+    .rreip-history-change__field {
+        margin-bottom: 0.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .rreip-details-nav__back {
+        padding-left: 0;
+    }
+
+    .rreip-details-header__title {
+        font-size: 1.2rem;
+    }
+
+    .rreip-details-header__actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .rreip-details-header__actions .rreip-btn {
+        width: 100%;
+        flex: none;
+    }
+
+    .rreip-details-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .rreip-details-card__header,
+    .rreip-details-item,
+    .rreip-analysis-item,
+    .rreip-copy-panel {
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+    }
+
+    .rreip-history-list {
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+    }
+
+    .rreip-history-list::before {
+        left: 1.06rem;
+    }
+
+    .rreip-history-item {
+        grid-template-columns: 18px minmax(0, 1fr);
+        gap: 0.5rem;
+    }
+
+    .rreip-history-item__header {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .rreip-history-item__date {
+        white-space: normal;
+    }
+
+    .rreip-copy-panel__actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .rreip-copy-panel__actions .rreip-btn {
+        width: 100%;
+    }
+
+    .rreip-email-preview__header,
+    .rreip-email-preview__body {
+        padding: 0.8rem;
+    }
+
+    .rreip-email-preview__body {
+        min-height: 210px;
+        font-size: 0.74rem;
+    }
+}
+
+
+/* ==========================================================================
+   22. Movimento reduzido
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .rreip-details-page *,
+    .rreip-details-page *::before,
+    .rreip-details-page *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

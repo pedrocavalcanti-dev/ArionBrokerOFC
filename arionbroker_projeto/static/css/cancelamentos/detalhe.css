@@ -1,0 +1,819 @@
+/* ============================================================
+   ARION PROJETOS — cancelamentos/detalhe.css  v2
+   Estiliza EXCLUSIVAMENTE a página de detalhes do cancelamento.
+   Reaproveita variáveis de base.css e classes de projetos.css /
+   cancelamentos.css. Nenhum estilo de modal fica aqui — ver
+   modais.css.
+
+   Índice:
+   1. Cabeçalho da ficha
+   2. Botões auxiliares do cabeçalho (icon / danger)
+   3. Barra de fluxo (progress bar)
+   4. Navegação por abas (+ indicador deslizante)
+   5. Painéis de conteúdo (+ transições)
+   6. Grids de informação (data-group)
+   7. Aging (estados semânticos)
+   8. Pendências (tabela dentro da aba)
+   9. Financeiro
+   10. Linha do tempo
+   11. Observações (lista estática da página)
+   12. Estados vazios
+   13. Responsivo
+   14. Tema claro
+   ============================================================ */
+
+/* ── 1. CABEÇALHO DA FICHA ───────────────────────────────── */
+.detalhe-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.4rem;
+    margin-bottom: 1.1rem;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, .12);
+    flex-wrap: wrap;
+    animation: detalheFadeUp .35s ease both;
+}
+
+.detalhe-header__left {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    min-width: 0;
+}
+
+.detalhe-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -.03em;
+    line-height: 1.25;
+    margin: 0 0 .4rem 0;
+    word-break: break-word;
+}
+
+.detalhe-title span#detalheTicketArion {
+    font-family: var(--font-mono);
+    color: var(--verde-arion-light);
+    font-weight: 800;
+    margin-right: .3rem;
+}
+
+.detalhe-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.detalhe-header__right {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* ── 2. BOTÕES AUXILIARES DO CABEÇALHO ───────────────────── */
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform var(--transition), background var(--transition), border-color var(--transition);
+}
+
+.btn-icon:hover {
+    transform: translateX(-2px);
+}
+
+.btn-icon:active {
+    transform: translateX(-1px) scale(.94);
+}
+
+.btn--danger {
+    color: #F87171;
+    border-color: rgba(239, 68, 68, .3);
+}
+
+.btn--danger:hover {
+    color: #fff;
+    background: #EF4444;
+    border-color: #EF4444;
+}
+
+/* Leve "pulso" ao clicar em qualquer botão de ação da ficha, dá feedback tátil */
+.detalhe-header__right button:active,
+.detalhe-content button:active {
+    transform: scale(.97);
+}
+
+/* ── 3. BARRA DE FLUXO (PROGRESS BAR) ────────────────────── */
+.canc-progress-bar {
+    display: flex;
+    align-items: flex-start;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    animation: detalheFadeUp .35s ease .05s both;
+}
+
+.canc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    min-width: 92px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.canc-step__circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 2px solid var(--border-strong);
+    transition: background var(--transition), border-color var(--transition), box-shadow var(--transition), transform .25s ease;
+    flex-shrink: 0;
+}
+
+.canc-step__label {
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+    transition: color var(--transition);
+}
+
+.canc-step.active .canc-step__circle {
+    background: var(--verde-arion);
+    border-color: var(--verde-arion);
+    box-shadow: 0 0 0 4px var(--verde-arion-muted);
+    transform: scale(1.12);
+}
+
+.canc-step.active .canc-step__label {
+    color: var(--verde-arion-light);
+}
+
+.canc-step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin-top: 9px;
+    min-width: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Preenche a linha de progresso quando o passo anterior já foi concluído */
+.canc-step.active~.canc-step-line::before,
+.canc-step-line--concluida::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--verde-arion);
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: transform .4s ease;
+}
+
+@media (max-width: 640px) {
+    .canc-progress-bar {
+        justify-content: flex-start;
+    }
+}
+
+/* ── 4. NAVEGAÇÃO POR ABAS ───────────────────────────────── */
+.detalhe-tabs-nav {
+    position: relative;
+    display: flex;
+    gap: .2rem;
+    border-bottom: 1px solid var(--border);
+    margin: 1.25rem 0 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.detalhe-tabs-nav::-webkit-scrollbar {
+    height: 0;
+}
+
+.detalhe-tab-btn {
+    position: relative;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: .75rem 1rem;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color .18s ease;
+}
+
+.detalhe-tab-btn::after {
+    /* leve realce de fundo no hover, some quando a aba está ativa */
+    content: '';
+    position: absolute;
+    inset: .25rem .25rem 0;
+    border-radius: 8px 8px 0 0;
+    background: var(--bg-elevated);
+    opacity: 0;
+    transition: opacity .18s ease;
+    z-index: -1;
+}
+
+.detalhe-tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.detalhe-tab-btn:hover::after {
+    opacity: .6;
+}
+
+.detalhe-tab-btn:focus-visible {
+    outline: 2px solid var(--verde-arion);
+    outline-offset: -2px;
+    border-radius: 4px 4px 0 0;
+}
+
+.detalhe-tab--active,
+.detalhe-tab-btn.detalhe-tab--active {
+    color: var(--verde-arion-light);
+    /* a borda inferior "de verdade" fica invisível — quem marca é o indicador deslizante */
+    border-bottom-color: transparent;
+}
+
+/* Indicador deslizante ("pill") — criado dinamicamente pelo detalhes.js */
+.detalhe-tab-indicator {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 2px;
+    width: 0;
+    background: var(--verde-arion);
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--verde-arion-muted);
+    transition: transform .28s cubic-bezier(.4, 0, .2, 1), width .28s cubic-bezier(.4, 0, .2, 1);
+    pointer-events: none;
+    will-change: transform, width;
+}
+
+.detalhe-tab-indicator--sem-transicao {
+    transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .detalhe-tab-indicator {
+        transition: none;
+    }
+}
+
+/* Badge de contagem dentro da aba (ex.: "Pendências (3)") ganha leve destaque */
+#tab-pendencias.detalhe-tab--active {
+    font-weight: 700;
+}
+
+/* ── 5. PAINÉIS DE CONTEÚDO ──────────────────────────────── */
+.detalhe-content {
+    margin-top: 1.1rem;
+    position: relative;
+}
+
+.detalhe-painel {
+    display: none;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 1.5rem;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, .1);
+}
+
+.detalhe-painel--active,
+.detalhe-painel.detalhe-painel--active {
+    display: block;
+    animation: detalhePainelIn .22s cubic-bezier(.25, .8, .5, 1) both;
+}
+
+@keyframes detalhePainelIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes detalheFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .detalhe-painel,
+    .detalhe-header,
+    .canc-progress-bar {
+        animation: none;
+    }
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+}
+
+/* ── 6. GRIDS DE INFORMAÇÃO ──────────────────────────────── */
+.grid-2-col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1.5rem;
+}
+
+.grid-3-col {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.1rem 1.5rem;
+}
+
+.grid-4-col {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.col-span-2 {
+    grid-column: span 2;
+}
+
+.col-span-3 {
+    grid-column: span 3;
+}
+
+.data-group {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    min-width: 0;
+}
+
+.data-group label {
+    font-size: .65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--text-muted);
+}
+
+.data-group p {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    line-height: 1.5;
+    word-break: break-word;
+    margin: 0;
+    transition: color var(--transition);
+}
+
+/* Destaque momentâneo quando um valor é atualizado via API (classe aplicada por JS) */
+.data-group p.valor-atualizado {
+    color: var(--verde-arion-light);
+    animation: valorPulso 1s ease;
+}
+
+@keyframes valorPulso {
+    0% {
+        background-color: var(--verde-arion-muted);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* ── 7. AGING — ESTADOS SEMÂNTICOS ───────────────────────── */
+.detalhe-kpi--warning .proj-stat-card__value,
+.proj-stat-card.detalhe-kpi--warning .proj-stat-card__value {
+    color: #FBBF24;
+}
+
+.detalhe-kpi--danger .proj-stat-card__value,
+.proj-stat-card.detalhe-kpi--danger .proj-stat-card__value {
+    color: #F87171;
+}
+
+.detalhe-kpi--warning::before {
+    background: #F59E0B !important;
+}
+
+.detalhe-kpi--danger::before {
+    background: #EF4444 !important;
+}
+
+/* ── 8. PENDÊNCIAS ────────────────────────────────────────── */
+.status-badge--aberta {
+    background: rgba(239, 68, 68, .12);
+    color: #F87171;
+}
+
+.status-badge--em_tratativa {
+    background: rgba(59, 130, 246, .12);
+    color: #60A5FA;
+}
+
+.status-badge--resolvida {
+    background: rgba(22, 163, 74, .12);
+    color: #4ADE80;
+}
+
+.status-badge--descartada {
+    background: rgba(107, 114, 128, .12);
+    color: #9CA3AF;
+}
+
+#tab-pendencias {
+    position: relative;
+}
+
+.proj-table tbody tr {
+    transition: background var(--transition);
+}
+
+.proj-table tbody tr:hover {
+    background: var(--bg-elevated);
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-micro {
+    transition: transform .15s ease, filter .15s ease;
+}
+
+.btn-micro:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+/* ── 9. FINANCEIRO ────────────────────────────────────────── */
+.financeiro-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    transition: border-color var(--transition), transform .18s ease, box-shadow .18s ease;
+}
+
+.financeiro-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .16);
+}
+
+.financeiro-card label {
+    font-size: .64rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+}
+
+.financeiro-card p {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.financeiro-card.highlight,
+.financeiro-card--total {
+    background: var(--verde-arion-muted);
+    border-color: rgba(22, 163, 74, .3);
+}
+
+.financeiro-card.highlight label {
+    color: var(--verde-arion-light);
+}
+
+.financeiro-card.highlight p {
+    color: var(--verde-arion-light);
+    font-size: 1.3rem;
+}
+
+.bg-light {
+    background: var(--bg-elevated);
+}
+
+.rounded {
+    border-radius: 8px;
+}
+
+.alert-box {
+    border-radius: 10px;
+    padding: .9rem 1.1rem;
+    font-size: var(--text-sm);
+    border: 1px solid transparent;
+    animation: detalhePainelIn .25s ease both;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, .1);
+    border-color: rgba(245, 158, 11, .3);
+    color: #FBBF24;
+}
+
+.btn-lg {
+    padding: .75rem 1.4rem;
+    font-size: var(--text-base);
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+
+.btn-lg:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px var(--verde-arion-muted);
+    filter: brightness(1.05);
+}
+
+.btn-lg:active {
+    transform: translateY(0);
+}
+
+/* ── 10. LINHA DO TEMPO ──────────────────────────────────── */
+.timeline-vertical {
+    position: relative;
+    padding-left: 1.6rem;
+}
+
+.timeline-vertical::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--border);
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+    animation: detalhePainelIn .3s ease both;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-item__marker {
+    position: absolute;
+    left: -1.6rem;
+    top: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    border: 3px solid var(--verde-arion);
+    z-index: 1;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.timeline-item:hover .timeline-item__marker {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 4px var(--verde-arion-muted);
+}
+
+.timeline-item__content {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    transition: border-color var(--transition), transform .15s ease;
+}
+
+.timeline-item:hover .timeline-item__content {
+    border-color: var(--border-strong);
+    transform: translateX(2px);
+}
+
+.timeline-item__header strong {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+}
+
+.timeline-item__content p {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── 11. OBSERVAÇÕES (aba da página, não modal) ──────────── */
+.timeline-container {
+    max-height: none;
+}
+
+.obs-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    margin-bottom: .75rem;
+    transition: border-color var(--transition), transform .15s ease;
+    animation: detalhePainelIn .25s ease both;
+}
+
+.obs-item:last-child {
+    margin-bottom: 0;
+}
+
+.obs-item:hover {
+    border-color: var(--border-strong);
+    transform: translateX(2px);
+}
+
+.obs-item__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.obs-item__autor {
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+}
+
+.obs-item__data {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.obs-item__texto {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.55;
+    white-space: pre-wrap;
+}
+
+/* ── 12. ESTADOS VAZIOS ──────────────────────────────────── */
+.empty-state-text {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.canc-empty-mini {
+    text-align: center;
+    padding: 1.25rem;
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+}
+
+/* ── UTILITÁRIOS PONTUAIS USADOS NA PÁGINA ───────────────── */
+.text-md {
+    font-size: var(--text-base);
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.relative {
+    position: relative;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+/* ── 13. RESPONSIVO ───────────────────────────────────────── */
+@media (max-width: 900px) {
+    .grid-3-col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .col-span-3 {
+        grid-column: span 2;
+    }
+
+    .grid-4-col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .detalhe-header {
+        flex-direction: column;
+    }
+
+    .detalhe-header__right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .grid-2-col,
+    .grid-3-col {
+        grid-template-columns: 1fr;
+    }
+
+    .col-span-2,
+    .col-span-3 {
+        grid-column: span 1;
+    }
+
+    .detalhe-painel {
+        padding: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-4-col {
+        grid-template-columns: 1fr;
+    }
+
+    .detalhe-title {
+        font-size: 1.1rem;
+    }
+
+    .financeiro-card.highlight p {
+        font-size: 1.1rem;
+    }
+}
+
+/* ── 14. TEMA CLARO ───────────────────────────────────────── */
+[data-theme="light"] .detalhe-header,
+[data-theme="light"] .canc-progress-bar,
+[data-theme="light"] .detalhe-painel {
+    box-shadow: 0 1px 8px rgba(0, 0, 0, .06);
+}
+
+[data-theme="light"] .financeiro-card,
+[data-theme="light"] .timeline-item__content,
+[data-theme="light"] .obs-item {
+    background: #F9FAFB;
+}
+
+[data-theme="light"] .status-badge--aberta {
+    color: #DC2626;
+}
+
+[data-theme="light"] .status-badge--em_tratativa {
+    color: #2563EB;
+}
+
+[data-theme="light"] .status-badge--resolvida {
+    color: #16A34A;
+}
+
+[data-theme="light"] .status-badge--descartada {
+    color: #6B7280;
+}
+
+[data-theme="light"] .alert-warning {
+    background: rgba(245, 158, 11, .08);
+    color: #B45309;
+}

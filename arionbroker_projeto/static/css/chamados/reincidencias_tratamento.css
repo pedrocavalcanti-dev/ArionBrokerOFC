@@ -1,0 +1,325 @@
+/* ==========================================================================
+   RREIP — Tratamento
+   ========================================================================== */
+
+/* 1. LARGURAS DAS COLUNAS (Para caber 100% na tela) */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-table {
+    width: 100%;
+    min-width: 1250px; /* Garante que a soma das colunas não invada a coluna de ações sticky */
+    table-layout: fixed;
+}
+
+/* ---------------------------------------------------
+   Colunas Fixas Básicas (Não diminuem)
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-ticket-origem {
+    width: 125px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-classificacao {
+    width: 155px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-status {
+    width: 145px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-operadora {
+    width: 85px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-quantidade {
+    width: 85px;
+    text-align: center;
+}
+
+/* FIX: Data de origem não pode vazar/sumir atrás da coluna de ações */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-data {
+    width: 110px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-data time {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-acoes {
+    width: 120px; /* Ajustado para caber os botões compactados */
+    text-align: right;
+}
+
+/* ---------------------------------------------------
+   Colunas Intermediárias (Larguras Fixas Definidas)
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-projeto {
+    width: 100px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-identificador {
+    width: 120px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-cliente {
+    width: 130px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-responsavel {
+    width: 140px;
+}
+
+/* ---------------------------------------------------
+   Única Coluna Flexível (Puxa todo o espaço livre da tela)
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-col-designacao {
+    width: auto;
+    min-width: 150px;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-row {
+    position: relative;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-table tbody td {
+    position: relative;
+}
+
+/* 2. ESTILOS ESPECÍFICOS E HIGHLIGHTS DE LINHA */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-row[data-status="REINCIDIU"] {
+    background: rgba(239, 68, 68, 0.035);
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-row[data-status="AGUARDANDO_TICKET_MONITORAMENTO"] {
+    background: rgba(249, 115, 22, 0.035);
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-row[data-classificacao="REINCIDENCIA_CONFIRMADA"] {
+    box-shadow: inset 3px 0 0 rgba(34, 197, 94, 0.75);
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-ticket-card--origem {
+    border-left: 3px solid #3b82f6;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-ticket--link {
+    color: #60a5fa;
+    transition: all 0.15s ease;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-ticket--link:hover {
+    border-color: rgba(59, 130, 246, 0.55);
+    background: rgba(59, 130, 246, 0.08);
+    color: #93c5fd;
+}
+
+/* Select de Status Menor e Compacto */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-status-select {
+    width: 100%;
+    min-height: 28px;
+    padding: 0.2rem 1.6rem 0.2rem 0.5rem;
+    border-color: var(--border);
+    border-radius: 999px;
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-status-select:hover {
+    border-color: var(--border-strong);
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-status-select:focus {
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+/* Indicador Numérico */
+.rreip-quantidade {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+}
+
+.rreip-quantidade--alerta {
+    border-color: rgba(245, 158, 11, 0.28);
+    background: rgba(245, 158, 11, 0.13);
+    color: #fcd34d;
+}
+
+.rreip-quantidade--critica {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.13);
+    color: #fca5a5;
+}
+
+/* 3. ESTADOS DE CARREGAMENTO */
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .is-loading {
+    cursor: wait;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-row.is-loading {
+    opacity: 0.62;
+    pointer-events: none;
+}
+
+.rreip-wrapper[data-fila-atual="TRATAMENTO"] .rreip-row.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: rgba(15, 23, 42, 0.05);
+}
+
+/* 4. MODAIS EXCLUSIVOS */
+#rreipModalEditar .rreip-modal__body,
+#rreipModalAnalise .rreip-modal__body {
+    padding-top: 1rem;
+}
+
+#rreipModalEditar .rreip-form-grid {
+    align-items: start;
+}
+
+#rreipModalClassificar .rreip-form-group+.rreip-form-group,
+#rreipModalAnalise .rreip-form-group+.rreip-form-group,
+#rreipModalTicketMonitoramento .rreip-form-group+.rreip-form-group {
+    margin-top: 0.75rem; /* Margem reduzida para ganhar espaço na tela */
+}
+
+#rreipModalClassificar .rreip-form-textarea {
+    min-height: 130px;
+}
+
+/* Campos do modal de análise técnica mais compactos */
+#rreipModalAnalise .rreip-form-textarea {
+    min-height: 55px;
+    height: 55px;
+    resize: vertical; /* Permite que o usuário estique a caixa se precisar escrever mais */
+}
+
+#rreipClassificarAviso {
+    min-height: 1.05rem;
+    padding-left: 0.1rem;
+}
+
+#rreipModalTicketMonitoramento .rreip-form-help {
+    margin-top: 0.85rem;
+    padding: 0.7rem 0.75rem;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(245, 158, 11, 0.08);
+    color: #fcd34d;
+}
+
+.rreip-email-preview {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-surface);
+}
+
+.rreip-email-preview__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.48rem;
+    padding: 0.85rem 0.95rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+}
+
+.rreip-email-preview__recipients {
+    min-height: 1.15rem;
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.rreip-email-preview__recipients:empty {
+    display: none;
+}
+
+.rreip-email-preview__recipients:not(:empty)::before {
+    margin-right: 0.35rem;
+    color: var(--text-muted);
+    font-weight: 800;
+}
+
+#rreipEmailDestinatarios:not(:empty)::before {
+    content: "Para:";
+}
+
+#rreipEmailCc:not(:empty)::before {
+    content: "CC:";
+}
+
+.rreip-email-preview__subject {
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 800;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.rreip-email-preview__subject:not(:empty)::before {
+    content: "Assunto:";
+    margin-right: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+}
+
+.rreip-email-preview__body {
+    min-height: 260px;
+    max-height: 480px;
+    overflow: auto;
+    padding: 1rem;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.rreip-email-preview__body:empty::before {
+    content: "O conteúdo da solicitação aparecerá aqui.";
+    color: var(--text-muted);
+    font-family: inherit;
+    font-style: italic;
+}
+
+#rreipTextoOtrsConteudo {
+    min-height: 310px;
+    max-height: 520px;
+    padding: 0.9rem;
+    border-color: var(--border);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    tab-size: 4;
+    white-space: pre-wrap;
+}
+
+#rreipTextoOtrsConteudo:focus {
+    border-color: rgba(59, 130, 246, 0.55);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}

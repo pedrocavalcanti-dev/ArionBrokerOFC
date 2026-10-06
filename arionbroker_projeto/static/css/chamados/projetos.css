@@ -1,0 +1,1323 @@
+/* ============================================================
+   ARION PROJETOS — projetos.css  v4
+   ============================================================ */
+
+/* ── CABEÇALHO ───────────────────────────────────────────── */
+.proj-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.proj-header__info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.proj-header__operadora-badge {
+    font-size: .65rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: .32rem .75rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.operadora--claro {
+    background: rgba(229, 57, 53, .12);
+    color: #E53935;
+    border: 1px solid rgba(229, 57, 53, .25);
+}
+
+.operadora--vivo {
+    background: rgba(171, 71, 188, .12);
+    color: #CE93D8;
+    border: 1px solid rgba(171, 71, 188, .25);
+}
+
+.operadora--algar {
+    background: rgba(41, 182, 246, .12);
+    color: #29B6F6;
+    border: 1px solid rgba(41, 182, 246, .25);
+}
+
+.operadora--outros {
+    background: var(--verde-arion-muted);
+    color: var(--verde-arion-light);
+    border: 1px solid rgba(22, 163, 74, .22);
+}
+
+.proj-header__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.proj-header__projeto {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -.03em;
+    line-height: 1;
+}
+
+.proj-header__meta {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.proj-header__meta strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.proj-header__actions {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+/* ── KPI CARDS ───────────────────────────────────────────── */
+.proj-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: .65rem;
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+    .proj-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .proj-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.proj-stat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem .85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.proj-stat-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .18);
+}
+
+.proj-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--border-strong);
+}
+
+.proj-stat-card--aberto::before {
+    background: #3B82F6;
+}
+
+.proj-stat-card--resolvido::before {
+    background: var(--verde-arion);
+}
+
+.proj-stat-card--atendimento::before {
+    background: #F59E0B;
+}
+
+.proj-stat-card--alerta::before {
+    background: #EF4444;
+}
+
+.proj-stat-card--aberto:hover {
+    border-color: rgba(59, 130, 246, .35);
+}
+
+.proj-stat-card--resolvido:hover {
+    border-color: rgba(22, 163, 74, .35);
+}
+
+.proj-stat-card--atendimento:hover {
+    border-color: rgba(245, 158, 11, .35);
+}
+
+.proj-stat-card--alerta:hover {
+    border-color: rgba(239, 68, 68, .35);
+}
+
+.proj-stat-card__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+    flex-shrink: 0;
+}
+
+.proj-stat-card__icon--total {
+    background: rgba(255, 255, 255, .06);
+    color: var(--text-muted);
+}
+
+.proj-stat-card__icon--aberto {
+    background: rgba(59, 130, 246, .12);
+    color: #3B82F6;
+}
+
+.proj-stat-card__icon--resolvido {
+    background: rgba(22, 163, 74, .12);
+    color: var(--verde-arion);
+}
+
+.proj-stat-card__icon--atendimento {
+    background: rgba(245, 158, 11, .12);
+    color: #F59E0B;
+}
+
+.proj-stat-card__icon--alerta {
+    background: rgba(239, 68, 68, .12);
+    color: #EF4444;
+}
+
+.proj-stat-card__label {
+    font-size: .66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-muted);
+    line-height: 1;
+}
+
+.proj-stat-card__value {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -.04em;
+    line-height: 1;
+}
+
+.proj-stat-card__sub {
+    font-size: .67rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+/* ── TOOLBAR ─────────────────────────────────────────────── */
+.proj-toolbar {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .75rem;
+    flex-wrap: wrap;
+}
+
+.proj-toolbar__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 180px;
+    max-width: 300px;
+}
+
+.proj-toolbar__search>svg {
+    position: absolute;
+    left: .72rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.proj-toolbar__input {
+    width: 100%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: .5rem 2.2rem .5rem 2.15rem;
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.proj-toolbar__input:focus {
+    border-color: var(--verde-arion);
+    box-shadow: 0 0 0 3px var(--verde-arion-muted);
+}
+
+.proj-toolbar__input::placeholder {
+    color: var(--text-muted);
+}
+
+.proj-toolbar__clear {
+    position: absolute;
+    right: .65rem;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: opacity var(--transition);
+    pointer-events: none;
+    padding: 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.proj-toolbar__search:has(input:not(:placeholder-shown)) .proj-toolbar__clear {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.proj-toolbar__filters {
+    display: flex;
+    gap: 3px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 3px;
+    flex-wrap: wrap;
+}
+
+.proj-filter-btn {
+    padding: .34rem .7rem;
+    border-radius: 6px;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--transition), color var(--transition);
+}
+
+.proj-filter-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.proj-filter-btn.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+.proj-toolbar__right {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+
+.proj-select {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: .46rem .8rem;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition);
+}
+
+.proj-select:focus {
+    border-color: var(--verde-arion);
+}
+
+.proj-toolbar__count {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    white-space: nowrap;
+    padding: .38rem .65rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+}
+
+/* ── TABELA ──────────────────────────────────────────────── */
+/*
+ * IMPORTANTE: overflow:visible no wrapper e no scroll
+ * para o dropdown de status não ser cortado.
+ * O dropdown usa position:fixed via JS, então não precisa
+ * de overflow:visible — mas removemos overflow:hidden do wrapper.
+ */
+.proj-table-wrapper {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    /* NÃO usar overflow:hidden aqui — cortaria o dropdown */
+    box-shadow: 0 2px 16px rgba(0, 0, 0, .12);
+}
+
+.proj-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+.proj-table-scroll::-webkit-scrollbar {
+    height: 5px;
+}
+
+.proj-table-scroll::-webkit-scrollbar-track {
+    background: var(--bg-elevated);
+}
+
+.proj-table-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 3px;
+}
+
+.proj-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    min-width: 820px;
+}
+
+/* thead */
+.proj-table thead tr {
+    background: var(--bg-elevated);
+    border-bottom: 2px solid var(--border);
+}
+
+.proj-table thead th {
+    padding: .65rem .9rem;
+    text-align: left;
+    font-size: .62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-muted);
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+    transition: color var(--transition), background var(--transition);
+}
+
+.proj-table thead th:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.th-sort-icon {
+    margin-left: 4px;
+    opacity: .25;
+    vertical-align: middle;
+    transition: opacity var(--transition);
+}
+
+.proj-table thead th:hover .th-sort-icon {
+    opacity: .6;
+}
+
+.proj-table thead th.sorted-asc .th-sort-icon,
+.proj-table thead th.sorted-desc .th-sort-icon {
+    opacity: 1;
+    color: var(--verde-arion-light);
+}
+
+/* tbody */
+.proj-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+}
+
+.proj-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.proj-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.proj-table tbody tr.hidden-row {
+    display: none;
+}
+
+.proj-table tbody td {
+    padding: .65rem .9rem;
+    color: var(--text-primary);
+    vertical-align: middle;
+    line-height: 1.4;
+}
+
+/* status stripes */
+.proj-table tbody tr.status-resolvido {
+    border-left: 3px solid #22c55e;
+}
+
+.proj-table tbody tr.status-aberto {
+    border-left: 3px solid #3B82F6;
+}
+
+.proj-table tbody tr.status-atendimento {
+    border-left: 3px solid #F59E0B;
+}
+
+.proj-table tbody tr.status-pendente {
+    border-left: 3px solid #EF4444;
+}
+
+.proj-table tbody tr.status-ag_visita {
+    border-left: 3px solid #8B5CF6;
+}
+
+.proj-table tbody tr.status-cgnat {
+    border-left: 3px solid #06B6D4;
+}
+
+.proj-table tbody tr.status-troca {
+    border-left: 3px solid #F97316;
+}
+
+.proj-table tbody tr.status-cancelamento {
+    border-left: 3px solid #6B7280;
+}
+
+.proj-table tbody tr.status-aguardando {
+    border-left: 3px solid #A78BFA;
+}
+
+.proj-table tbody tr.status-analise {
+    border-left: 3px solid #FBBF24;
+}
+
+/* colunas */
+.col-ticket {
+    min-width: 160px;
+}
+
+.col-designacao {
+    min-width: 130px;
+}
+
+.col-obs {
+    min-width: 80px;
+    text-align: center;
+}
+
+.col-data {
+    min-width: 88px;
+    white-space: nowrap;
+    color: var(--text-secondary);
+}
+
+.col-aging {
+    min-width: 68px;
+    text-align: center;
+}
+
+.col-acoes {
+    min-width: 65px;
+    text-align: right;
+}
+
+.col-brad {
+    min-width: 62px;
+}
+
+.col-sigla {
+    min-width: 62px;
+}
+
+.col-cliente {
+    min-width: 90px;
+}
+
+.col-contato {
+    min-width: 115px;
+}
+
+.col-status {
+    min-width: 155px;
+}
+
+.font-mono {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .02em;
+}
+
+.text-mono-sm {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+/* ticket chip */
+.ticket-chip {
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .18rem .5rem;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    transition: border-color var(--transition), color var(--transition);
+}
+
+.proj-table tbody tr:hover .ticket-chip {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+/* ── STATUS INLINE ────────────────────────────────────────── */
+.status-cell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-edit-btn {
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: opacity var(--transition), color var(--transition), border-color var(--transition);
+    flex-shrink: 0;
+}
+
+.proj-table tbody tr:hover .status-edit-btn {
+    opacity: 1;
+}
+
+.status-edit-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    background: var(--bg-hover);
+}
+
+/* Dropdown de status — renderizado no body com position:fixed via JS */
+.status-dropdown {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+    min-width: 230px;
+    padding: 5px;
+    animation: dropIn .13s ease;
+}
+
+@keyframes dropIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.status-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: .42rem .65rem;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-align: left;
+    transition: background var(--transition), color var(--transition);
+    white-space: nowrap;
+}
+
+.status-option:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.status-option.active {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.status-option.active::after {
+    content: '✓';
+    margin-left: auto;
+    font-size: .7rem;
+    color: var(--verde-arion-light);
+}
+
+/* dots */
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.status-dot--aberto {
+    background: #3B82F6;
+}
+
+.status-dot--resolvido {
+    background: #22c55e;
+}
+
+.status-dot--atendimento {
+    background: #F59E0B;
+}
+
+.status-dot--pendente {
+    background: #EF4444;
+}
+
+.status-dot--ag_visita {
+    background: #8B5CF6;
+}
+
+.status-dot--cgnat {
+    background: #06B6D4;
+}
+
+.status-dot--troca {
+    background: #F97316;
+}
+
+.status-dot--cancelamento {
+    background: #6B7280;
+}
+
+.status-dot--aguardando {
+    background: #A78BFA;
+}
+
+.status-dot--analise {
+    background: #FBBF24;
+}
+
+/* badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: .2rem .62rem;
+    border-radius: 20px;
+    font-size: .67rem;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: .02em;
+}
+
+.status-badge::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.status-badge--aberto {
+    background: rgba(59, 130, 246, .12);
+    color: #60A5FA;
+}
+
+.status-badge--resolvido {
+    background: rgba(22, 163, 74, .12);
+    color: #4ADE80;
+}
+
+.status-badge--atendimento {
+    background: rgba(245, 158, 11, .12);
+    color: #FBBF24;
+}
+
+.status-badge--pendente {
+    background: rgba(239, 68, 68, .12);
+    color: #F87171;
+}
+
+.status-badge--ag_visita {
+    background: rgba(139, 92, 246, .12);
+    color: #C4B5FD;
+}
+
+.status-badge--cgnat {
+    background: rgba(6, 182, 212, .12);
+    color: #67E8F9;
+}
+
+.status-badge--troca {
+    background: rgba(249, 115, 22, .12);
+    color: #FB923C;
+}
+
+.status-badge--cancelamento {
+    background: rgba(107, 114, 128, .12);
+    color: #9CA3AF;
+}
+
+.status-badge--aguardando {
+    background: rgba(167, 139, 250, .12);
+    color: #C4B5FD;
+}
+
+.status-badge--analise {
+    background: rgba(251, 191, 36, .12);
+    color: #FCD34D;
+}
+
+/* ── OBS CELL ────────────────────────────────────────────── */
+.obs-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.obs-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .2rem .52rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.obs-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    background: var(--bg-hover);
+}
+
+.obs-btn--empty {
+    opacity: .45;
+}
+
+.obs-btn--empty:hover {
+    opacity: 1;
+}
+
+/* ── AGING CHIP ──────────────────────────────────────────── */
+.aging-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    padding: .2rem .48rem;
+    border-radius: 20px;
+    font-size: .67rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+}
+
+.aging-chip--ok {
+    background: rgba(22, 163, 74, .10);
+    color: #4ADE80;
+}
+
+.aging-chip--medio {
+    background: rgba(245, 158, 11, .12);
+    color: #FBBF24;
+}
+
+.aging-chip--alto {
+    background: rgba(249, 115, 22, .12);
+    color: #FB923C;
+}
+
+.aging-chip--critico {
+    background: rgba(239, 68, 68, .14);
+    color: #F87171;
+}
+
+/* ── ROW ACTIONS ─────────────────────────────────────────── */
+.row-actions {
+    display: flex;
+    gap: 3px;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.proj-table tbody tr:hover .row-actions {
+    opacity: 1;
+}
+
+.row-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: color var(--transition), background var(--transition), border-color var(--transition);
+}
+
+.row-action-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
+}
+
+.row-action-btn--danger:hover {
+    color: #EF4444;
+    background: rgba(239, 68, 68, .08);
+    border-color: rgba(239, 68, 68, .25);
+}
+
+/* ── EMPTY STATES ────────────────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 3.5rem 1rem !important;
+    color: var(--text-muted);
+}
+
+.empty-state svg {
+    margin: 0 auto .8rem;
+    opacity: .25;
+    display: block;
+}
+
+.empty-state p {
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: .3rem;
+    font-size: var(--text-base);
+}
+
+.empty-state span {
+    font-size: var(--text-sm);
+}
+
+.proj-empty-search {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    padding: 2.5rem 1rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.proj-empty-search svg {
+    opacity: .25;
+}
+
+.proj-empty-search p {
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+}
+
+/* ── MODAL OBS ───────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+    animation: fadeIn .15s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+.modal-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .45);
+    animation: slideUp .18s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(14px);
+        opacity: 0
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1
+    }
+}
+
+.modal-box__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-box__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-base);
+    color: var(--text-primary);
+}
+
+.modal-box__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition);
+}
+
+.modal-box__close:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.modal-box__body {
+    padding: 1rem 1.25rem;
+    flex: 1;
+}
+
+.modal-obs-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .75rem;
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    line-height: 1.7;
+    resize: vertical;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.modal-obs-textarea:focus {
+    border-color: var(--verde-arion);
+    box-shadow: 0 0 0 3px var(--verde-arion-muted);
+}
+
+.modal-obs-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.modal-box__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    padding: .85rem 1.25rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ── RESPONSIVO ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .proj-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .proj-header__actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .proj-toolbar {
+        gap: .5rem;
+    }
+
+    .proj-toolbar__search {
+        max-width: 100%;
+        flex: 1 1 100%;
+        order: -1;
+    }
+
+    .proj-toolbar__right {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .proj-toolbar__filters {
+        order: 2;
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 2px;
+    }
+
+    .proj-filter-btn {
+        flex-shrink: 0;
+    }
+
+    .col-contato {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .col-data {
+        display: none;
+    }
+
+    .proj-stat-card__sub {
+        display: none;
+    }
+}
+
+/* ── TEMA CLARO ──────────────────────────────────────────── */
+[data-theme="light"] .ticket-chip {
+    background: #F3F4F6;
+    border-color: #E5E7EB;
+    color: #374151;
+}
+
+[data-theme="light"] .status-badge--resolvido {
+    color: #16A34A;
+}
+
+[data-theme="light"] .status-badge--aberto {
+    color: #2563EB;
+}
+
+[data-theme="light"] .status-badge--atendimento {
+    color: #D97706;
+}
+
+[data-theme="light"] .status-badge--pendente {
+    color: #DC2626;
+}
+
+[data-theme="light"] .status-badge--ag_visita {
+    color: #7C3AED;
+}
+
+[data-theme="light"] .status-badge--cgnat {
+    color: #0891B2;
+}
+
+[data-theme="light"] .aging-chip--ok {
+    color: #16A34A;
+}
+
+[data-theme="light"] .aging-chip--medio {
+    color: #D97706;
+}
+
+[data-theme="light"] .aging-chip--alto {
+    color: #EA580C;
+}
+
+[data-theme="light"] .aging-chip--critico {
+    color: #DC2626;
+}
+
+[data-theme="light"] .proj-stat-card {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .07);
+}
+
+[data-theme="light"] .status-dropdown {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .15);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   MODAL NOVO CHAMADO — FORMULÁRIO
+   ══════════════════════════════════════════════════════════════ */
+
+/* Modal um pouco mais largo pra caber o form em grid */
+.modal-box--form {
+    max-width: 620px;
+}
+
+/* ── GRID DE CAMPOS ──────────────────────────────────────── */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .85rem;
+    margin-bottom: .9rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+/* Campo que ocupa a linha inteira (ex: Designação, Obs) */
+.form-field--full {
+    grid-column: 1 / -1;
+}
+
+.form-field label {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--text-muted);
+}
+
+/* ── INPUT ───────────────────────────────────────────────── */
+.form-input {
+    width: 100%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .58rem .75rem;
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-input:focus {
+    border-color: var(--verde-arion);
+    box-shadow: 0 0 0 3px var(--verde-arion-muted);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Reaproveita a textarea de Obs já existente, só ajusto a altura pro modal de form */
+.form-field .modal-obs-textarea {
+    min-height: 80px;
+}
+
+/* ── HINT (texto de ajuda abaixo do form) ───────────────────── */
+.form-hint {
+    font-size: .7rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.form-hint::before {
+    content: 'ℹ';
+    font-size: .8rem;
+    opacity: .6;
+}
+
+/* ── ERRO ────────────────────────────────────────────────── */
+.form-erro {
+    background: rgba(239, 68, 68, .10);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, .25);
+    border-radius: 8px;
+    padding: .6rem .8rem;
+    font-size: .78rem;
+    font-weight: 600;
+    margin-bottom: .9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-erro::before {
+    content: '⚠';
+    flex-shrink: 0;
+}
+
+/* ── RESPONSIVO: campos empilham no mobile ──────────────────── */
+@media (max-width: 480px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-field--full {
+        grid-column: 1;
+    }
+}
+
+/* ── TEMA CLARO ──────────────────────────────────────────── */
+[data-theme="light"] .form-input {
+    background: #F3F4F6;
+    border-color: #E5E7EB;
+}
+
+[data-theme="light"] .form-erro {
+    background: rgba(239, 68, 68, .08);
+    color: #DC2626;
+    border-color: rgba(239, 68, 68, .2);
+}
+
+.status-badge--massiva,
+.status-dot--massiva { background: rgba(239,68,68,.12); color: #F87171; }

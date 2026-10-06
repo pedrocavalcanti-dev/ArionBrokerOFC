@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Configuração do Robô Embratel | Arion Broker{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/embratel/configuracao.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="embratel-config-wrapper">
+    
+    <!-- 1. CABEÇALHO CONTEXTUAL -->
+    <header class="embratel-config-header">
+        <div class="embratel-config-header__left">
+            <h1 class="topbar__title">Configuração do Robô</h1>
+            <p class="embratel-config-header__sub">Gerencie os parâmetros do módulo Modos Web.</p>
+        </div>
+        <div class="embratel-config-header__right">
+            <!-- Ações Rápidas -->
+            {% if urls_disponiveis.sincronizar %}
+            <form method="POST" action="{% url 'automacao_embratel:sincronizar' %}" class="embratel-config-inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn--primary btn--sm embratel-config-action-btn" data-confirm="Deseja forçar a execução imediata do ciclo automático?">
+                    <i class="bi bi-play-fill"></i> Executar Agora
+                </button>
+            </form>
+            {% else %}
+            <button type="button" class="btn btn--primary btn--sm" disabled title="URL de execução não mapeada no contexto">
+                <i class="bi bi-play-fill"></i> Executar Agora
+            </button>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- 2. CARDS DE STATUS -->
+    <section class="embratel-config-summary">
+        <div class="card embratel-config-card-status">
+            <span class="embratel-config-card-status__label">Robô Embratel</span>
+            <span class="embratel-config-card-status__value {% if configuracao.ativo %}text-success{% else %}text-danger{% endif %}">
+                {% if configuracao.ativo %}Ativo{% else %}Pausado{% endif %}
+            </span>
+        </div>
+        <div class="card embratel-config-card-status">
+            <span class="embratel-config-card-status__label">Projeto Inicial</span>
+            <span class="embratel-config-card-status__value">Bradesco</span>
+        </div>
+        <div class="card embratel-config-card-status">
+            <span class="embratel-config-card-status__label">Intervalo de Varredura</span>
+            <span class="embratel-config-card-status__value">{{ configuracao.intervalo_minutos|default:"15" }} minutos</span>
+        </div>
+        <div class="card embratel-config-card-status">
+            <span class="embratel-config-card-status__label">Última Execução</span>
+            <span class="embratel-config-card-status__value">{{ configuracao.ultima_execucao|date:"d/m/Y H:i"|default:"—" }}</span>
+        </div>
+    </section>
+
+    <!-- FORMULÁRIO PRINCIPAL DE CONFIGURAÇÃO -->
+    <form id="embratel-config-form" method="POST" action="." class="embratel-config-form-container">
+        {% csrf_token %}
+        
+        <!-- 3. ABAS DE NAVEGAÇÃO -->
+        <nav class="embratel-config-tabs" role="tablist">
+            <button type="button" class="embratel-config-tab-btn is-active" role="tab" aria-selected="true" aria-controls="tab-geral" id="btn-tab-geral">Geral</button>
+            <button type="button" class="embratel-config-tab-btn" role="tab" aria-selected="false" aria-controls="tab-projeto" id="btn-tab-projeto">Projeto</button>
+            <button type="button" class="embratel-config-tab-btn" role="tab" aria-selected="false" aria-controls="tab-email" id="btn-tab-email">E-mail</button>
+            <button type="button" class="embratel-config-tab-btn" role="tab" aria-selected="false" aria-controls="tab-execucao" id="btn-tab-execucao">Execução</button>
+            <button type="button" class="embratel-config-tab-btn" role="tab" aria-selected="false" aria-controls="tab-logs" id="btn-tab-logs">Logs</button>
+            <button type="button" class="embratel-config-tab-btn" role="tab" aria-selected="false" aria-controls="tab-avancado" id="btn-tab-avancado">Avançado</button>
+        </nav>
+
+        <div class="embratel-config-content card">
+            
+            <!-- 4. BLOCO: GERAL -->
+            <div id="tab-geral" class="embratel-config-tab-content is-active" role="tabpanel" aria-labelledby="btn-tab-geral">
+                <h2 class="embratel-config-section-title">Configurações Gerais</h2>
+                
+                <div class="embratel-config-grid">
+                    <div class="embratel-config-field">
+                        <label for="config_ativo" class="embratel-config-label">Status do Robô</label>
+                        <select name="ativo" id="config_ativo" class="input embratel-config-input" data-track-dirty="true">
+                            <option value="True" {% if configuracao.ativo %}selected{% endif %}>Ativo (Rodando em Background)</option>
+                            <option value="False" {% if not configuracao.ativo %}selected{% endif %}>Pausado</option>
+                        </select>
+                        <small class="text-muted">Desativar o robô paralisa novas coletas e envios automáticos.</small>
+                    </div>
+
+                    <div class="embratel-config-field">
+                        <label for="config_intervalo" class="embratel-config-label">Intervalo (Minutos)</label>
+                        <input type="number" name="intervalo_minutos" id="config_intervalo" class="input embratel-config-input" value="{{ configuracao.intervalo_minutos|default:'15' }}" min="1" max="1440" data-track-dirty="true">
+                        <small class="text-muted">De quanto em quanto tempo o robô consulta o portal.</small>
+                    </div>
+
+                    <div class="embratel-config-field">
+                        <label for="config_ambiente" class="embratel-config-label">Ambiente Alvo</label>
+                        <input type="text" id="config_ambiente" class="input embratel-config-input" value="Modos Web Embratel" disabled readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. BLOCO: PROJETO -->
+            <div id="tab-projeto" class="embratel-config-tab-content" role="tabpanel" aria-labelledby="btn-tab-projeto" hidden>
+                <h2 class="embratel-config-section-title">Mapeamento de Projetos</h2>
+                <p class="text-muted embratel-config-desc">Selecione quais projetos o robô deverá monitorar. Inicialmente focado no Bradesco.</p>
+                
+                <div class="embratel-config-checklist">
+                    <label class="embratel-config-check-item">
+                        <input type="checkbox" name="projetos_ativos" value="bradesco" checked data-track-dirty="true"> 
+                        <span class="badge embratel-config-badge--bradesco">Bradesco</span>
+                    </label>
+                    <label class="embratel-config-check-item">
+                        <input type="checkbox" name="projetos_ativos" value="bb" data-track-dirty="true"> 
+                        <span class="badge badge--novo">Banco do Brasil</span> (Planejado)
+                    </label>
+                    <label class="embratel-config-check-item">
+                        <input type="checkbox" name="projetos_ativos" value="caixa" data-track-dirty="true"> 
+                        <span class="badge badge--novo">Caixa</span> (Planejado)
+                    </label>
+                    <label class="embratel-config-check-item">
+                        <input type="checkbox" name="projetos_ativos" value="correios" data-track-dirty="true"> 
+                        <span class="badge badge--novo">Correios</span> (Planejado)
+                    </label>
+                    <label class="embratel-config-check-item">
+                        <input type="checkbox" name="projetos_ativos" value="carrefour" data-track-dirty="true"> 
+                        <span class="badge badge--novo">Carrefour</span> (Planejado)
+                    </label>
+                </div>
+            </div>
+
+            <!-- 6. BLOCO: E-MAIL -->
+            <div id="tab-email" class="embratel-config-tab-content" role="tabpanel" aria-labelledby="btn-tab-email" hidden>
+                <h2 class="embratel-config-section-title">Roteamento de Comunicação</h2>
+                <p class="text-muted embratel-config-desc">Definições para os chamados gerados na plataforma Embratel.</p>
+                
+                <div class="embratel-config-grid">
+                    <div class="embratel-config-field" style="grid-column: 1 / -1;">
+                        <label for="config_destinatarios" class="embratel-config-label">Destinatários Padrão (Para)</label>
+                        <input type="text" name="destinatarios" id="config_destinatarios" class="input embratel-config-input" value="{{ configuracao.destinatarios|default:'' }}" placeholder="email@exemplo.com.br; outro@exemplo.com" data-track-dirty="true">
+                        <small class="text-muted">Separe múltiplos e-mails por ponto e vírgula (;).</small>
+                    </div>
+                    
+                    <div class="embratel-config-field" style="grid-column: 1 / -1;">
+                        <label for="config_cc" class="embratel-config-label">Com Cópia (CC)</label>
+                        <input type="text" name="cc" id="config_cc" class="input embratel-config-input" value="{{ configuracao.cc|default:'' }}" placeholder="copia@exemplo.com.br" data-track-dirty="true">
+                    </div>
+
+                    <div class="embratel-config-field">
+                        <label for="config_template" class="embratel-config-label">Template de E-mail</label>
+                        <!-- Campo estático para exibição se o backend resolver dinamicamente via services.py -->
+                        <input type="text" id="config_template" class="input embratel-config-input" value="Baseado em Serviços Arion" disabled readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. BLOCO: EXECUÇÃO (Read-Only) -->
+            <div id="tab-execucao" class="embratel-config-tab-content" role="tabpanel" aria-labelledby="btn-tab-execucao" hidden>
+                <h2 class="embratel-config-section-title">Métricas de Execução</h2>
+                
+                <div class="embratel-config-grid">
+                    <div class="embratel-config-field">
+                        <span class="embratel-config-label">Último Sucesso</span>
+                        <span class="embratel-config-readonly-val">{{ configuracao.ultimo_sucesso|date:"d/m/Y H:i:s"|default:"—" }}</span>
+                    </div>
+                    <div class="embratel-config-field">
+                        <span class="embratel-config-label">Última Falha</span>
+                        <span class="embratel-config-readonly-val text-danger">{{ configuracao.ultima_falha|date:"d/m/Y H:i:s"|default:"Nenhuma falha recente" }}</span>
+                    </div>
+                    <div class="embratel-config-field">
+                        <span class="embratel-config-label">Modificado Por</span>
+                        <span class="embratel-config-readonly-val">{{ configuracao.alterado_por|default:"Sistema" }} em {{ configuracao.alterado_em|date:"d/m/Y"|default:"—" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. BLOCO: LOGS -->
+            <div id="tab-logs" class="embratel-config-tab-content" role="tabpanel" aria-labelledby="btn-tab-logs" hidden>
+                <h2 class="embratel-config-section-title">Últimos Ciclos Registrados</h2>
+                
+                <div class="embratel-config-logs-container">
+                    {% if historico_execucoes %}
+                    <table class="table embratel-config-table">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Origem</th>
+                                <th>Duração</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for execucao in historico_execucoes %}
+                            <tr>
+                                <td>{{ execucao.iniciado_em|date:"d/m/Y H:i:s" }}</td>
+                                <td>{{ execucao.origem|default:"—" }}</td>
+                                <td>{{ execucao.duracao_segundos|default:"0" }}s</td>
+                                <td>
+                                    <span class="badge badge--{{ execucao.status|slugify|default:'default' }}">
+                                        {{ execucao.status|default:"-" }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="embratel-config-empty-state">
+                        <i class="bi bi-clock-history"></i>
+                        <p>Nenhum registro de execução encontrado.</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="embratel-config-actions-inline">
+                    <a href="{% url 'automacao_embratel:execucoes' %}" class="btn btn--outline btn--sm">Ver Todo o Histórico</a>
+                </div>
+            </div>
+
+            <!-- BLOCO: AVANÇADO -->
+            <div id="tab-avancado" class="embratel-config-tab-content" role="tabpanel" aria-labelledby="btn-tab-avancado" hidden>
+                <h2 class="embratel-config-section-title text-danger"><i class="bi bi-exclamation-triangle"></i> Zona de Perigo</h2>
+                <p class="text-muted embratel-config-desc">Alterações nesta área podem comprometer o funcionamento padrão do robô Embratel.</p>
+                
+                <div class="embratel-config-advanced-box">
+                    <div class="embratel-config-advanced-item">
+                        <div>
+                            <strong>Resetar Fila de Reprocessamento</strong>
+                            <p class="text-muted embratel-config-text-sm">Remove todas as tarefas presas no status "REVISÃO".</p>
+                        </div>
+                        <button type="button" class="btn btn--danger btn--sm" data-modal-target="#embratel-config-modal" data-modal-title="Resetar Fila" data-modal-body="Tem certeza que deseja resetar a fila de reprocessamento? Isso exigirá avaliação manual posterior.">Resetar Fila</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 9. BOTÕES GLOBAIS DE AÇÃO -->
+        <div class="embratel-config-footer">
+            <div class="embratel-config-footer__left">
+                <!-- Botão de teste simulado -->
+                <button type="button" class="btn btn--outline" id="btn-test-config" data-modal-target="#embratel-config-modal" data-modal-title="Testar Conexão" data-modal-body="Esta ação simulará uma consulta de 1 página na API do Modos Web (Estratégia A). Prosseguir?">
+                    <i class="bi bi-lightning-charge"></i> Testar Conexão
+                </button>
+            </div>
+            <div class="embratel-config-footer__right">
+                <a href="{% url 'automacao_embratel:lista' %}" class="btn btn--outline" id="btn-cancel-config">Cancelar</a>
+                <button type="submit" class="btn btn--primary" id="btn-save-config">
+                    <i class="bi bi-save"></i> Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- 10. MODAL REUTILIZÁVEL -->
+    <div id="embratel-config-modal" class="embratel-config-modal" role="dialog" aria-modal="true" aria-labelledby="embratel-config-modal-title" aria-hidden="true">
+        <div class="embratel-config-modal__overlay" data-modal-close></div>
+        <div class="embratel-config-modal__content">
+            <div class="embratel-config-modal__header">
+                <h3 id="embratel-config-modal-title">Confirmar</h3>
+                <button type="button" class="embratel-config-modal__close" data-modal-close aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="embratel-config-modal__body" id="embratel-config-modal-body">
+                Deseja prosseguir com esta ação?
+            </div>
+            <div class="embratel-config-modal__footer">
+                <button type="button" class="btn btn--outline" data-modal-close>Cancelar</button>
+                <button type="button" class="btn btn--primary" id="btn-modal-confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="embratel-config-toast" class="embratel-config-toast" aria-live="polite"></div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script defer src="{% static 'js/embratel/configuracao.js' %}"></script>
+{% endblock %}

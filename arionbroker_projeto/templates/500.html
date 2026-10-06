@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 — Erro interno · ARION BROKER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/erros/erros.css' %}">
+</head>
+<body class="erro-body">    
+
+    <div class="erro-card erro--500">
+
+        <div class="erro-code">500</div>
+
+        <div class="erro-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+        </div>
+
+        <h1 class="erro-titulo">Erro interno do servidor</h1>
+        <p class="erro-descricao">
+            Algo inesperado aconteceu no servidor.<br>
+            O erro foi registrado. Tente novamente em alguns instantes.
+        </p>
+
+        <div class="erro-acoes">
+            <a href="javascript:location.reload()" class="btn btn--outline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Tentar novamente
+            </a>
+            <a href="{% url 'chamados:dashboard_projetos' %}" class="btn btn--primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Ir ao Dashboard
+            </a>
+        </div>
+
+        <hr class="erro-divider">
+
+        <div class="erro-brand">
+            <div class="erro-brand-logo">A</div>
+            ARION PROJETOS · BROKER
+        </div>
+
+    </div>
+
+    <script>
+        const tema = localStorage.getItem('arion-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', tema);
+    </script>
+
+</body>
+</html>

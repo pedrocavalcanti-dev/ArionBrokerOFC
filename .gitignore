@@ -1,0 +1,77 @@
+# ============================================================
+# ARION BROKER
+# ============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.so
+
+# Virtualenv
+venv/
+.venv/
+env/
+ENV/
+
+# Django runtime
+*.log
+django.log
+logs/
+
+# Banco local
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+*.sqlite
+
+# Variáveis / credenciais
+.env
+.env.*
+!.env.example
+
+# Sessões / cookies / autenticação
+*_cookies.json
+cookies.json
+otrs_cookies.json
+session.json
+sessions/
+browser-data/
+user-data/
+
+# Arquivos gerados
+staticfiles/
+
+# Uploads / mídia
+media/
+
+# Cache
+.cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Playwright
+playwright-report/
+test-results/
+
+# Temporários
+*.tmp
+*.temp
+*.bak
+*.swp
+~$*
+# Backup local da produ��o
+arionbroker_projeto_BACKUP_*/

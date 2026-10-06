@@ -1,0 +1,759 @@
+{% extends "chamados/reincidencias/base_reincidencias.html" %}
+{% load static %}
+
+{% block descricao_fila %}
+Chamados reincidentes em triagem, investigação, tratativa ou aguardando a abertura do ticket de monitoramento.
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<!-- 1º Carrega as regras e larguras específicas desta fila -->
+<link rel="stylesheet" href="{% static 'css/chamados/reincidencias_tratamento.css' %}">
+<!-- 2º Carrega as regras de responsividade (Media Queries) para sobrescrever larguras em telas menores -->
+<link rel="stylesheet" href="{% static 'css/chamados/reincidencias_responsividade.css' %}">
+{% endblock %}
+
+{% block thead %}
+<th class="rreip-col-ticket-origem">Ticket de origem</th>
+<th class="rreip-col-classificacao">Classificação</th>
+<th class="rreip-col-status">Status</th>
+<th class="rreip-col-operadora">Operadora</th>
+<th class="rreip-col-projeto">Projeto</th>
+<th class="rreip-col-identificador">Identificador</th>
+<th class="rreip-col-designacao">Designação</th>
+<th class="rreip-col-cliente">Cliente</th>
+<th class="rreip-col-quantidade">Reincidências</th>
+<th class="rreip-col-responsavel">Responsável</th>
+<th class="rreip-col-data">Data de origem</th>
+<th class="rreip-col-acoes">Ações</th>
+{% endblock %}
+
+
+{% block tbody %}
+{% for reincidencia in reincidencias %}
+<tr
+    class="rreip-row"
+    data-id="{{ reincidencia.id }}"
+    data-fila="{{ reincidencia.fila }}"
+    data-status="{{ reincidencia.status }}"
+    data-classificacao="{{ reincidencia.classificacao }}"
+>
+    <!-- CHECKBOX -->
+    <td class="rreip-col-checkbox">
+        <input
+            type="checkbox"
+            class="rreip-checkbox rreip-row-checkbox"
+            value="{{ reincidencia.id }}"
+            aria-label="Selecionar reincidência {% firstof reincidencia.ticket_origem reincidencia.ticket_atual reincidencia.id %}"
+        >
+    </td>
+
+    <!-- TICKET DE ORIGEM -->
+    <td class="rreip-col-ticket-origem">
+        {% firstof reincidencia.ticket_origem reincidencia.ticket_atual "—" as ticket_exibicao %}
+        {% firstof reincidencia.url_ticket_origem reincidencia.url_ticket "" as url_exibicao %}
+
+        <div class="rreip-ticket-card rreip-ticket-card--origem">
+            <span class="rreip-ticket-card__label">Origem</span>
+
+            {% if url_exibicao %}
+                <a
+                    href="{{ url_exibicao }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="rreip-ticket rreip-ticket--link rreip-ticket-card__number"
+                >
+                    {{ ticket_exibicao }}
+                </a>
+            {% else %}
+                <span class="rreip-ticket rreip-ticket-card__number">
+                    {{ ticket_exibicao }}
+                </span>
+            {% endif %}
+        </div>
+    </td>
+
+    <!-- CLASSIFICAÇÃO -->
+    <td class="rreip-col-classificacao">
+        {% if reincidencia.classificacao == "REINCIDENCIA_CONFIRMADA" %}
+            <span class="rreip-classificacao rreip-classificacao--confirmada">
+                {{ reincidencia.get_classificacao_display|default:"Reincidência confirmada" }}
+            </span>
+
+        {% elif reincidencia.classificacao == "MASSIVA" %}
+            <span class="rreip-classificacao rreip-classificacao--massiva">
+                {{ reincidencia.get_classificacao_display|default:"Massiva" }}
+            </span>
+
+        {% elif reincidencia.classificacao == "FALSO_POSITIVO" %}
+            <span class="rreip-classificacao rreip-classificacao--falso-positivo">
+                {{ reincidencia.get_classificacao_display|default:"Falso positivo" }}
+            </span>
+
+        {% elif reincidencia.classificacao == "FALHA_ISOLADA" %}
+            <span class="rreip-classificacao rreip-classificacao--falha-isolada">
+                {{ reincidencia.get_classificacao_display|default:"Falha isolada" }}
+            </span>
+
+        {% elif reincidencia.classificacao == "DUPLICADO" %}
+            <span class="rreip-classificacao rreip-classificacao--duplicado">
+                {{ reincidencia.get_classificacao_display|default:"Duplicado" }}
+            </span>
+
+        {% elif reincidencia.classificacao == "NAO_SE_APLICA" %}
+            <span class="rreip-classificacao rreip-classificacao--nao-se-aplica">
+                {{ reincidencia.get_classificacao_display|default:"Não se aplica" }}
+            </span>
+
+        {% else %}
+            <span class="rreip-classificacao rreip-classificacao--pendente">
+                {{ reincidencia.get_classificacao_display|default:"Pendente" }}
+            </span>
+        {% endif %}
+    </td>
+
+    <!-- STATUS -->
+    <td class="rreip-col-status">
+        {% if reincidencia.status == "AGUARDANDO_TICKET_MONITORAMENTO" %}
+            <span class="rreip-status rreip-status--aguardando-ticket">
+                <span class="rreip-status__dot"></span>
+                Aguardando ticket
+            </span>
+
+        {% elif reincidencia.status == "REINCIDIU" %}
+            <span class="rreip-status rreip-status--reincidiu">
+                <span class="rreip-status__dot"></span>
+                Reincidiu novamente
+            </span>
+
+        {% elif request.user == reincidencia.responsavel or request.user.is_staff %}
+            <select
+                class="rreip-form-select rreip-status-select"
+                data-action="alterar-status"
+                data-id="{{ reincidencia.id }}"
+                data-valor-anterior="{{ reincidencia.status }}"
+                aria-label="Alterar status da reincidência {{ ticket_exibicao }}"
+            >
+                <option value="NOVO" {% if reincidencia.status == "NOVO" %}selected{% endif %}>Novo</option>
+                <option value="EM_ANALISE" {% if reincidencia.status == "EM_ANALISE" %}selected{% endif %}>Em análise</option>
+                <option value="EM_TRATATIVA" {% if reincidencia.status == "EM_TRATATIVA" %}selected{% endif %}>Em tratativa</option>
+                <option value="AGUARDANDO_ISP" {% if reincidencia.status == "AGUARDANDO_ISP" %}selected{% endif %}>Aguardando ISP</option>
+                <option value="AGUARDANDO_CLIENTE" {% if reincidencia.status == "AGUARDANDO_CLIENTE" %}selected{% endif %}>Aguardando cliente</option>
+            </select>
+
+        {% else %}
+            <span class="
+                rreip-status
+                {% if reincidencia.status == "NOVO" %}rreip-status--novo
+                {% elif reincidencia.status == "EM_ANALISE" %}rreip-status--em-analise
+                {% elif reincidencia.status == "EM_TRATATIVA" %}rreip-status--em-tratativa
+                {% elif reincidencia.status == "AGUARDANDO_ISP" %}rreip-status--aguardando-isp
+                {% elif reincidencia.status == "AGUARDANDO_CLIENTE" %}rreip-status--aguardando-cliente
+                {% endif %}
+            ">
+                <span class="rreip-status__dot"></span>
+                {{ reincidencia.get_status_display|default:reincidencia.status }}
+            </span>
+        {% endif %}
+    </td>
+
+    <!-- OPERADORA -->
+    <td class="rreip-col-operadora">
+        <span class="rreip-operadora-badge">
+            {{ reincidencia.operadora|default:"—" }}
+        </span>
+    </td>
+
+    <!-- PROJETO -->
+    <td class="rreip-col-projeto">
+        <span class="rreip-projeto">
+            {{ reincidencia.projeto|default:"—" }}
+        </span>
+    </td>
+
+    <!-- IDENTIFICADOR -->
+    <td class="rreip-col-identificador">
+        {% if reincidencia.identificador_projeto %}
+            <div class="rreip-identificador">
+                <span class="rreip-identificador__label">
+                    {{ reincidencia.get_identificador_label|default:"ID" }}
+                </span>
+                <span class="rreip-identificador__value">
+                    {{ reincidencia.identificador_projeto }}
+                </span>
+            </div>
+        {% else %}
+            —
+        {% endif %}
+    </td>
+
+    <!-- DESIGNAÇÃO -->
+    <td class="rreip-col-designacao">
+        <span class="rreip-designacao font-mono">
+            {{ reincidencia.designacao|default:"—" }}
+        </span>
+    </td>
+
+    <!-- CLIENTE -->
+    <td class="rreip-col-cliente">
+        <span class="rreip-cliente">
+            {{ reincidencia.cliente|default:"—" }}
+        </span>
+    </td>
+
+    <!-- QUANTIDADE DE REINCIDÊNCIAS -->
+    <td class="rreip-col-quantidade">
+        <span class="
+            rreip-quantidade
+            {% if reincidencia.quantidade_reincidencias >= 3 %}rreip-quantidade--critica
+            {% elif reincidencia.quantidade_reincidencias == 2 %}rreip-quantidade--alerta
+            {% endif %}
+        ">
+            {{ reincidencia.quantidade_reincidencias|default:1 }}
+        </span>
+    </td>
+
+    <!-- RESPONSÁVEL -->
+    <td class="rreip-col-responsavel">
+        {% if not reincidencia.responsavel %}
+            <div class="rreip-responsavel">
+                <span class="rreip-responsavel--vazio">
+                    Sem responsável
+                </span>
+                <button
+                    type="button"
+                    class="rreip-btn rreip-btn--text rreip-btn--small"
+                    data-action="apropriar"
+                    data-id="{{ reincidencia.id }}"
+                >
+                    Apropriar-se
+                </button>
+            </div>
+
+        {% elif request.user == reincidencia.responsavel %}
+            <div class="rreip-responsavel">
+                <span class="rreip-responsavel__avatar">
+                    {% firstof request.user.first_name|first|upper request.user.username|first|upper "US" %}
+                </span>
+                <span class="rreip-responsavel__nome">
+                    Você
+                </span>
+                <button
+                    type="button"
+                    class="rreip-btn rreip-btn--text rreip-btn--small"
+                    data-action="liberar"
+                    data-id="{{ reincidencia.id }}"
+                >
+                    Liberar
+                </button>
+            </div>
+
+        {% else %}
+            <div class="rreip-responsavel">
+                <span class="rreip-responsavel__avatar">
+                    {% firstof reincidencia.responsavel.first_name|first|upper reincidencia.responsavel.username|first|upper "US" %}
+                </span>
+                <span class="rreip-responsavel__nome">
+                    {% firstof reincidencia.responsavel.get_full_name reincidencia.responsavel.username "Usuário" %}
+                </span>
+                {% if request.user.is_staff %}
+                    <button
+                        type="button"
+                        class="rreip-btn rreip-btn--text rreip-btn--small"
+                        data-action="transferir"
+                        data-id="{{ reincidencia.id }}"
+                    >
+                        Transferir
+                    </button>
+                {% endif %}
+            </div>
+        {% endif %}
+    </td>
+
+    <!-- DATA DE ORIGEM -->
+    <td class="rreip-col-data">
+        {% if reincidencia.data_ticket_origem %}
+            <span class="rreip-data">
+                <time datetime="{{ reincidencia.data_ticket_origem|date:'c' }}">
+                    {{ reincidencia.data_ticket_origem|date:"d/m/Y H:i" }}
+                </time>
+            </span>
+        {% elif reincidencia.data_ticket %}
+            <span class="rreip-data">
+                <time datetime="{{ reincidencia.data_ticket|date:'c' }}">
+                    {{ reincidencia.data_ticket|date:"d/m/Y H:i" }}
+                </time>
+            </span>
+        {% else %}
+            —
+        {% endif %}
+    </td>
+
+    <!-- AÇÕES -->
+    <td class="rreip-col-acoes">
+        <div class="rreip-actions">
+            <a
+                href="{% url 'chamados:reincidencias:detalhes' reincidencia.id %}"
+                class="rreip-action-btn"
+                title="Ver detalhes"
+                aria-label="Ver detalhes da reincidência"
+            >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </a>
+
+            {% if request.user == reincidencia.responsavel or request.user.is_staff %}
+                <button
+                    type="button"
+                    class="rreip-action-btn"
+                    data-action="classificar"
+                    data-id="{{ reincidencia.id }}"
+                    title="Classificar triagem"
+                    aria-label="Classificar triagem"
+                >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M20 12a8 8 0 1 1-3.2-6.4"></path>
+                        <polyline points="20 4 20 10 14 10"></polyline>
+                    </svg>
+                </button>
+
+                <button
+                    type="button"
+                    class="rreip-action-btn"
+                    data-action="analise"
+                    data-id="{{ reincidencia.id }}"
+                    title="Preencher análise RREIP"
+                    aria-label="Preencher análise RREIP"
+                >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </button>
+
+                <details class="rreip-actions-menu">
+                    <summary
+                        class="rreip-action-btn"
+                        aria-label="Mais ações"
+                        title="Mais ações"
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </summary>
+
+                    <div class="rreip-actions-menu__content">
+                        <button
+                            type="button"
+                            class="rreip-btn rreip-btn--text rreip-btn--small"
+                            data-action="editar"
+                            data-id="{{ reincidencia.id }}"
+                        >
+                            Editar dados
+                        </button>
+
+                        <button
+                            type="button"
+                            class="rreip-btn rreip-btn--text rreip-btn--small"
+                            data-action="copiar-otrs"
+                            data-id="{{ reincidencia.id }}"
+                        >
+                            Texto para OTRS
+                        </button>
+
+                        {% if reincidencia.classificacao == "REINCIDENCIA_CONFIRMADA" and reincidencia.analise_completa %}
+                            {% if not reincidencia.email_monitoramento_enviado %}
+                                <hr>
+                                <button
+                                    type="button"
+                                    class="rreip-btn rreip-btn--primary rreip-btn--small"
+                                    data-action="enviar-email-monitoramento"
+                                    data-id="{{ reincidencia.id }}"
+                                >
+                                    Solicitar monitoramento
+                                </button>
+                            {% else %}
+                                <hr>
+                                <button
+                                    type="button"
+                                    class="rreip-btn rreip-btn--text rreip-btn--small"
+                                    data-action="enviar-email-monitoramento"
+                                    data-id="{{ reincidencia.id }}"
+                                >
+                                    Ver prévia do e-mail
+                                </button>
+
+                                {% if not reincidencia.ticket_monitoramento %}
+                                    <button
+                                        type="button"
+                                        class="rreip-btn rreip-btn--primary rreip-btn--small"
+                                        data-action="registrar-ticket-monitoramento"
+                                        data-id="{{ reincidencia.id }}"
+                                    >
+                                        Registrar ticket do OTRS
+                                    </button>
+                                {% elif reincidencia.pode_iniciar_monitoramento %}
+                                    <button
+                                        type="button"
+                                        class="rreip-btn rreip-btn--success rreip-btn--small"
+                                        data-action="iniciar-monitoramento"
+                                        data-id="{{ reincidencia.id }}"
+                                    >
+                                        Iniciar 30 dias
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if request.user.is_staff %}
+                            <hr>
+                            <button
+                                type="button"
+                                class="rreip-btn rreip-btn--danger rreip-btn--small"
+                                data-action="excluir"
+                                data-id="{{ reincidencia.id }}"
+                                title="Usar somente para registros criados por engano ou teste"
+                            >
+                                Excluir definitivamente
+                            </button>
+                        {% endif %}
+                    </div>
+                </details>
+            {% endif %}
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% endblock %}
+
+
+{% block modais %}
+
+<!-- MODAL: EDITAR DADOS -->
+<div
+    class="rreip-modal-overlay"
+    id="rreipModalEditar"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="rreipModalEditarTitulo"
+>
+    <div class="rreip-modal rreip-modal--large">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalEditarTitulo">Editar dados básicos</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalEditar" aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="rreipFormEditar" novalidate autocomplete="off">
+            {% csrf_token %}
+
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipEditarId" name="id">
+
+                <div class="rreip-form-grid">
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarTicketOrigem">Ticket de origem</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarTicketOrigem" name="ticket_origem">
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarUrlTicketOrigem">URL do ticket de origem</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarUrlTicketOrigem" name="url_ticket_origem">
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarDataTicketOrigem">Data do ticket de origem</label>
+                        <input type="datetime-local" class="rreip-form-input" id="rreipEditarDataTicketOrigem" name="data_ticket_origem">
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarDataEncerramentoOrigem">Data de encerramento da origem</label>
+                        <input type="datetime-local" class="rreip-form-input" id="rreipEditarDataEncerramentoOrigem" name="data_encerramento_origem">
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarOperadora">Operadora</label>
+                        <select class="rreip-form-select" id="rreipEditarOperadora" name="operadora">
+                            <option value="">Selecione a operadora</option>
+                            {% for operadora in opcoes_filtros.operadoras|default:operadoras %}
+                                <option value="{{ operadora }}">{{ operadora }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarProjeto">Projeto</label>
+                        <select class="rreip-form-select" id="rreipEditarProjeto" name="projeto">
+                            <option value="">Selecione o projeto</option>
+                        </select>
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" id="rreipEditarIdentificadorLabel" for="rreipEditarIdentificador">Identificador</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarIdentificador" name="identificador_projeto">
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarDesignacao">Designação <span class="rreip-form-required">*</span></label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarDesignacao" name="designacao" required>
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarCliente">Cliente</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarCliente" name="cliente">
+                    </div>
+
+                    <div class="rreip-form-group">
+                        <label class="rreip-form-label" for="rreipEditarISP">ISP</label>
+                        <input type="text" class="rreip-form-input" id="rreipEditarISP" name="isp">
+                    </div>
+                </div>
+            </div>
+
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalEditar">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Salvar alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL: CLASSIFICAÇÃO -->
+<div
+    class="rreip-modal-overlay"
+    id="rreipModalClassificar"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="rreipModalClassificarTitulo"
+>
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalClassificarTitulo">Classificar triagem</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalClassificar" aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="rreipFormClassificar" novalidate autocomplete="off">
+            {% csrf_token %}
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipClassificarId" name="id">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipClassificarValor">Resultado da triagem <span class="rreip-form-required">*</span></label>
+                    <select class="rreip-form-select" id="rreipClassificarValor" name="classificacao" required>
+                        <option value="PENDENTE">Pendente de classificação</option>
+                        <option value="REINCIDENCIA_CONFIRMADA">Reincidência confirmada</option>
+                        <option value="MASSIVA">Massiva — Finalizar</option>
+                        <option value="FALSO_POSITIVO">Falso positivo — Finalizar</option>
+                        <option value="FALHA_ISOLADA">Falha isolada — Finalizar</option>
+                        <option value="DUPLICADO">Duplicado — Finalizar</option>
+                        <option value="NAO_SE_APLICA">Não se aplica — Finalizar</option>
+                    </select>
+                    <span class="rreip-form-help" id="rreipClassificarAviso">Selecione uma opção para ver o destino do registro.</span>
+                </div>
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipClassificarMotivo">Motivo ou justificativa</label>
+                    <textarea class="rreip-form-textarea" id="rreipClassificarMotivo" name="motivo" placeholder="Informe a justificativa da classificação."></textarea>
+                </div>
+            </div>
+
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalClassificar">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Salvar classificação</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL: ANÁLISE -->
+<div
+    class="rreip-modal-overlay"
+    id="rreipModalAnalise"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="rreipModalAnaliseTitulo"
+>
+    <div class="rreip-modal rreip-modal--large">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalAnaliseTitulo">Análise técnica</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalAnalise" aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="rreipFormAnalise" novalidate autocomplete="off">
+            {% csrf_token %}
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipAnaliseId" name="id">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseMotivo">Motivo identificado</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseMotivo" name="motivo_identificado"></textarea>
+                </div>
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseCausa">Causa raiz</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseCausa" name="causa_raiz"></textarea>
+                </div>
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseAcaoRealizada">Ação realizada</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseAcaoRealizada" name="acao_realizada"></textarea>
+                </div>
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseAcaoPreventiva">Ação preventiva</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseAcaoPreventiva" name="acao_preventiva"></textarea>
+                </div>
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipAnaliseConclusao">Conclusão</label>
+                    <textarea class="rreip-form-textarea" id="rreipAnaliseConclusao" name="conclusao"></textarea>
+                </div>
+            </div>
+
+            <div class="rreip-modal__footer" style="justify-content: space-between;">
+                <!-- Botão novo de Gerar Relatório alinhado à esquerda -->
+                <button type="button" class="rreip-btn rreip-btn--secondary" id="rreipBtnGerarRelatorio" title="Preencher com Inteligência Artificial">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                    </svg>
+                    Gerar relatório
+                </button>
+                
+                <!-- Botões padrão alinhados à direita -->
+                <div style="display: flex; gap: 0.55rem;">
+                    <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalAnalise">Cancelar</button>
+                    <button type="submit" class="rreip-btn rreip-btn--primary">Salvar análise</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL: PRÉVIA DO E-MAIL -->
+<div
+    class="rreip-modal-overlay"
+    id="rreipModalEmailMonitoramento"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="rreipModalEmailTitulo"
+>
+    <div class="rreip-modal rreip-modal--large">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalEmailTitulo">Solicitação de monitoramento</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalEmailMonitoramento" aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="rreip-modal__body">
+            <input type="hidden" id="rreipEmailRegistroId">
+            <div class="rreip-email-preview">
+                <div class="rreip-email-preview__header">
+                    <div class="rreip-email-preview__recipients" id="rreipEmailDestinatarios"></div>
+                    <div class="rreip-email-preview__recipients" id="rreipEmailCc"></div>
+                    <div class="rreip-email-preview__subject" id="rreipEmailAssunto"></div>
+                </div>
+                <div class="rreip-email-preview__body" id="rreipEmailCorpo"></div>
+            </div>
+        </div>
+
+        <div class="rreip-modal__footer">
+            <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalEmailMonitoramento">Cancelar</button>
+            <button type="button" class="rreip-btn rreip-btn--primary" id="rreipBtnConfirmarEnvioEmail" data-action="confirmar-envio-email">Enviar solicitação</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL: TICKET DE MONITORAMENTO -->
+<div
+    class="rreip-modal-overlay"
+    id="rreipModalTicketMonitoramento"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="rreipModalTicketMonitoramentoTitulo"
+>
+    <div class="rreip-modal">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalTicketMonitoramentoTitulo">Registrar ticket de monitoramento</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalTicketMonitoramento" aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="rreipFormTicketMonitoramento" novalidate autocomplete="off">
+            {% csrf_token %}
+            <div class="rreip-modal__body">
+                <div class="rreip-form-error-summary" data-form-error-summary hidden></div>
+                <input type="hidden" id="rreipTicketMonitoramentoId" name="id">
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipTicketMonitoramentoNumero">Ticket da fila de monitoramento <span class="rreip-form-required">*</span></label>
+                    <input type="text" class="rreip-form-input" id="rreipTicketMonitoramentoNumero" name="ticket_monitoramento" required>
+                </div>
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipTicketMonitoramentoUrl">URL do ticket</label>
+                    <input type="text" class="rreip-form-input" id="rreipTicketMonitoramentoUrl" name="url_ticket_monitoramento">
+                </div>
+
+                <div class="rreip-form-group">
+                    <label class="rreip-form-label" for="rreipTicketMonitoramentoData">Data do ticket</label>
+                    <input type="datetime-local" class="rreip-form-input" id="rreipTicketMonitoramentoData" name="data_ticket_monitoramento">
+                </div>
+
+                <span class="rreip-form-help">O período de 30 dias não será iniciado automaticamente. Depois de registrar o ticket, será necessário confirmar o início do monitoramento.</span>
+            </div>
+
+            <div class="rreip-modal__footer">
+                <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalTicketMonitoramento">Cancelar</button>
+                <button type="submit" class="rreip-btn rreip-btn--primary">Salvar ticket</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL: TEXTO PARA OTRS -->
+<div
+    class="rreip-modal-overlay"
+    id="rreipModalTextoOtrs"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="rreipModalTextoOtrsTitulo"
+>
+    <div class="rreip-modal rreip-modal--large">
+        <div class="rreip-modal__header">
+            <h3 class="rreip-modal__title" id="rreipModalTextoOtrsTitulo">Texto para OTRS</h3>
+            <button type="button" class="rreip-modal__close" data-close-modal="rreipModalTextoOtrs" aria-label="Fechar">&times;</button>
+        </div>
+
+        <div class="rreip-modal__body">
+            <textarea class="rreip-form-textarea rreip-copy-panel__text" id="rreipTextoOtrsConteudo" readonly></textarea>
+        </div>
+
+        <div class="rreip-modal__footer">
+            <button type="button" class="rreip-btn rreip-btn--text" data-close-modal="rreipModalTextoOtrs">Fechar</button>
+            <button type="button" class="rreip-btn rreip-btn--primary" id="rreipBtnCopiarTextoOtrs" data-action="confirmar-copiar-otrs">Copiar texto</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_reincidencias_js %}
+<script src="{% static 'js/chamados/reincidencias_tratamento.js' %}"></script>
+{% endblock %}

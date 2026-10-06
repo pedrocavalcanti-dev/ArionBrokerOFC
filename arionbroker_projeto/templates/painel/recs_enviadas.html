@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RECs Enviadas — ARION BROKER{% endblock %}
+{% block page_title %}Histórico de Envios{% endblock %}
+{% block nav_historico %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/painel/enviados.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="table-wrapper">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>REC</th>
+                <th>Designação Claro</th>
+                <th>BL / Operadora</th>
+                <th>Projeto</th>
+                <th style="text-align: center;">Enviado por</th>
+                <th>Destino</th>
+                <th>Data Envio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in recs %}
+            <tr class="rec-row proj-{{ rec.projeto|lower }}">
+                <td><span class="rec-id">{{ rec.rec_id }}</span></td>
+                <td><span class="text-mono">{{ rec.designacao_claro }}</span></td>
+                <td><span class="text-mono">{{ rec.bl_dados }}</span></td>
+
+                <td>
+                    {% if rec.projeto == 'CORREIOS' %}
+                        <span class="badge badge--correios"><i class="bi bi-envelope-fill"></i> Correios</span>
+                    {% elif rec.projeto == 'CAIXA' %}
+                        <span class="badge badge--caixa"><i class="bi bi-bank2"></i> Caixa</span>
+                    {% elif rec.projeto == 'BB' %}
+                        <span class="badge badge--bb"><i class="bi bi-building-fill"></i> BB</span>
+                    {% else %}
+                        <span class="badge badge--revisao"><i class="bi bi-question-circle-fill"></i> Revisão</span>
+                    {% endif %}
+                </td>
+
+                <td style="text-align: center;">
+                    {% if rec.origem_envio == 'AUTOMATICA' %}
+                        <span class="envio-tag">
+                            <i class="bi bi-robot"></i> Automático robô
+                        </span>
+                    {% elif rec.origem_envio == 'MANUAL' %}
+                        <span class="envio-tag">
+                            <i class="bi bi-person-fill"></i> {{ rec.enviado_por|default:"Manual" }}
+                        </span>
+                    {% else %}
+                        <span class="text-muted-sm">—</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if rec.destino_email %}
+                        <span class="text-mono" style="font-size:0.75rem; color:var(--text-secondary);">
+                            {{ rec.destino_email }}
+                        </span>
+                    {% else %}
+                        <span class="text-muted-sm">—</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <span class="data-envio-tag">
+                        <i class="bi bi-send-check-fill"></i> {{ rec.data_envio|date:"d/m/Y H:i" }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">
+                    <div class="empty-state">
+                        <i class="bi bi-send empty-state__icon"></i>
+                        <p class="empty-state__title">Nenhuma REC enviada ainda</p>
+                        <p class="empty-state__sub">As RECs enviadas aparecerão aqui.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

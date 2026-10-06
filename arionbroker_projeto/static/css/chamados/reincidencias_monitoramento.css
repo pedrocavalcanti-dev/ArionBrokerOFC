@@ -1,0 +1,728 @@
+/* ==========================================================================
+   RREIP — Monitoramento
+   Arquivo: static/css/chamados/reincidencias_monitoramento.css
+
+   Este arquivo contém somente os estilos específicos da fila MONITORAMENTO.
+   Requer o carregamento prévio de:
+   static/css/chamados/reincidencias_base.css
+   ========================================================================== */
+
+/* ==========================================================================
+   1. LARGURAS DAS COLUNAS (Para caber 100% na tela)
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table {
+    width: 100%;
+    min-width: 1380px;
+    /* Reduzido para encaixar melhor e eliminar o buraco branco */
+    table-layout: fixed;
+}
+
+/* ---------------------------------------------------
+   Colunas Fixas (Não diminuem)
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-ticket-monitoramento {
+    width: 155px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-ticket-origem {
+    width: 140px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-projeto {
+    width: 110px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-identificador {
+    width: 125px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-cliente {
+    width: 140px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-responsavel {
+    width: 155px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-prazo {
+    width: 80px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-status {
+    width: 140px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-acoes {
+    width: 90px;
+    text-align: right;
+}
+
+/* FIX: Data não pode vazar/sumir */
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-data {
+    width: 135px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------
+   Única Coluna Flexível (Puxa todo o espaço livre da tela)
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-designacao {
+    width: 80px;
+    min-width: 80px;
+    color: var(--text-primary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------------------------------------------------
+   Estilos base de Linha
+   --------------------------------------------------- */
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-row[data-status="REINCIDIU"] {
+    background: rgba(239, 68, 68, 0.045);
+    box-shadow: inset 3px 0 0 rgba(239, 68, 68, 0.75);
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-row[data-status="CONCLUIDO"] {
+    background: rgba(16, 185, 129, 0.035);
+    box-shadow: inset 3px 0 0 rgba(16, 185, 129, 0.65);
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-row[data-status="MONITORANDO"] {
+    box-shadow: inset 3px 0 0 rgba(6, 182, 212, 0.65);
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table tbody td {
+    position: relative;
+}
+
+/* ==========================================================================
+   2. Tickets de origem e monitoramento
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.48rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 6px);
+    background: var(--bg-elevated);
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card--origem {
+    border-left: 3px solid #3b82f6;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card--monitoramento {
+    border-left: 3px solid #06b6d4;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card__label {
+    color: var(--text-muted);
+    font-size: 0.61rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card__number {
+    max-width: 100%;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 0.25rem 0.48rem;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket--link {
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card--origem .rreip-ticket--link {
+    color: #60a5fa;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card--origem .rreip-ticket--link:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.08);
+    color: #93c5fd;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card--monitoramento .rreip-ticket--link {
+    color: #22d3ee;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-ticket-card--monitoramento .rreip-ticket--link:hover {
+    border-color: rgba(6, 182, 212, 0.5);
+    background: rgba(6, 182, 212, 0.08);
+    color: #67e8f9;
+}
+
+/* ==========================================================================
+   3. Projeto, identificador e cliente
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-projeto {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-identificador {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    gap: 0.35rem;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-identificador__label {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 0.61rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-identificador__value {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-cliente {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   4. Responsável
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-responsavel {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 0.48rem;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-responsavel__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(6, 182, 212, 0.28);
+    border-radius: 50%;
+    background: rgba(6, 182, 212, 0.12);
+    color: #67e8f9;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-responsavel__nome {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-responsavel--vazio {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-responsavel .rreip-btn {
+    min-height: 30px;
+    padding: 0.32rem 0.5rem;
+    font-size: 0.68rem;
+}
+
+/* ==========================================================================
+   5. Datas
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-data time {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    color: var(--text-secondary);
+    font-size: 0.74rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-col-data time::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-right: 0.38rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--border-strong);
+}
+
+/* ==========================================================================
+   6. Prazo
+   ========================================================================== */
+
+.rreip-prazo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0.28rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.69rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.rreip-prazo::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    margin-right: 0.38rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.rreip-prazo--normal {
+    border-color: rgba(6, 182, 212, 0.28);
+    background: rgba(6, 182, 212, 0.12);
+    color: #67e8f9;
+}
+
+.rreip-prazo--alerta {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.13);
+    color: #fcd34d;
+}
+
+.rreip-prazo--vencido {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.13);
+    color: #fca5a5;
+}
+
+.rreip-prazo--concluido {
+    border-color: rgba(16, 185, 129, 0.28);
+    background: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+}
+
+/* ==========================================================================
+   7. Status
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    min-height: 28px;
+    padding: 0.28rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-status__dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.rreip-status--monitorando {
+    border-color: rgba(6, 182, 212, 0.28) !important;
+    background: rgba(6, 182, 212, 0.12) !important;
+    color: #67e8f9 !important;
+}
+
+.rreip-status--reincidiu {
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    background: rgba(239, 68, 68, 0.13) !important;
+    color: #fca5a5 !important;
+}
+
+.rreip-status--concluido {
+    border-color: rgba(16, 185, 129, 0.28) !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #6ee7b7 !important;
+}
+
+/* ==========================================================================
+   8. Ações da linha
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.15rem;
+    /* Ajustado para deixar botões mais próximos, igual ao tratamento */
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 6px);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-action-btn:hover {
+    border-color: rgba(6, 182, 212, 0.45);
+    background: rgba(6, 182, 212, 0.1);
+    color: #67e8f9;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-action-btn:focus-visible {
+    outline: 3px solid rgba(6, 182, 212, 0.18);
+    outline-offset: 2px;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-action-btn svg {
+    pointer-events: none;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions-menu {
+    position: relative;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions-menu>summary {
+    list-style: none;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions-menu>summary::-webkit-details-marker {
+    display: none;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions-menu[open]>summary {
+    border-color: rgba(6, 182, 212, 0.45);
+    background: rgba(6, 182, 212, 0.1);
+    color: #67e8f9;
+}
+
+/* Força o menu a abrir para a esquerda (para dentro da tela) e ficar no topo */
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions-menu__content {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    right: 0; /* Alinha o menu pela direita, fazendo-o crescer para a esquerda */
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    min-width: 235px;
+    gap: 0.3rem;
+    padding: 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-elevated);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+}
+
+/* Garante que a célula com o menu aberto não fique escondida atrás da linha de baixo */
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table tbody td.rreip-col-acoes:hover,
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table tbody td.rreip-col-acoes:focus-within,
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table tbody td.rreip-col-acoes:has(details[open]) {
+    z-index: 999 !important;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions-menu__content .rreip-btn {
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 35px;
+    padding: 0.45rem 0.65rem;
+    text-align: left;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-actions-menu__content hr {
+    margin: 0.25rem 0;
+}
+
+/* ==========================================================================
+   9. Modal de nova ocorrência
+   ========================================================================== */
+
+#rreipModalNovaOcorrencia .rreip-form-group+.rreip-form-group {
+    margin-top: 1rem;
+}
+
+#rreipModalNovaOcorrencia .rreip-form-help {
+    display: block !important;
+    margin-top: 0.85rem !important;
+    padding: 0.75rem 0.8rem;
+    border: 1px solid rgba(239, 68, 68, 0.28);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(239, 68, 68, 0.08);
+    color: #fca5a5 !important;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+#rreipModalNovaOcorrencia .rreip-form-help strong {
+    color: #f87171;
+}
+
+#rreipModalNovaOcorrencia .rreip-btn--danger {
+    min-width: 140px;
+}
+
+/* ==========================================================================
+   10. Modal de conclusão
+   ========================================================================== */
+
+#rreipModalConcluir .rreip-modal__body>p {
+    margin: 0 0 1rem !important;
+    color: var(--text-secondary) !important;
+    font-size: var(--text-sm, 0.875rem) !important;
+    line-height: 1.55;
+}
+
+#rreipModalConcluir .rreip-form-group {
+    margin-top: 0.8rem;
+    padding: 0.9rem !important;
+    border: 1px dashed rgba(245, 158, 11, 0.45) !important;
+    border-radius: var(--radius-md, 8px) !important;
+    background: rgba(245, 158, 11, 0.08) !important;
+}
+
+#rreipModalConcluir .rreip-form-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    color: #fcd34d !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+}
+
+#rreipModalConcluir input[type="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0;
+    margin: 0;
+    accent-color: #f59e0b;
+}
+
+#rreipModalConcluir .rreip-form-help {
+    display: block !important;
+    margin-top: 0.5rem !important;
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    line-height: 1.45;
+}
+
+#rreipModalConcluir .rreip-btn--success {
+    min-width: 150px;
+}
+
+/* ==========================================================================
+   11. Estado vazio
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-empty-state__icon {
+    color: #22d3ee;
+    opacity: 0.8;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-empty-state {
+    background:
+        linear-gradient(180deg,
+            rgba(6, 182, 212, 0.035),
+            transparent 55%),
+        var(--bg-surface);
+}
+
+/* ==========================================================================
+   12. Estados de carregamento
+   ========================================================================== */
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-row.is-loading {
+    opacity: 0.62;
+    pointer-events: none;
+}
+
+.rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-row.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: rgba(15, 23, 42, 0.05);
+}
+
+#rreipModalNovaOcorrencia.is-loading .rreip-modal,
+#rreipModalConcluir.is-loading .rreip-modal {
+    opacity: 0.72;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   13. Tema claro
+   ========================================================================== */
+
+html:not([data-theme="dark"]) .rreip-prazo--normal {
+    color: #0e7490;
+}
+
+html:not([data-theme="dark"]) .rreip-prazo--alerta {
+    color: #b45309;
+}
+
+html:not([data-theme="dark"]) .rreip-prazo--vencido {
+    color: #b91c1c;
+}
+
+html:not([data-theme="dark"]) .rreip-prazo--concluido {
+    color: #047857;
+}
+
+html:not([data-theme="dark"]) .rreip-status--monitorando {
+    color: #0e7490 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--reincidiu {
+    color: #b91c1c !important;
+}
+
+html:not([data-theme="dark"]) .rreip-status--concluido {
+    color: #047857 !important;
+}
+
+html:not([data-theme="dark"]) .rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-responsavel__avatar {
+    color: #0e7490;
+}
+
+html:not([data-theme="dark"]) #rreipModalNovaOcorrencia .rreip-form-help {
+    color: #991b1b !important;
+}
+
+html:not([data-theme="dark"]) #rreipModalConcluir .rreip-form-label {
+    color: #92400e !important;
+}
+
+/* ==========================================================================
+   14. Responsividade Adaptada
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table {
+        min-width: 1300px;
+    }
+}
+
+@media (max-width: 768px) {
+    #rreipModalNovaOcorrencia .rreip-form-help {
+        font-size: 0.72rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-table {
+        min-width: 1200px;
+    }
+
+    .rreip-prazo,
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"] .rreip-status {
+        font-size: 0.67rem;
+    }
+
+    #rreipModalNovaOcorrencia .rreip-form-help,
+    #rreipModalConcluir .rreip-form-group {
+        padding: 0.7rem !important;
+    }
+}
+
+/* ==========================================================================
+   15. Movimento reduzido
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"] *,
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"] *::before,
+    .rreip-wrapper[data-fila-atual="MONITORAMENTO"] *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
