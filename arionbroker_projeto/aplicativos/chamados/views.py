@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import timedelta
 
 from django.shortcuts import render
@@ -7,6 +8,9 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from aplicativos.chamados.models import Chamado, KpiOtrs, ConfiguracaoSLA, FiltroProjeto
+from aplicativos.chamados.dashboard_otrs import obter_dashboard_atacado
+
+logger = logging.getLogger(__name__)
 
 # ── KPI IDs — mapeamento fixo dos perfis do OTRS ──────────────
 KPI_BRAD           = '613_2'   # BRAD — tem brad_por_operadora {CLARO, VIVO, OUTROS}
@@ -18,9 +22,9 @@ KPI_BB             = '655_2'   # PROJETO BB (Banco do Brasil — Claro)
 KPI_CARREFOUR      = '702_2'   # PROJETO CARREFOUR (Claro)
 KPI_CEF            = '682_2'   # PROJETO CEF (Caixa — Claro)
 KPI_DIVERSOS       = '686_2'   # PROJETO DIVERSOS (Claro)
-KPI_PROJETOS       = '251_2'   # PROJETOS — total geral em aberto
+KPI_PROJETOS       = '251_2'   # NOC - ATACADO — não é total global comprovado
 KPI_NGO            = '185_2'   # NGO - NÃO GEOGRÁFICO (bucket "Outros", informativo)
-KPI_REINCIDENCIAS  = '723_2'   # Reincidências (bucket "Outros", NÃO soma no total de chamados)
+KPI_REINCIDENCIAS  = '724_2'   # REINCIDENTES (30 dias); 723_2 é Monitoramento RREIP
 
 
 @login_required
@@ -71,95 +75,33 @@ def api_kpis(request):
 def api_dashboard_resumo(request):
     """
     Endpoint JSON com os totais consolidados para o dashboard principal.
-    GET /chamados/api/dashboard-resumo/
+    GET /projetos/api/dashboard-resumo/
     """
     try:
-        ids_necessarios = {
-            KPI_BRAD, KPI_CORREIOS, KPI_LAN2LAN, KPI_MCDONALDS,
-            KPI_ALGAR, KPI_BB, KPI_CARREFOUR, KPI_CEF, KPI_DIVERSOS,
-            KPI_PROJETOS, KPI_NGO, KPI_REINCIDENCIAS,
-        }
-        kpis_qs = KpiOtrs.objects.filter(kpi_id__in=ids_necessarios)
-        idx = {k.kpi_id: k for k in kpis_qs}
+        # ATACADO vem da sessão OTRS existente; esta API não grava KPIs no banco.
+        data = dict(obter_dashboard_atacado())
 
-        def val(kpi_id):
-            k = idx.get(kpi_id)
-            return k.valor if k else 0
-
-        def brad_op(operadora):
-            k = idx.get(KPI_BRAD)
-            if not k or not k.brad_por_operadora:
-                return 0
-            return k.brad_por_operadora.get(operadora, 0)
-
+        # Preserva a origem atual do SLA e do NGO. Não inferir resolvidos dos KPIs.
         atrasados_qs = KpiOtrs.objects.filter(grupo='CHAMADOS POR GESTORES +4D')
-        atrasados = sum(k.valor for k in atrasados_qs)
+        data['atrasados'] = sum(k.valor for k in atrasados_qs)
+        ngo = KpiOtrs.objects.filter(kpi_id=KPI_NGO, coletado_ok=True).first()
+        ngo_valor = ngo.valor if ngo else None
+        reincidentes = next(p for p in data['atacado']['projetos']
+                            if p['id'] == 'reincidentes_30_dias')
+        data['outros'] = {
+            'total': ngo_valor,
+            'projetos': [
+                {'id': 'ngo', 'nome': 'NGO - Não Geográfico', 'valor': ngo_valor},
+                {'id': 'reincidencias', 'nome': 'Reincidências',
+                 'valor': reincidentes['valor'], 'kpi_id': KPI_REINCIDENCIAS},
+            ],
+        }
+        data['ok'] = True
+        return JsonResponse(data)
 
-        total_em_aberto = val(KPI_PROJETOS)
-
-        brad_vivo    = brad_op('VIVO')
-        mcdonalds    = val(KPI_MCDONALDS)
-        lan2lan      = val(KPI_LAN2LAN)
-        total_vivo   = brad_vivo + mcdonalds + lan2lan
-
-        brad_claro   = brad_op('CLARO')
-        correios     = val(KPI_CORREIOS)
-        cef          = val(KPI_CEF)
-        bb           = val(KPI_BB)
-        carrefour    = val(KPI_CARREFOUR)
-        diversos     = val(KPI_DIVERSOS)
-        total_claro  = brad_claro + correios + cef + bb + carrefour + diversos
-
-        algar        = val(KPI_ALGAR)
-        total_algar  = algar
-
-        ngo           = val(KPI_NGO)
-        reincidencias = val(KPI_REINCIDENCIAS)
-
-        ultimo = KpiOtrs.objects.filter(kpi_id__in=ids_necessarios).order_by('-atualizado_em').first()
-        atualizado_em = ultimo.atualizado_em.strftime('%d/%m/%Y %H:%M:%S') if ultimo and ultimo.atualizado_em else None
-
-        return JsonResponse({
-            'ok': True,
-            'atualizado_em':  atualizado_em,
-            'total_em_aberto': total_em_aberto,
-            'atrasados':      atrasados,
-            'vivo': {
-                'total': total_vivo,
-                'projetos': [
-                    {'nome': 'Bradesco',        'valor': brad_vivo},
-                    {"nome": "McDonald's",       'valor': mcdonalds},
-                    {'nome': 'L2L (LAN-to-LAN)', 'valor': lan2lan},
-                ],
-            },
-            'claro': {
-                'total': total_claro,
-                'projetos': [
-                    {'nome': 'Bradesco',         'valor': brad_claro},
-                    {'nome': 'Correios',          'valor': correios},
-                    {'nome': 'Caixa Econômica',   'valor': cef},
-                    {'nome': 'Banco do Brasil',   'valor': bb},
-                    {'nome': 'Carrefour',         'valor': carrefour},
-                    {'nome': 'Diversos',          'valor': diversos},
-                ],
-            },
-            'algar': {
-                'total': total_algar,
-                'projetos': [
-                    {'nome': 'Escolas Conectadas', 'valor': algar},
-                ],
-            },
-            'outros': {
-                'total': ngo,
-                'projetos': [
-                    {'nome': 'NGO - Não Geográfico', 'valor': ngo},
-                    {'nome': 'Reincidências',         'valor': reincidencias},
-                ],
-            },
-        })
-
-    except Exception as e:
-        return JsonResponse({'ok': False, 'erro': str(e)}, status=500)
+    except Exception as exc:
+        logger.error('[OTRS DASHBOARD] Resumo indisponível (%s)', type(exc).__name__)
+        return JsonResponse({'ok': False, 'erro': 'Resumo OTRS indisponível; verifique a sessão existente.'}, status=503)
 
 
 @login_required

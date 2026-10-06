@@ -65,14 +65,14 @@ const ESTRUTURA = [
 
 // ── HELPERS DA API ─────────────────────────────────────────
 function getTotalOp(dadosResumo, opId) {
-    if (!dadosResumo) return 0;
+    if (!dadosResumo) return null;
     const op = dadosResumo[opId];
-    return (op && op.total != null) ? op.total : 0;
+    return (op && op.total != null) ? op.total : null;
 }
 
-function getProjDataApi(dadosResumo, opId, apiNome) {
+function getProjDataApi(dadosResumo, opId, projetoId) {
     if (!dadosResumo || !dadosResumo[opId] || !dadosResumo[opId].projetos) return null;
-    return dadosResumo[opId].projetos.find(p => p.nome === apiNome) || null;
+    return dadosResumo[opId].projetos.find(p => p.id === projetoId) || null;
 }
 
 // ── FETCH PRINCIPAL ────────────────────────────────────────
@@ -83,33 +83,44 @@ function carregarDados() {
             return r.json();
         })
         .then(data => {
-            if (data.ok === false) return;
+            if (data.ok === false) throw new Error('Resumo OTRS indisponível');
             _dadosResumo = data;
             renderKPIs(data);
             renderOperadoras(data);
             renderGraficos(data);
             renderDestaquesSLA(data);
         })
-        .catch(err => console.error('[RESUMO] Erro ao carregar dados:', err));
+        .catch(err => {
+            console.error('[RESUMO] Erro ao carregar dados:', err);
+            const strip = document.getElementById('kpi-strip');
+            if (!strip) return;
+            if (_dadosResumo) {
+                strip.querySelector('.kpi-card__label').textContent = 'OTRS · atualização falhou';
+                strip.title = 'Exibindo a última leitura: ' + _dadosResumo.atualizado_em;
+            } else {
+                strip.innerHTML = '<div class="kpi-card"><div class="kpi-card__label">OTRS indisponível</div><div class="kpi-card__value">—</div></div>';
+            }
+        });
 }
 
 // ── RENDERIZAÇÃO: KPIs GIGANTES DO TOPO ────────────────────
 function renderKPIs(data) {
     const container = document.getElementById('kpi-strip');
     if (!container) return;
+    container.title = data.atualizado_em ? 'Leitura OTRS: ' + data.atualizado_em : '';
 
-    const total = data.total ?? 0;
-    const emAberto = data.total_em_aberto ?? 0;
-    const resolvidos = data.resolvidos ?? 0;
+    const total = data.total ?? '—';
+    const emAberto = data.total_em_aberto ?? '—';
+    const resolvidos = data.resolvidos ?? '—';
     const atrasados = data.atrasados ?? 0;
 
     container.innerHTML = `
         <div class="kpi-card kpi-card--total">
-            <div class="kpi-card__label">Total OTRS</div>
+            <div class="kpi-card__label">NOC - ATACADO</div>
             <div class="kpi-card__value" id="kpi-total">${total}</div>
         </div>
         <div class="kpi-card kpi-card--aberto">
-            <div class="kpi-card__label">Em Aberto</div>
+            <div class="kpi-card__label">Em Aberto · NOC - ATACADO</div>
             <div class="kpi-card__value">${emAberto}</div>
         </div>
         <div class="kpi-card kpi-card--resolv">
@@ -132,8 +143,8 @@ function renderOperadoras(data) {
         const totalOp = getTotalOp(data, op.id);
 
         const cardsHtml = op.projetos.map(proj => {
-            const projDataApi = getProjDataApi(data, op.id, proj.api_nome);
-            const total = projDataApi ? (projDataApi.valor || 0) : 0;
+            const projDataApi = getProjDataApi(data, op.id, proj.id);
+            const total = projDataApi?.valor ?? '—';
 
             return `
             <div class="projeto-card projeto-card--${op.cor}" title="${escapeHtml(proj.nome)}">
@@ -146,7 +157,7 @@ function renderOperadoras(data) {
         <div class="operadora-section" id="op-${op.id}">
             <div class="operadora-header">
                 <div class="operadora-title op-title-${op.cor}">${op.nome}</div>
-                <div class="operadora-total-text">${totalOp} Chamados</div>
+                <div class="operadora-total-text" title="Chamados únicos nos projetos mapeados; métricas adicionais estão na API ATACADO">${totalOp ?? '—'} Chamados</div>
             </div>
             <div class="projetos-grid" id="grid-${op.id}">
                 ${cardsHtml}
@@ -163,7 +174,7 @@ function renderDestaquesSLA(data) {
     const itens = [];
     ESTRUTURA.filter(op => !op.sem_detalhe).forEach(op => {
         op.projetos.forEach(proj => {
-            const projDataApi = getProjDataApi(data, op.id, proj.api_nome);
+            const projDataApi = getProjDataApi(data, op.id, proj.id);
             const atrasados = projDataApi ? (projDataApi.atrasados || 0) : 0;
             if (atrasados > 0) {
                 itens.push({ nome: proj.nome, opNome: op.nome, atrasados });
